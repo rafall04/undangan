@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { currentSession } from '@/lib/auth/cookies';
 import { listAdminClients, listOrders } from '@/lib/admin/queries';
 import { AdminLogoutButton } from '@/lib/admin/AdminLogin';
+import { ProcessOrderButton } from '@/lib/admin/ProcessOrderButton';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Admin — Dashboard', robots: { index: false, follow: false } };
@@ -137,13 +138,14 @@ export default function AdminDashboard() {
             </p>
           ) : (
             <div className="mt-3 overflow-x-auto rounded-2xl border border-brand-line">
-              <table className="w-full min-w-[560px] text-left text-sm">
+              <table className="w-full min-w-[680px] text-left text-sm">
                 <thead className="bg-brand-paper text-xs uppercase tracking-wide text-brand-muted">
                   <tr>
                     <th className="px-4 py-3">Pemesan</th>
                     <th className="px-4 py-3">Kontak</th>
                     <th className="px-4 py-3">Paket</th>
                     <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-brand-line">
@@ -153,6 +155,17 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3 text-brand-muted">{o.kontak ?? '—'}</td>
                       <td className="px-4 py-3 text-brand-muted">{o.paket ?? '—'}</td>
                       <td className="px-4 py-3 text-brand-muted">{o.status}</td>
+                      <td className="px-4 py-3 text-right">
+                        {o.status === 'baru' ? (
+                          <ProcessOrderButton orderId={o.id} suggestedSlug={o.suggestedSlug} />
+                        ) : o.slug ? (
+                          <Link href={`/admin/clients/${o.slug}`} className="text-xs text-brand-gold hover:underline">
+                            Buka /{o.slug}
+                          </Link>
+                        ) : (
+                          <span className="text-xs text-brand-muted">—</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

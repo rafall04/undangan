@@ -53,12 +53,45 @@ export interface OrderRow {
   slug: string | null;
   status: string;
   created_at: number;
+  /** Saran slug dari nama pasangan di config order (untuk tombol Proses). */
+  suggestedSlug: string;
+}
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 export function listOrders(): OrderRow[] {
-  return getDb()
+  const rows = getDb()
     .prepare(
-      'SELECT id, nama_pemesan, kontak, paket, slug, status, created_at FROM orders ORDER BY created_at DESC LIMIT 200',
+      'SELECT id, nama_pemesan, kontak, paket, slug, status, created_at, config_json FROM orders ORDER BY created_at DESC LIMIT 200',
     )
-    .all() as OrderRow[];
+    .all() as (Omit<OrderRow, 'suggestedSlug'> & { config_json: string | null })[];
+
+  return rows.map((o) => {
+    let suggestedSlug = '';
+    try {
+      const c = o.config_json ? JSON.parse(o.config_json) : null;
+      const a = c?.mempelai?.pria?.panggilan;
+      const b = c?.mempelai?.wanita?.panggilan;
+      if (a && b) suggestedSlug = slugify(`${a}-${b}`);
+    } catch {
+      /* abaikan */
+    }
+    return {
+      id: o.id,
+      nama_pemesan: o.nama_pemesan,
+      kontak: o.kontak,
+      paket: o.paket,
+      slug: o.slug,
+      status: o.status,
+      created_at: o.created_at,
+      suggestedSlug,
+    };
+  });
 }

@@ -64,3 +64,17 @@ export function createClientScaffold(slug: string): CreateResult {
   writeFileSync(join(clientDir(s), 'config.json'), draftToConfigJson(template), 'utf8');
   return { ok: true, slug: s };
 }
+
+/**
+ * Buat undangan dari config order Studio. Scaffold dulu (template) lalu terapkan
+ * config order bila valid; kalau tidak valid, template tetap dipakai (admin
+ * lengkapi via form). Selalu menghasilkan undangan yang bisa dibuka.
+ */
+export function createClientFromConfig(slug: string, rawConfig: unknown): CreateResult {
+  const created = createClientScaffold(slug);
+  if (!created.ok) return created;
+  if (rawConfig && typeof rawConfig === 'object') {
+    saveClientConfig(created.slug!, rawConfig); // kalau invalid, template tetap dipakai
+  }
+  return created;
+}
