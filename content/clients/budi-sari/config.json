@@ -1,0 +1,121 @@
+{
+  "temaSlug": "sakinah",
+  "islami": true,
+  "accessKey": "budisari2026",
+  "urutanNama": "pria-dulu",
+  "hashtag": "BudiSariBersatu",
+  "tanggalUtama": "2026-10-10T08:00:00",
+
+  "mempelai": {
+    "pria": {
+      "panggilan": "Budi",
+      "namaLengkap": "Budi Santoso, S.Kom.",
+      "urutan": "Putra pertama dari",
+      "ayah": "Sukirno",
+      "ibu": "Wahyuni",
+      "instagram": "budi.santoso",
+      "foto": "groom.svg"
+    },
+    "wanita": {
+      "panggilan": "Sari",
+      "namaLengkap": "Sari Wulandari, S.Pd.",
+      "urutan": "Putri kedua dari",
+      "ayah": "Hartono",
+      "ibu": "Sumiati",
+      "instagram": "sari.wulandari",
+      "foto": "bride.svg"
+    }
+  },
+
+  "acara": [
+    {
+      "nama": "Akad Nikah",
+      "tanggal": "2026-10-10",
+      "waktuMulai": "08:00",
+      "waktuSelesai": "10:00",
+      "zonaWaktu": "WIB",
+      "tempat": "Masjid Al-Ikhlas",
+      "alamat": "Jl. Melati No. 12, Bekasi"
+    },
+    {
+      "nama": "Resepsi",
+      "tanggal": "2026-10-10",
+      "waktuMulai": "11:00",
+      "waktuSelesai": "Selesai",
+      "zonaWaktu": "WIB",
+      "tempat": "Gedung Serbaguna Melati",
+      "alamat": "Jl. Melati No. 20, Bekasi",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Gedung%20Serbaguna%20Melati%20Bekasi",
+      "mapsEmbed": "https://maps.google.com/maps?q=Bekasi&output=embed"
+    }
+  ],
+
+  "ayat": {
+    "teks": "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya.",
+    "sumber": "QS. Ar-Rum: 21"
+  },
+
+  "ceritaCinta": [
+    {
+      "judul": "Pertama Bertemu",
+      "tanggal": "2020-08-17",
+      "deskripsi": "Dipertemukan di sebuah kegiatan organisasi, tanpa menyangka akan berlanjut hingga pelaminan.",
+      "foto": "story-01.svg"
+    },
+    {
+      "judul": "Taaruf & Restu",
+      "tanggal": "2025-11-05",
+      "deskripsi": "Dengan niat baik dan restu kedua keluarga, kami melangkah lebih serius.",
+      "foto": "story-02.svg"
+    },
+    {
+      "judul": "Khitbah",
+      "tanggal": "2026-04-12",
+      "deskripsi": "Sebuah lamaran sederhana yang penuh makna, menandai janji menuju halal.",
+      "foto": "story-03.svg"
+    }
+  ],
+
+  "galeri": [
+    "gallery-01.svg",
+    "gallery-02.svg",
+    "gallery-03.svg",
+    "gallery-04.svg",
+    "gallery-05.svg",
+    "gallery-06.svg",
+    "gallery-07.svg",
+    "gallery-08.svg"
+  ],
+
+  "fotoCover": "cover.svg",
+
+  "musik": { "judul": "Instrumen Akustik", "src": "/media/placeholder-song.wav" },
+
+  "ucapanContoh": [
+    { "nama": "Keluarga Besar Sukirno", "pesan": "Barakallahu lakuma. Semoga menjadi keluarga sakinah, mawaddah, warahmah.", "kehadiran": "hadir", "waktu": "3 hari lalu" },
+    { "nama": "Sahabat SMA", "pesan": "Selamat ya Budi & Sari! Bahagia selalu, semoga langgeng sampai jannah.", "kehadiran": "hadir", "waktu": "4 hari lalu" },
+    { "nama": "Rekan Kerja", "pesan": "Turut berbahagia, mohon maaf belum bisa hadir. Doa terbaik untuk kalian.", "kehadiran": "tidak", "waktu": "5 hari lalu" }
+  ],
+
+  "penutup": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kedua mempelai.",
+
+  "amplop": {
+    "catatan": "Doa restu Anda adalah hadiah terindah. Bila berkenan memberi tanda kasih, dapat melalui:",
+    "rekening": [
+      { "bank": "BCA", "nomor": "8201234567", "atasNama": "Budi Santoso", "jenis": "bank" },
+      { "bank": "OVO", "nomor": "081298765432", "atasNama": "Sari Wulandari", "jenis": "ewallet" }
+    ],
+    "alamatKado": "Jl. Melati No. 12, Bekasi 17111"
+  },
+
+
+  "templatePesan": "Assalamu'alaikum Wr. Wb.\n\nYth. Bapak/Ibu/Saudara/i {nama}\n\nTanpa mengurangi rasa hormat, kami mengundang Anda untuk menghadiri acara pernikahan kami, Budi & Sari.\n\nBerikut tautan undangan digital kami:\n{link}\n\nMerupakan suatu kebahagiaan bagi kami apabila Anda berkenan hadir. Terima kasih.\n\nWassalamu'alaikum Wr. Wb.",
+
+  "tamu": [
+    { "nama": "Bapak Andi Wijaya", "telepon": "081234567890", "grup": "Keluarga" },
+    { "nama": "Ibu Siti Rahayu", "telepon": "082198765432", "grup": "Keluarga" },
+    { "nama": "Rudi Hartanto", "telepon": "085611122233", "grup": "Teman Kantor" },
+    { "nama": "Dewi Lestari", "grup": "Teman Kuliah" },
+    { "nama": "Bapak/Ibu Hendra", "telepon": "6281377788899", "grup": "Tetangga" }
+  ]
+}

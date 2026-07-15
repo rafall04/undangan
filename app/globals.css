@@ -2,26 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   Nilai default variabel tema (dipakai bila belum ada wrapper tema).
+   Wrapper undangan menimpanya lewat inline-style dari temaCssVars().
+   ========================================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f4ecdd;
+  --surface: #fdf9f0;
+  --primary: #6b4423;
+  --accent: #a9791d;
+  --ink: #3a2c1e;
+  --muted: #7a6a55;
+  --cover-gradient: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0.2)
+  );
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-script: 'Pinyon Script', cursive;
+  --font-body: 'Jost', system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  background: #f4ecdd;
+  color: #3a2c1e;
 }
 
+/* Undangan: kunci lebar & hilangkan scroll horizontal di mobile. */
+.invite-root {
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Reveal-on-scroll (IntersectionObserver menambah .is-visible).
+   Hormati prefers-reduced-motion.
+   ========================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-floaty,
+  .animate-spin-slow {
+    animation: none !important;
+  }
+}
+
+/* Utility ringkas */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .tracking-brand {
+    letter-spacing: 0.35em;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  /* Lewati render/paint kartu di luar viewport (katalog jadi ringan). */
+  .cv-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 340px;
+  }
+}
+
+/* Cetak: sembunyikan kontrol non-esensial */
+@media print {
+  .no-print {
+    display: none !important;
   }
 }

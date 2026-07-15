@@ -1,0 +1,26 @@
+# ============================================================================
+# Jalankan Rafayana terisolasi. Terikat HANYA ke localhost:3007 → nginx yang
+# menangani domain + TLS. Ganti 3007 bila port itu sudah dipakai project lain.
+#   cd /opt/undangan && docker compose -f deploy/docker-compose.yml up -d --build
+# ============================================================================
+services:
+  undangan:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: undangan
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:3007:3000'
+    environment:
+      - NODE_ENV=production
+      - UNDANGAN_DATA_DIR=/app/data
+    # Kredensial admin (ADMIN_EMAIL, ADMIN_PASSWORD) via file rahasia di server
+    # (/opt/undangan/.env) — TIDAK ikut di repo/image.
+    env_file:
+      - ../.env
+    volumes:
+      # content rw → admin & editor bisa menulis config.json + foto klien:
+      - ../content:/app/content
+      # SQLite persisten (RSVP, tamu, sesi, admin, order):
+      - ../data:/app/data

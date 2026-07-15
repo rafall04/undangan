@@ -1,0 +1,119 @@
+{
+  "temaSlug": "ar-rahman",
+  "islami": true,
+  "accessKey": "isalintang2026",
+  "urutanNama": "pria-dulu",
+  "hashtag": "IsaLintang",
+  "tanggalUtama": "2026-12-02T08:00:00",
+
+  "mempelai": {
+    "pria": {
+      "panggilan": "Isa",
+      "namaLengkap": "Isa Abdullah",
+      "urutan": "Putra pertama dari",
+      "ayah": "H. Abdullah Rahman",
+      "ibu": "Hj. Siti Aminah",
+      "instagram": "isa.abdullah",
+      "foto": "groom.jpg"
+    },
+    "wanita": {
+      "panggilan": "Lintang",
+      "namaLengkap": "Lintang Virginia",
+      "urutan": "Putri pertama dari",
+      "ayah": "Bambang Suryanto",
+      "ibu": "Dewi Anggraini",
+      "instagram": "lintang.virginia",
+      "foto": "bride.jpg"
+    }
+  },
+
+  "acara": [
+    {
+      "nama": "Akad Nikah",
+      "tanggal": "2026-12-02",
+      "waktuMulai": "08:00",
+      "waktuSelesai": "10:00",
+      "zonaWaktu": "WIB",
+      "tempat": "Kediaman Mempelai Wanita",
+      "alamat": "Ds. Dander (sebelah barat Masjid Ar Rahman Dander), Kec. Dander, Kab. Bojonegoro, Jawa Timur",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Masjid+Ar+Rahman+Dander+Bojonegoro",
+      "mapsEmbed": "https://maps.google.com/maps?q=Masjid+Ar+Rahman+Dander+Bojonegoro&output=embed"
+    },
+    {
+      "nama": "Resepsi",
+      "tanggal": "2026-12-02",
+      "waktuMulai": "10:00",
+      "waktuSelesai": "Selesai",
+      "zonaWaktu": "WIB",
+      "tempat": "Kediaman Mempelai Wanita",
+      "alamat": "Ds. Dander (sebelah barat Masjid Ar Rahman Dander), Kec. Dander, Kab. Bojonegoro, Jawa Timur",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Masjid+Ar+Rahman+Dander+Bojonegoro",
+      "mapsEmbed": "https://maps.google.com/maps?q=Masjid+Ar+Rahman+Dander+Bojonegoro&output=embed"
+    }
+  ],
+
+  "ayat": {
+    "teks": "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.",
+    "sumber": "QS. Ar-Rum: 21"
+  },
+
+  "ceritaCinta": [
+    {
+      "judul": "Pertama Bertemu",
+      "tanggal": "2023-05-20",
+      "deskripsi": "Dipertemukan dalam sebuah kegiatan kampus, dari perkenalan sederhana yang tak terlupakan.",
+      "foto": "story-01.jpg"
+    },
+    {
+      "judul": "Taaruf & Restu",
+      "tanggal": "2026-03-15",
+      "deskripsi": "Dengan niat baik dan restu kedua keluarga, kami melangkah menuju jenjang yang lebih serius.",
+      "foto": "story-02.jpg"
+    },
+    {
+      "judul": "Khitbah",
+      "tanggal": "2026-08-10",
+      "deskripsi": "Sebuah lamaran penuh makna, menandai janji menuju ikatan yang halal.",
+      "foto": "story-03.jpg"
+    }
+  ],
+
+  "galeri": [
+    "gallery-01.jpg",
+    "gallery-02.jpg",
+    "gallery-03.jpg",
+    "gallery-04.jpg",
+    "gallery-05.jpg",
+    "gallery-06.jpg"
+  ],
+
+  "fotoCover": "cover.jpg",
+
+  "musik": { "judul": "Instrumen Akustik", "src": "/media/placeholder-song.wav" },
+
+  "ucapanContoh": [
+    { "nama": "Keluarga Besar Abdullah", "pesan": "Barakallahu lakuma. Semoga menjadi keluarga yang sakinah, mawaddah, warahmah.", "kehadiran": "hadir", "waktu": "2 hari lalu" },
+    { "nama": "Sahabat Kuliah", "pesan": "Selamat ya Isa & Lintang! Semoga langgeng sampai jannah. Aamiin.", "kehadiran": "hadir", "waktu": "3 hari lalu" },
+    { "nama": "Rekan Kerja", "pesan": "Turut berbahagia atas pernikahan kalian. Mohon maaf belum bisa hadir, doa terbaik selalu menyertai.", "kehadiran": "tidak", "waktu": "4 hari lalu" }
+  ],
+
+  "penutup": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kedua mempelai.",
+
+  "amplop": {
+    "catatan": "Doa restu Anda adalah hadiah terindah. Bila berkenan memberi tanda kasih, dapat melalui:",
+    "rekening": [
+      { "bank": "BCA", "nomor": "1234567890", "atasNama": "Isa Abdullah", "jenis": "bank" },
+      { "bank": "DANA", "nomor": "081234567890", "atasNama": "Lintang Virginia", "jenis": "ewallet" }
+    ],
+    "alamatKado": "Ds. Dander, Kec. Dander, Kab. Bojonegoro, Jawa Timur"
+  },
+
+  "templatePesan": "Assalamu'alaikum Wr. Wb.\n\nYth. Bapak/Ibu/Saudara/i {nama}\n\nTanpa mengurangi rasa hormat, kami mengundang Anda untuk menghadiri acara pernikahan kami, Isa & Lintang.\n\nBerikut tautan undangan digital kami:\n{link}\n\nMerupakan suatu kebahagiaan bagi kami apabila Anda berkenan hadir. Terima kasih.\n\nWassalamu'alaikum Wr. Wb.",
+
+  "tamu": [
+    { "nama": "Bapak Ahmad Fauzi", "telepon": "081234567890", "grup": "Keluarga" },
+    { "nama": "Ibu Nur Halimah", "telepon": "082198765432", "grup": "Keluarga" },
+    { "nama": "Rizky Pratama", "telepon": "085611122233", "grup": "Teman Kuliah" },
+    { "nama": "Sinta Dewi", "grup": "Teman Kerja" }
+  ]
+}

@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.shots
+tests
+data
+.env
+*.db
+*.db-shm
+*.db-wal
+*.log
+npm-debug.log*
+.DS_Store
