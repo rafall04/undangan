@@ -7,6 +7,7 @@ import { configKlienSchema } from '@/lib/clients/schema';
 import { type Draft, DEFAULT_DRAFT, loadDraft, draftToConfigJson, STUDIO_KEY } from './draft';
 import { generatePalette } from './palette-gen';
 import { type StylePreset, loadPresets, saveUserPreset, deleteUserPreset, BUILTIN_PRESETS } from './presets';
+import { MUSIC_LIBRARY, isLibraryTrack } from '@/lib/music/library';
 
 const PALETTE_KEYS: Array<['bg' | 'surface' | 'primary' | 'accent' | 'ink' | 'muted', string]> = [
   ['bg', 'Latar'],
@@ -203,6 +204,21 @@ export function StudioEditor({
 
   const rek = draft.amplop?.rekening ?? [];
   const setRek = (next: typeof rek) => set({ amplop: { ...draft.amplop, rekening: next } });
+
+  // --- Musik latar ---
+  const musikMode = !draft.musik ? '' : isLibraryTrack(draft.musik.src) ? draft.musik.src ?? '' : '__custom__';
+  const setMusik = (patch: Partial<{ judul: string; src: string }>) =>
+    setDraft((d) => ({ ...d, musik: { judul: d.musik?.judul, src: d.musik?.src ?? '', ...patch } }));
+  function pickMusik(val: string) {
+    if (val === '') return setDraft((d) => ({ ...d, musik: undefined }));
+    if (val === '__custom__')
+      return setDraft((d) => ({
+        ...d,
+        musik: { judul: d.musik?.judul ?? 'Lagu Pilihan', src: isLibraryTrack(d.musik?.src) ? '' : d.musik?.src ?? '' },
+      }));
+    const t = MUSIC_LIBRARY.find((x) => x.src === val);
+    if (t) setDraft((d) => ({ ...d, musik: { judul: t.judul, src: t.src } }));
+  }
 
   // --- Kustomisasi lanjutan ---
   const tema = useMemo(() => getTemaBySlug(draft.temaSlug), [draft.temaSlug]);
@@ -451,6 +467,48 @@ export function StudioEditor({
             )}
             <p className="mt-1 text-[11px] text-brand-muted">Pilih font lalu jadikan Font judul/script/teks di atas. Saat ekspor, taruh file font di folder klien.</p>
           </div>
+        </Section>
+
+        <Section title="Musik Latar">
+          <p className="text-xs text-brand-muted">
+            Backsound diputar saat undangan dibuka. Pilih dari library bebas-royalti, atau masukkan link lagu sendiri
+            (hak cipta lagu custom = tanggung jawab Anda).
+          </p>
+          <Field label="Pilihan musik">
+            <select className={inputCls} value={musikMode} onChange={(e) => pickMusik(e.target.value)}>
+              <option value="">Tanpa musik</option>
+              <optgroup label="Library (bebas royalti)">
+                {MUSIC_LIBRARY.map((t) => (
+                  <option key={t.id} value={t.src}>
+                    {t.judul} — {t.mood}
+                  </option>
+                ))}
+              </optgroup>
+              <option value="__custom__">Custom (link lagu sendiri)</option>
+            </select>
+          </Field>
+          {musikMode === '__custom__' && (
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <Field label="Judul lagu">
+                <input className={inputCls} value={draft.musik?.judul ?? ''} onChange={(e) => setMusik({ judul: e.target.value })} />
+              </Field>
+              <Field label="Link .mp3 (https)">
+                <input
+                  className={inputCls}
+                  placeholder="https://…/lagu.mp3"
+                  value={draft.musik?.src ?? ''}
+                  onChange={(e) => setMusik({ src: e.target.value })}
+                />
+              </Field>
+            </div>
+          )}
+          {draft.musik?.src ? (
+            <div>
+              <span className={labelCls}>Pratinjau</span>
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <audio controls preload="none" src={draft.musik.src} className="w-full" />
+            </div>
+          ) : null}
         </Section>
 
         <Section title="Template Pesan & Penutup">

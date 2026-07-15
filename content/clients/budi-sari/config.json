@@ -89,7 +89,7 @@
 
   "fotoCover": "cover.svg",
 
-  "musik": { "judul": "Instrumen Akustik", "src": "/media/placeholder-song.wav" },
+  "musik": { "judul": "Romantis", "src": "/media/library/romantis.mp3" },
 
   "ucapanContoh": [
     { "nama": "Keluarga Besar Sukirno", "pesan": "Barakallahu lakuma. Semoga menjadi keluarga sakinah, mawaddah, warahmah.", "kehadiran": "hadir", "waktu": "3 hari lalu" },

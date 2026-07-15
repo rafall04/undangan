@@ -113,7 +113,7 @@ export function Invitation({
       {/* Musik */}
       {data.musik?.src && (
         <>
-          <audio ref={audioRef} src={data.musik.src} loop preload="auto" />
+          <audio ref={audioRef} src={data.musik.src} loop preload="none" />
           {opened && <MusikButton playing={playing} onToggle={toggleMusik} judul={data.musik.judul} />}
         </>
       )}

@@ -13,7 +13,8 @@
     "gen-registry": "tsx scripts/gen-registry.mts",
     "new-client": "tsx scripts/new-client.mts",
     "optimize": "tsx scripts/optimize-photos.mts",
-    "shots": "tsx scripts/screenshots.mts"
+    "shots": "tsx scripts/screenshots.mts",
+    "gen-music": "tsx scripts/gen-music.mts"
   },
   "dependencies": {
     "@fontsource/alex-brush": "^5.2.8",
@@ -54,6 +55,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@breezystack/lamejs": "^1.2.7",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",
