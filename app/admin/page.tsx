@@ -59,6 +59,12 @@ export default function AdminDashboard() {
             >
               + Undangan Baru
             </Link>
+            <Link
+              href="/admin/settings"
+              className="rounded-full border border-brand-line px-4 py-1.5 text-sm text-brand-ink hover:border-brand-gold"
+            >
+              Pengaturan
+            </Link>
             <AdminLogoutButton />
           </div>
         </div>

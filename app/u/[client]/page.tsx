@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { listClientSlugs, loadClient } from '@/lib/clients/load';
+import { loadClient } from '@/lib/clients/load';
+import { effectiveStatus } from '@/lib/clients/meta';
 import { Invitation } from '@/lib/invitation';
 import { pasanganPanggilan } from '@/lib/invitation/types';
+import { BRAND, waLink } from '@/lib/brand';
 
 // FASE 4 — Undangan klien nyata dari content/clients/<slug>/. Dukungan ?to=.
-
-export function generateStaticParams() {
-  return listClientSlugs().map((client) => ({ client }));
-}
+// Dinamis: status/masa-berlaku dicek tiap request (undangan expired → nonaktif).
+export const dynamic = 'force-dynamic';
 
 export function generateMetadata({ params }: { params: { client: string } }): Metadata {
   let bundle;
@@ -29,6 +29,26 @@ export function generateMetadata({ params }: { params: { client: string } }): Me
   };
 }
 
+function UndanganNonaktif() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-brand-cream px-6 text-center">
+      <p className="font-brand-script text-4xl text-brand-gold">Rafayana</p>
+      <h1 className="mt-3 font-brand-serif text-2xl font-semibold text-brand-ink">Undangan Tidak Aktif</h1>
+      <p className="mt-2 max-w-sm text-sm text-brand-muted">
+        Masa aktif undangan ini telah berakhir. Silakan hubungi admin untuk mengaktifkannya kembali.
+      </p>
+      <a
+        href={waLink(`Halo ${BRAND.nama}, saya ingin mengaktifkan kembali undangan saya.`)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-5 rounded-full bg-brand-ink px-6 py-2.5 text-sm font-medium text-brand-cream hover:opacity-90"
+      >
+        Hubungi via WhatsApp
+      </a>
+    </div>
+  );
+}
+
 export default function ClientInvitationPage({
   params,
   searchParams,
@@ -38,6 +58,11 @@ export default function ClientInvitationPage({
 }) {
   const bundle = loadClient(params.client);
   if (!bundle) notFound();
+
+  // Masa aktif / status: expired atau dinonaktifkan → halaman nonaktif.
+  if (effectiveStatus(params.client) === 'disabled') {
+    return <UndanganNonaktif />;
+  }
 
   const guest = typeof searchParams.to === 'string' ? searchParams.to : undefined;
 

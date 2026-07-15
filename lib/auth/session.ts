@@ -84,3 +84,12 @@ export function verifyAdmin(email: string, password: string): string | null {
   if (!row) return null;
   return verifyPassword(password, row.pass_hash) ? e : null;
 }
+
+/** Ganti password admin (dipanggil setelah verifikasi password lama). */
+export function updateAdminPassword(email: string, newPassword: string): boolean {
+  const e = email.trim().toLowerCase();
+  const info = getDb()
+    .prepare('UPDATE admin_users SET pass_hash = ? WHERE email = ?')
+    .run(hashPassword(newPassword), e);
+  return info.changes > 0;
+}
