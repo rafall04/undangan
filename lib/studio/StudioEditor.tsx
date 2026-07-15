@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getAllTema, getTemaBySlug, fontsByRole, MOTIFS_META } from '@/lib/engine';
 import { contrastRatio } from '@/lib/engine/contrast';
 import { configKlienSchema } from '@/lib/clients/schema';
-import { type Draft, DEFAULT_DRAFT, loadDraft, saveDraft, draftToConfigJson } from './draft';
+import { type Draft, DEFAULT_DRAFT, loadDraft, draftToConfigJson, STUDIO_KEY } from './draft';
 import { generatePalette } from './palette-gen';
 import { type StylePreset, loadPresets, saveUserPreset, deleteUserPreset, BUILTIN_PRESETS } from './presets';
 
@@ -46,11 +46,28 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export function StudioEditor() {
+export function StudioEditor({
+  mode = 'studio',
+  slug,
+  initialConfig,
+  onSaved,
+}: {
+  /** 'studio' = mandiri (localStorage + unduh); 'admin' = simpan ke server. */
+  mode?: 'studio' | 'admin';
+  slug?: string;
+  initialConfig?: unknown;
+  onSaved?: () => void;
+} = {}) {
+  // Preview membaca localStorage; pakai key per-slug di mode admin agar tak
+  // menimpa draft studio pengguna lain.
+  const storageKey = mode === 'admin' && slug ? `rafayana:studio:admin:${slug}` : STUDIO_KEY;
   const [draft, setDraft] = useState<Draft>(DEFAULT_DRAFT);
   const [version, setVersion] = useState(0);
   const [hydrated, setHydrated] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState('');
+  const [saveIssues, setSaveIssues] = useState<string[]>([]);
   const [order, setOrder] = useState({ nama: '', kontak: '', paket: '' });
   const [orderBusy, setOrderBusy] = useState(false);
   const [orderMsg, setOrderMsg] = useState('');
@@ -60,18 +77,40 @@ export function StudioEditor() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    setDraft(loadDraft());
+    if (mode === 'admin') {
+      const cfg = initialConfig && typeof initialConfig === 'object' ? (initialConfig as Partial<Draft>) : {};
+      // Isi HANYA field struktural wajib (yang diakses form tanpa fallback) agar
+      // form tak error — jangan bawa field dekoratif DEFAULT (mis. quote) yang
+      // akan mengotori config klien saat disimpan.
+      const base: Partial<Draft> = {
+        temaSlug: DEFAULT_DRAFT.temaSlug,
+        islami: false,
+        accessKey: '',
+        urutanNama: 'pria-dulu',
+        tanggalUtama: DEFAULT_DRAFT.tanggalUtama,
+        mempelai: DEFAULT_DRAFT.mempelai,
+        acara: DEFAULT_DRAFT.acara,
+      };
+      setDraft({ ...base, ...cfg } as Draft);
+    } else {
+      setDraft(loadDraft());
+    }
     setPresets(loadPresets());
     setHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Simpan + segarkan pratinjau (debounce).
+  // Simpan draft ke localStorage (untuk iframe pratinjau) + segarkan (debounce).
   useEffect(() => {
     if (!hydrated) return;
-    saveDraft(draft);
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(draft));
+    } catch {
+      /* abaikan */
+    }
     const t = setTimeout(() => setVersion((v) => v + 1), 900);
     return () => clearTimeout(t);
-  }, [draft, hydrated]);
+  }, [draft, hydrated, storageKey]);
 
   const issues = useMemo(() => {
     const r = configKlienSchema.safeParse(draft);
@@ -133,6 +172,33 @@ export function StudioEditor() {
   }
   function reset() {
     if (confirm('Kosongkan semua isian dan mulai dari contoh default?')) setDraft(DEFAULT_DRAFT);
+  }
+
+  // Mode admin: simpan draft langsung ke config.json klien (server, tervalidasi).
+  async function saveToServer() {
+    if (!slug || saving) return;
+    setSaving(true);
+    setSaveMsg('');
+    setSaveIssues([]);
+    try {
+      const clean = JSON.parse(draftToConfigJson(draft));
+      const res = await fetch(`/api/admin/clients/${slug}`, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(clean),
+      });
+      const j = (await res.json().catch(() => null)) as { ok?: boolean; issues?: string[]; error?: string } | null;
+      if (!res.ok || !j?.ok) {
+        setSaveIssues(j?.issues ?? [j?.error ?? 'Gagal menyimpan.']);
+      } else {
+        setSaveMsg('Tersimpan ✓ Undangan sudah diperbarui.');
+        onSaved?.();
+      }
+    } catch {
+      setSaveMsg('Gagal terhubung. Coba lagi.');
+    } finally {
+      setSaving(false);
+    }
   }
 
   const rek = draft.amplop?.rekening ?? [];
@@ -398,65 +464,98 @@ export function StudioEditor() {
         <div className="rounded-2xl border border-brand-line bg-brand-paper p-4">
           <p className="mb-2 text-xs font-medium text-brand-muted">Pratinjau langsung (foto pakai placeholder)</p>
           <div className="overflow-hidden rounded-xl border border-brand-line bg-black/5">
-            <iframe key={version} ref={iframeRef} src="/studio/preview" title="Pratinjau" className="h-[560px] w-full" />
+            <iframe key={version} ref={iframeRef} src={`/studio/preview?k=${encodeURIComponent(storageKey)}`} title="Pratinjau" className="h-[560px] w-full" />
           </div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <button onClick={unduh} className="flex-1 rounded-full bg-brand-ink py-2.5 text-sm font-medium text-brand-cream hover:opacity-90">Unduh config.json</button>
-            <button onClick={salin} className="rounded-full border border-brand-gold px-4 py-2.5 text-sm text-brand-ink hover:bg-brand-gold hover:text-white">{copied ? 'Tersalin ✓' : 'Salin JSON'}</button>
-            <button onClick={reset} className="rounded-full border border-brand-line px-4 py-2.5 text-sm text-brand-muted">Reset</button>
-          </div>
-          {issues.length > 0 && (
-            <div className="mt-3 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">
-              <p className="font-medium">Masih perlu dilengkapi:</p>
-              <ul className="mt-1 list-inside list-disc">{issues.slice(0, 5).map((s, i) => <li key={i}>{s}</li>)}</ul>
-            </div>
-          )}
-          <p className="mt-3 text-[11px] leading-relaxed text-brand-muted">
-            Setelah selesai, unduh <b>config.json</b> lalu kirim ke admin (atau taruh di
-            <code> content/clients/&lt;nama&gt;/</code>). Foto ditambahkan terpisah oleh admin.
-          </p>
+          {mode === 'admin' ? (
+            <>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  onClick={saveToServer}
+                  disabled={saving}
+                  className="flex-1 rounded-full bg-brand-ink py-2.5 text-sm font-medium text-brand-cream hover:opacity-90 disabled:opacity-60"
+                >
+                  {saving ? 'Menyimpan…' : 'Simpan ke Undangan'}
+                </button>
+                <button onClick={salin} className="rounded-full border border-brand-gold px-4 py-2.5 text-sm text-brand-ink hover:bg-brand-gold hover:text-white">{copied ? 'Tersalin ✓' : 'Salin JSON'}</button>
+              </div>
+              {saveMsg && <p className="mt-2 rounded-lg bg-green-600/10 px-3 py-2 text-xs text-green-800">{saveMsg}</p>}
+              {saveIssues.length > 0 && (
+                <ul className="mt-2 space-y-1 rounded-lg bg-red-600/10 px-3 py-2 text-xs text-red-700">
+                  {saveIssues.map((it, i) => <li key={i}>• {it}</li>)}
+                </ul>
+              )}
+              {issues.length > 0 && (
+                <div className="mt-3 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">
+                  <p className="font-medium">Perlu dilengkapi agar tampil sempurna:</p>
+                  <ul className="mt-1 list-inside list-disc">{issues.slice(0, 5).map((s, i) => <li key={i}>{s}</li>)}</ul>
+                </div>
+              )}
+              <p className="mt-3 text-[11px] leading-relaxed text-brand-muted">
+                Perubahan langsung tersimpan ke undangan. Foto dikelola di bagian “Foto” di atas.
+                Isian di luar form (galeri, cerita cinta, dll.) tetap aman &amp; bisa diedit via “JSON mentah”.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button onClick={unduh} className="flex-1 rounded-full bg-brand-ink py-2.5 text-sm font-medium text-brand-cream hover:opacity-90">Unduh config.json</button>
+                <button onClick={salin} className="rounded-full border border-brand-gold px-4 py-2.5 text-sm text-brand-ink hover:bg-brand-gold hover:text-white">{copied ? 'Tersalin ✓' : 'Salin JSON'}</button>
+                <button onClick={reset} className="rounded-full border border-brand-line px-4 py-2.5 text-sm text-brand-muted">Reset</button>
+              </div>
+              {issues.length > 0 && (
+                <div className="mt-3 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">
+                  <p className="font-medium">Masih perlu dilengkapi:</p>
+                  <ul className="mt-1 list-inside list-disc">{issues.slice(0, 5).map((s, i) => <li key={i}>{s}</li>)}</ul>
+                </div>
+              )}
+              <p className="mt-3 text-[11px] leading-relaxed text-brand-muted">
+                Setelah selesai, unduh <b>config.json</b> lalu kirim ke admin (atau taruh di
+                <code> content/clients/&lt;nama&gt;/</code>). Foto ditambahkan terpisah oleh admin.
+              </p>
 
-          {/* Ajukan langsung ke admin (tanpa unduh manual) */}
-          <div className="mt-4 rounded-xl border border-brand-gold/50 bg-brand-gold/5 p-4">
-            <p className="text-sm font-medium text-brand-ink">Ajukan langsung ke Admin</p>
-            <p className="mt-0.5 text-[11px] text-brand-muted">
-              Kirim rancangan Anda + kontak; admin akan menghubungi &amp; menyiapkan undangan.
-            </p>
-            <div className="mt-3 space-y-2">
-              <input
-                className={inputCls}
-                placeholder="Nama Anda"
-                value={order.nama}
-                onChange={(e) => setOrder((o) => ({ ...o, nama: e.target.value }))}
-                maxLength={80}
-              />
-              <input
-                className={inputCls}
-                placeholder="WhatsApp / email"
-                value={order.kontak}
-                onChange={(e) => setOrder((o) => ({ ...o, kontak: e.target.value }))}
-                maxLength={120}
-              />
-              <select
-                className={inputCls}
-                value={order.paket}
-                onChange={(e) => setOrder((o) => ({ ...o, paket: e.target.value }))}
-              >
-                <option value="">Paket (opsional)</option>
-                <option value="perak">Perak</option>
-                <option value="emas">Emas</option>
-                <option value="platinum">Platinum</option>
-              </select>
-              <button
-                onClick={submitOrder}
-                disabled={orderBusy}
-                className="w-full rounded-full bg-brand-gold py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
-              >
-                {orderBusy ? 'Mengirim…' : 'Ajukan ke Admin'}
-              </button>
-              {orderMsg && <p className="text-[11px] text-brand-ink">{orderMsg}</p>}
-            </div>
-          </div>
+              {/* Ajukan langsung ke admin (tanpa unduh manual) */}
+              <div className="mt-4 rounded-xl border border-brand-gold/50 bg-brand-gold/5 p-4">
+                <p className="text-sm font-medium text-brand-ink">Ajukan langsung ke Admin</p>
+                <p className="mt-0.5 text-[11px] text-brand-muted">
+                  Kirim rancangan Anda + kontak; admin akan menghubungi &amp; menyiapkan undangan.
+                </p>
+                <div className="mt-3 space-y-2">
+                  <input
+                    className={inputCls}
+                    placeholder="Nama Anda"
+                    value={order.nama}
+                    onChange={(e) => setOrder((o) => ({ ...o, nama: e.target.value }))}
+                    maxLength={80}
+                  />
+                  <input
+                    className={inputCls}
+                    placeholder="WhatsApp / email"
+                    value={order.kontak}
+                    onChange={(e) => setOrder((o) => ({ ...o, kontak: e.target.value }))}
+                    maxLength={120}
+                  />
+                  <select
+                    className={inputCls}
+                    value={order.paket}
+                    onChange={(e) => setOrder((o) => ({ ...o, paket: e.target.value }))}
+                  >
+                    <option value="">Paket (opsional)</option>
+                    <option value="perak">Perak</option>
+                    <option value="emas">Emas</option>
+                    <option value="platinum">Platinum</option>
+                  </select>
+                  <button
+                    onClick={submitOrder}
+                    disabled={orderBusy}
+                    className="w-full rounded-full bg-brand-gold py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
+                  >
+                    {orderBusy ? 'Mengirim…' : 'Ajukan ke Admin'}
+                  </button>
+                  {orderMsg && <p className="text-[11px] text-brand-ink">{orderMsg}</p>}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

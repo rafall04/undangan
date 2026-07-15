@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PhotoManager } from './PhotoManager';
+import { StudioEditor } from '@/lib/studio/StudioEditor';
 
 // ============================================================================
 // Editor undangan (admin): kelola status publish/paket/masa-berlaku + edit
@@ -50,6 +51,16 @@ export function AdminClientEditor({
   const [msg, setMsg] = useState('');
   const [magic, setMagic] = useState('');
   const [magicBusy, setMagicBusy] = useState(false);
+
+  const parsedConfig = useMemo(() => {
+    try {
+      return JSON.parse(initialJson);
+    } catch {
+      return {};
+    }
+  }, [initialJson]);
+  // Sinkronkan editor JSON mentah bila config server berubah (mis. sesudah simpan form).
+  useEffect(() => setJson(initialJson), [initialJson]);
 
   async function saveConfig() {
     setIssues([]);
@@ -113,7 +124,7 @@ export function AdminClientEditor({
   const pill = 'rounded-full px-4 py-1.5 text-sm font-medium transition-colors';
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <Link href="/admin" className="text-xs text-brand-gold hover:underline">
@@ -223,32 +234,51 @@ export function AdminClientEditor({
       {/* Kelola foto */}
       <PhotoManager slug={slug} />
 
-      {/* Editor config.json */}
-      <section className="mt-6 rounded-2xl border border-brand-line bg-brand-paper p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="font-brand-serif text-lg font-semibold text-brand-ink">Data Undangan (config.json)</h2>
-          <button
-            onClick={saveConfig}
-            disabled={saving}
-            className="rounded-full bg-brand-ink px-5 py-2 text-sm font-medium text-brand-cream hover:opacity-90 disabled:opacity-60"
-          >
-            {saving ? 'Menyimpan…' : 'Simpan Config'}
-          </button>
-        </div>
-        {issues.length > 0 && (
-          <ul className="mt-3 space-y-1 rounded-lg bg-red-600/10 px-4 py-3 text-xs text-red-700">
-            {issues.map((it, i) => (
-              <li key={i}>• {it}</li>
-            ))}
-          </ul>
-        )}
-        <textarea
-          value={json}
-          onChange={(e) => setJson(e.target.value)}
-          spellCheck={false}
-          className="mt-3 min-h-[420px] w-full rounded-xl border border-brand-line bg-brand-cream px-4 py-3 font-mono text-xs leading-relaxed text-brand-ink outline-none focus:border-brand-gold"
+      {/* Editor form terstruktur (utama) — pakai ulang form Studio, simpan ke server */}
+      <div className="mt-6">
+        <h2 className="mb-2 font-brand-serif text-lg font-semibold text-brand-ink">Data Undangan</h2>
+        <StudioEditor
+          key={initialJson}
+          mode="admin"
+          slug={slug}
+          initialConfig={parsedConfig}
+          onSaved={() => router.refresh()}
         />
-      </section>
+      </div>
+
+      {/* Lanjutan: JSON mentah untuk field di luar form */}
+      <details className="mt-6 rounded-2xl border border-brand-line bg-brand-paper p-5">
+        <summary className="cursor-pointer font-brand-serif text-lg font-semibold text-brand-ink">
+          Edit JSON mentah (lanjutan)
+        </summary>
+        <div className="mt-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs text-brand-muted">
+              Untuk field yang belum ada di form: galeri, cerita cinta, musik, acara ke-3, dll.
+            </p>
+            <button
+              onClick={saveConfig}
+              disabled={saving}
+              className="shrink-0 rounded-full bg-brand-ink px-5 py-2 text-sm font-medium text-brand-cream hover:opacity-90 disabled:opacity-60"
+            >
+              {saving ? 'Menyimpan…' : 'Simpan JSON'}
+            </button>
+          </div>
+          {issues.length > 0 && (
+            <ul className="mt-3 space-y-1 rounded-lg bg-red-600/10 px-4 py-3 text-xs text-red-700">
+              {issues.map((it, i) => (
+                <li key={i}>• {it}</li>
+              ))}
+            </ul>
+          )}
+          <textarea
+            value={json}
+            onChange={(e) => setJson(e.target.value)}
+            spellCheck={false}
+            className="mt-3 min-h-[420px] w-full rounded-xl border border-brand-line bg-brand-cream px-4 py-3 font-mono text-xs leading-relaxed text-brand-ink outline-none focus:border-brand-gold"
+          />
+        </div>
+      </details>
     </div>
   );
 }
