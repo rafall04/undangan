@@ -40,38 +40,31 @@ export function AdminSettings({ email }: { email: string }) {
     }
   }
 
-  const input =
-    'mt-1 w-full rounded-xl border border-brand-line bg-brand-paper px-4 py-2.5 text-sm text-brand-ink outline-none focus:border-brand-gold';
-
   return (
-    <div className="mx-auto max-w-md px-4 py-8 sm:px-6">
-      <Link href="/admin" className="text-xs text-brand-gold hover:underline">
+    <div className="ui-container max-w-md py-8">
+      <Link href="/admin" className="ui-link text-xs">
         ← Dashboard
       </Link>
-      <h1 className="mt-2 font-brand-serif text-2xl font-semibold text-brand-ink">Pengaturan</h1>
-      <p className="text-xs text-brand-muted">Akun admin: {email}</p>
+      <h1 className="ui-title mt-2 text-xl">Pengaturan</h1>
+      <p className="text-xs text-slate-500">Akun admin: {email}</p>
 
-      <form onSubmit={submit} className="mt-6 space-y-3 rounded-2xl border border-brand-line bg-brand-paper p-5">
-        <h2 className="font-brand-serif text-lg font-semibold text-brand-ink">Ganti Password</h2>
-        <label className="block text-sm">
-          <span className="text-brand-muted">Password lama</span>
-          <input type="password" value={cur} onChange={(e) => setCur(e.target.value)} className={input} autoComplete="current-password" />
+      <form onSubmit={submit} className="ui-card mt-6 space-y-4 p-6">
+        <h2 className="ui-title">Ganti Password</h2>
+        <label className="block">
+          <span className="ui-label">Password lama</span>
+          <input type="password" value={cur} onChange={(e) => setCur(e.target.value)} className="ui-input" autoComplete="current-password" />
         </label>
-        <label className="block text-sm">
-          <span className="text-brand-muted">Password baru (min 8)</span>
-          <input type="password" value={next} onChange={(e) => setNext(e.target.value)} className={input} autoComplete="new-password" />
+        <label className="block">
+          <span className="ui-label">Password baru (min 8)</span>
+          <input type="password" value={next} onChange={(e) => setNext(e.target.value)} className="ui-input" autoComplete="new-password" />
         </label>
-        <label className="block text-sm">
-          <span className="text-brand-muted">Konfirmasi password baru</span>
-          <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className={input} autoComplete="new-password" />
+        <label className="block">
+          <span className="ui-label">Konfirmasi password baru</span>
+          <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="ui-input" autoComplete="new-password" />
         </label>
-        {msg && <p className="rounded-lg bg-green-600/10 px-3 py-2 text-xs text-green-800">{msg}</p>}
-        {err && <p className="rounded-lg bg-red-600/10 px-3 py-2 text-xs text-red-700">{err}</p>}
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-full bg-brand-ink py-2.5 text-sm font-medium text-brand-cream hover:opacity-90 disabled:opacity-60"
-        >
+        {msg && <p className="rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{msg}</p>}
+        {err && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{err}</p>}
+        <button type="submit" disabled={busy} className="ui-btn ui-btn-primary w-full">
           {busy ? 'Menyimpan…' : 'Ganti Password'}
         </button>
       </form>

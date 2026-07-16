@@ -122,36 +122,34 @@ export function AdminClientEditor({
     }
   }
 
-  const pill = 'rounded-full px-4 py-1.5 text-sm font-medium transition-colors';
-
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div className="ui-container py-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <Link href="/admin" className="text-xs text-brand-gold hover:underline">
+          <Link href="/admin" className="ui-link text-xs">
             ← Dashboard
           </Link>
-          <h1 className="font-brand-serif text-2xl font-semibold text-brand-ink">{judul}</h1>
-          <p className="text-xs text-brand-muted">
+          <h1 className="ui-title mt-1 text-xl">{judul}</h1>
+          <p className="text-xs text-slate-500">
             /{slug} · {rsvpCount} RSVP
           </p>
         </div>
-        <div className="flex flex-wrap gap-2 text-sm">
-          <Link href={`/u/${slug}`} target="_blank" className="rounded-full border border-brand-line px-4 py-1.5 text-brand-ink hover:border-brand-gold">
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/u/${slug}`} target="_blank" className="ui-btn ui-btn-secondary">
             Lihat Undangan
           </Link>
-          <Link href={`/u/${slug}/kirim`} target="_blank" className="rounded-full border border-brand-line px-4 py-1.5 text-brand-ink hover:border-brand-gold">
+          <Link href={`/u/${slug}/kirim`} target="_blank" className="ui-btn ui-btn-secondary">
             Alat Kirim
           </Link>
           <DeleteClientButton slug={slug} />
         </div>
       </div>
 
-      {msg && <p className="mt-4 rounded-lg bg-green-600/10 px-4 py-2 text-sm text-green-800">{msg}</p>}
+      {msg && <p className="mt-4 rounded-lg bg-emerald-50 px-4 py-2 text-sm text-emerald-700">{msg}</p>}
 
       {/* Status publish */}
-      <section className="mt-6 rounded-2xl border border-brand-line bg-brand-paper p-5">
-        <h2 className="font-brand-serif text-lg font-semibold text-brand-ink">Status &amp; Paket</h2>
+      <section className="ui-card mt-6 p-5">
+        <h2 className="ui-title text-base">Status &amp; Paket</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {STATUSES.map((st) => (
             <button
@@ -160,9 +158,7 @@ export function AdminClientEditor({
                 setStatus(st.id);
                 patchMeta({ status: st.id }, `Status: ${st.label} ✓`);
               }}
-              className={`${pill} border ${
-                status === st.id ? 'border-brand-ink bg-brand-ink text-brand-cream' : 'border-brand-line text-brand-ink hover:border-brand-gold'
-              }`}
+              className={`ui-btn ${status === st.id ? 'ui-btn-primary' : 'ui-btn-secondary'}`}
             >
               {st.label}
             </button>
@@ -170,12 +166,8 @@ export function AdminClientEditor({
         </div>
         <div className="mt-4 flex flex-wrap items-end gap-4">
           <label className="text-sm">
-            <span className="text-brand-muted">Paket</span>
-            <select
-              value={paket}
-              onChange={(e) => setPaket(e.target.value)}
-              className="mt-1 block rounded-xl border border-brand-line bg-brand-cream px-3 py-2 text-sm"
-            >
+            <span className="ui-label">Paket</span>
+            <select value={paket} onChange={(e) => setPaket(e.target.value)} className="ui-input w-auto">
               <option value="">—</option>
               <option value="perak">Perak</option>
               <option value="emas">Emas</option>
@@ -183,53 +175,34 @@ export function AdminClientEditor({
             </select>
           </label>
           <label className="text-sm">
-            <span className="text-brand-muted">Masa berlaku s/d</span>
-            <input
-              type="date"
-              value={expiry}
-              onChange={(e) => setExpiry(e.target.value)}
-              className="mt-1 block rounded-xl border border-brand-line bg-brand-cream px-3 py-2 text-sm"
-            />
+            <span className="ui-label">Masa berlaku s/d</span>
+            <input type="date" value={expiry} onChange={(e) => setExpiry(e.target.value)} className="ui-input w-auto" />
           </label>
           <button
             onClick={() => patchMeta({ paket: paket || null, expiresAt: expiry ? new Date(expiry).getTime() : null }, 'Paket & masa berlaku disimpan ✓')}
-            className="rounded-full bg-brand-ink px-5 py-2 text-sm font-medium text-brand-cream hover:opacity-90"
+            className="ui-btn ui-btn-primary"
           >
             Simpan
           </button>
         </div>
 
         {/* Magic-link login untuk client */}
-        <div className="mt-4 border-t border-brand-line pt-4">
-          <p className="text-sm font-medium text-brand-ink">Link login client (magic-link)</p>
-          <p className="text-[11px] text-brand-muted">
+        <div className="mt-5 border-t border-slate-200 pt-4">
+          <p className="text-sm font-medium text-slate-800">Link login client (magic-link)</p>
+          <p className="mt-0.5 text-xs text-slate-500">
             Kirim ke client via WA — sekali klik langsung masuk ke alat kirim, tanpa kode akses. Berlaku 7 hari, sekali pakai.
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <button
-              onClick={genMagic}
-              disabled={magicBusy}
-              className="rounded-full border border-brand-gold px-4 py-1.5 text-sm text-brand-ink hover:bg-brand-gold hover:text-white disabled:opacity-60"
-            >
+            <button onClick={genMagic} disabled={magicBusy} className="ui-btn ui-btn-secondary">
               {magicBusy ? 'Membuat…' : 'Buat link login'}
             </button>
             {magic && (
-              <button
-                onClick={() => navigator.clipboard?.writeText(magic)}
-                className="rounded-full border border-brand-line px-4 py-1.5 text-sm text-brand-ink hover:border-brand-gold"
-              >
+              <button onClick={() => navigator.clipboard?.writeText(magic)} className="ui-btn ui-btn-secondary">
                 Salin
               </button>
             )}
           </div>
-          {magic && (
-            <input
-              readOnly
-              value={magic}
-              onFocus={(e) => e.target.select()}
-              className="mt-2 w-full rounded-lg border border-brand-line bg-brand-cream px-3 py-2 text-xs text-brand-ink"
-            />
-          )}
+          {magic && <input readOnly value={magic} onFocus={(e) => e.target.select()} className="ui-input mt-2 text-xs" />}
         </div>
       </section>
 
@@ -238,7 +211,7 @@ export function AdminClientEditor({
 
       {/* Editor form terstruktur (utama) — pakai ulang form Studio, simpan ke server */}
       <div className="mt-6">
-        <h2 className="mb-2 font-brand-serif text-lg font-semibold text-brand-ink">Data Undangan</h2>
+        <h2 className="ui-title mb-2 text-base">Data Undangan</h2>
         <StudioEditor
           key={initialJson}
           mode="admin"
@@ -249,25 +222,19 @@ export function AdminClientEditor({
       </div>
 
       {/* Lanjutan: JSON mentah untuk field di luar form */}
-      <details className="mt-6 rounded-2xl border border-brand-line bg-brand-paper p-5">
-        <summary className="cursor-pointer font-brand-serif text-lg font-semibold text-brand-ink">
-          Edit JSON mentah (lanjutan)
-        </summary>
+      <details className="ui-card mt-6 p-5">
+        <summary className="ui-title cursor-pointer text-base">Edit JSON mentah (lanjutan)</summary>
         <div className="mt-3">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs text-brand-muted">
+            <p className="text-xs text-slate-500">
               Untuk field yang belum ada di form: galeri, cerita cinta, musik, acara ke-3, dll.
             </p>
-            <button
-              onClick={saveConfig}
-              disabled={saving}
-              className="shrink-0 rounded-full bg-brand-ink px-5 py-2 text-sm font-medium text-brand-cream hover:opacity-90 disabled:opacity-60"
-            >
+            <button onClick={saveConfig} disabled={saving} className="ui-btn ui-btn-primary shrink-0">
               {saving ? 'Menyimpan…' : 'Simpan JSON'}
             </button>
           </div>
           {issues.length > 0 && (
-            <ul className="mt-3 space-y-1 rounded-lg bg-red-600/10 px-4 py-3 text-xs text-red-700">
+            <ul className="mt-3 space-y-1 rounded-lg bg-red-50 px-4 py-3 text-xs text-red-700">
               {issues.map((it, i) => (
                 <li key={i}>• {it}</li>
               ))}
@@ -277,7 +244,7 @@ export function AdminClientEditor({
             value={json}
             onChange={(e) => setJson(e.target.value)}
             spellCheck={false}
-            className="mt-3 min-h-[420px] w-full rounded-xl border border-brand-line bg-brand-cream px-4 py-3 font-mono text-xs leading-relaxed text-brand-ink outline-none focus:border-brand-gold"
+            className="mt-3 min-h-[420px] w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 font-mono text-xs leading-relaxed text-slate-800 outline-none focus:border-slate-900"
           />
         </div>
       </details>

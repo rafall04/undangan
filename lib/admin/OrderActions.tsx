@@ -32,19 +32,19 @@ export function OrderActions({ order }: { order: OrderRow }) {
   const done = order.status === 'selesai' || order.status === 'batal';
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-2 text-xs">
+    <div className="flex flex-wrap items-center justify-end gap-3 text-sm">
       {order.status === 'baru' && <ProcessOrderButton orderId={order.id} suggestedSlug={order.suggestedSlug} />}
       {order.slug && (
-        <Link href={`/admin/clients/${order.slug}`} className="text-brand-gold hover:underline">
+        <Link href={`/admin/clients/${order.slug}`} className="ui-link">
           Buka
         </Link>
       )}
       {!done && (
         <>
-          <button onClick={() => setStatus('selesai')} disabled={busy} className="text-green-700 hover:underline disabled:opacity-60">
+          <button onClick={() => setStatus('selesai')} disabled={busy} className="font-medium text-emerald-600 hover:underline disabled:opacity-50">
             Selesai
           </button>
-          <button onClick={() => setStatus('batal')} disabled={busy} className="text-red-600 hover:underline disabled:opacity-60">
+          <button onClick={() => setStatus('batal')} disabled={busy} className="font-medium text-red-600 hover:underline disabled:opacity-50">
             Batal
           </button>
         </>

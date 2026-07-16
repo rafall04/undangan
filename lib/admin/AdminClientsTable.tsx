@@ -5,9 +5,9 @@ import Link from 'next/link';
 import type { AdminClientRow } from './queries';
 
 const STATUS_BADGE: Record<string, string> = {
-  published: 'bg-green-600/12 text-green-800',
-  draft: 'bg-amber-600/14 text-amber-800',
-  disabled: 'bg-red-600/12 text-red-800',
+  published: 'bg-emerald-100 text-emerald-700',
+  draft: 'bg-amber-100 text-amber-700',
+  disabled: 'bg-slate-200 text-slate-600',
 };
 const STATUS_LABEL: Record<string, string> = { published: 'Terbit', draft: 'Draft', disabled: 'Nonaktif' };
 
@@ -42,77 +42,64 @@ export function AdminClientsTable({ rows }: { rows: AdminClientRow[] }) {
   return (
     <>
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Cari nama / slug…"
-          className="w-48 rounded-full border border-brand-line bg-brand-paper px-4 py-1.5 text-sm outline-none focus:border-brand-gold"
-        />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-full border border-brand-line bg-brand-paper px-3 py-1.5 text-sm"
-        >
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama / slug…" className="ui-input w-56" />
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ui-input w-auto">
           <option value="">Semua status</option>
           <option value="published">Terbit</option>
           <option value="draft">Draft</option>
           <option value="disabled">Nonaktif</option>
         </select>
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as SortKey)}
-          className="rounded-full border border-brand-line bg-brand-paper px-3 py-1.5 text-sm"
-        >
+        <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="ui-input w-auto">
           <option value="judul">Urut: Nama</option>
           <option value="acara">Urut: Tanggal acara</option>
           <option value="rsvp">Urut: RSVP terbanyak</option>
         </select>
-        <span className="text-xs text-brand-muted">{filtered.length} undangan</span>
+        <span className="text-xs text-slate-500">{filtered.length} undangan</span>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-brand-line">
+      <div className="ui-card overflow-x-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="bg-brand-paper text-xs uppercase tracking-wide text-brand-muted">
+          <thead className="border-b border-slate-200 bg-slate-50">
             <tr>
-              <th className="px-4 py-3">Pasangan</th>
-              <th className="px-4 py-3">Tema</th>
-              <th className="px-4 py-3">Acara</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">RSVP</th>
-              <th className="px-4 py-3 text-right">Aksi</th>
+              <th className="ui-th">Pasangan</th>
+              <th className="ui-th">Tema</th>
+              <th className="ui-th">Acara</th>
+              <th className="ui-th">Status</th>
+              <th className="ui-th">RSVP</th>
+              <th className="ui-th text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-brand-line">
+          <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-brand-muted">
+                <td colSpan={6} className="px-4 py-10 text-center text-slate-500">
                   {rows.length === 0 ? 'Belum ada undangan. Klik “+ Undangan Baru”.' : 'Tidak ada yang cocok.'}
                 </td>
               </tr>
             ) : (
               filtered.map((c) => (
-                <tr key={c.slug} className="bg-brand-cream/40">
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-brand-ink">{c.judul}</div>
-                    <div className="text-xs text-brand-muted">/{c.slug}</div>
+                <tr key={c.slug} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60">
+                  <td className="ui-td">
+                    <div className="font-medium text-slate-900">{c.judul}</div>
+                    <div className="text-xs text-slate-400">/{c.slug}</div>
                     {!c.valid && <span className="text-xs text-red-600">config bermasalah</span>}
                   </td>
-                  <td className="px-4 py-3 text-brand-muted">{c.tema}</td>
-                  <td className="px-4 py-3 text-brand-muted">{tglAcara(c.tanggalUtama)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_BADGE[c.status] ?? ''}`}>
+                  <td className="ui-td text-slate-500">{c.tema}</td>
+                  <td className="ui-td text-slate-500">{tglAcara(c.tanggalUtama)}</td>
+                  <td className="ui-td">
+                    <span className={`ui-badge ${STATUS_BADGE[c.status] ?? 'bg-slate-100 text-slate-600'}`}>
                       {STATUS_LABEL[c.status] ?? c.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-brand-muted">
-                    {c.rsvp} <span className="text-xs">({c.hadir} hadir)</span>
+                  <td className="ui-td text-slate-600">
+                    <span className="font-medium text-slate-900">{c.rsvp}</span> <span className="text-xs text-slate-400">({c.hadir} hadir)</span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-end gap-2 text-xs">
-                      <Link href={`/admin/clients/${c.slug}`} className="text-brand-gold hover:underline">
+                  <td className="ui-td">
+                    <div className="flex justify-end gap-3">
+                      <Link href={`/admin/clients/${c.slug}`} className="ui-link">
                         Kelola
                       </Link>
-                      <Link href={`/u/${c.slug}`} target="_blank" className="text-brand-ink hover:underline">
+                      <Link href={`/u/${c.slug}`} target="_blank" className="font-medium text-slate-500 hover:text-slate-800">
                         Lihat
                       </Link>
                     </div>

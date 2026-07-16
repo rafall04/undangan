@@ -35,7 +35,7 @@ export default function AdminClientPage({ params }: { params: { slug: string } }
   }
 
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <div className="ui-page">
       <AdminClientEditor
         slug={params.slug}
         judul={judul}

@@ -29,7 +29,7 @@ export function DeleteClientButton({ slug }: { slug: string }) {
     <button
       onClick={del}
       disabled={busy}
-      className="rounded-full border border-red-300 px-4 py-1.5 text-sm text-red-600 hover:bg-red-50 disabled:opacity-60"
+      className="ui-btn ui-btn-danger"
     >
       {busy ? 'Menghapus…' : 'Hapus undangan'}
     </button>

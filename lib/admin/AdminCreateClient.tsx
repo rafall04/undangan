@@ -4,10 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-// ============================================================================
-// Buat undangan baru (admin): slug → scaffold config template → ke editor.
-// ============================================================================
-
 export function AdminCreateClient() {
   const router = useRouter();
   const [slug, setSlug] = useState('');
@@ -41,18 +37,18 @@ export function AdminCreateClient() {
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
-      <Link href="/admin" className="text-xs text-brand-gold hover:underline">
+    <div className="ui-container max-w-lg py-10">
+      <Link href="/admin" className="ui-link text-xs">
         ← Dashboard
       </Link>
-      <h1 className="mt-2 font-brand-serif text-2xl font-semibold text-brand-ink">Undangan Baru</h1>
-      <p className="mt-2 text-sm text-brand-muted">
+      <h1 className="ui-title mt-2 text-xl">Undangan Baru</h1>
+      <p className="mt-2 text-sm text-slate-500">
         Tentukan slug (URL). Undangan dibuat dari template &amp; bisa langsung diedit. Slug jadi alamat{' '}
-        <code>/u/&lt;slug&gt;</code>.
+        <code className="rounded bg-slate-100 px-1 text-slate-700">/u/&lt;slug&gt;</code>.
       </p>
-      <form onSubmit={submit} className="mt-5">
-        <label className="block text-sm">
-          <span className="text-brand-muted">Slug</span>
+      <form onSubmit={submit} className="ui-card mt-5 space-y-1 p-6">
+        <label className="block">
+          <span className="ui-label">Slug</span>
           <input
             value={slug}
             onChange={(e) => {
@@ -61,18 +57,16 @@ export function AdminCreateClient() {
             }}
             autoFocus
             placeholder="mis. andi-nia"
-            className="mt-1 w-full rounded-xl border border-brand-line bg-brand-paper px-4 py-2.5 text-sm outline-none focus:border-brand-gold"
+            className="ui-input"
           />
         </label>
-        {clean && <p className="mt-1 text-xs text-brand-muted">URL: /u/{clean}</p>}
-        {err && <p className="mt-2 text-xs text-red-600">{err}</p>}
-        <button
-          type="submit"
-          disabled={busy || !clean}
-          className="mt-4 rounded-full bg-brand-ink px-6 py-2.5 text-sm font-medium text-brand-cream hover:opacity-90 disabled:opacity-60"
-        >
-          {busy ? 'Membuat…' : 'Buat & Edit'}
-        </button>
+        {clean && <p className="text-xs text-slate-500">URL: /u/{clean}</p>}
+        {err && <p className="text-xs text-red-600">{err}</p>}
+        <div className="pt-3">
+          <button type="submit" disabled={busy || !clean} className="ui-btn ui-btn-primary">
+            {busy ? 'Membuat…' : 'Buat & Edit'}
+          </button>
+        </div>
       </form>
     </div>
   );

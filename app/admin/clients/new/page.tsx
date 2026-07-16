@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Admin — Undangan Baru', robots: { 
 export default function NewClientPage() {
   if (!currentSession('admin')) redirect('/admin/login');
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <div className="ui-page">
       <AdminCreateClient />
     </div>
   );

@@ -10,7 +10,7 @@ export default function AdminSettingsPage() {
   const s = currentSession('admin');
   if (!s) redirect('/admin/login');
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <div className="ui-page">
       <AdminSettings email={s.subject} />
     </div>
   );

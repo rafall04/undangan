@@ -91,6 +91,68 @@ body {
   }
 }
 
+/* ==========================================================================
+   "App" UI — panel admin & portal client. Sengaja NETRAL & fungsional, lepas
+   dari mood undangan (cream/emas/serif). Aksen tunggal: amber. Font: sans.
+   Pakai class semantik ini agar konsisten & mudah ditambah/dikurangi.
+   ========================================================================== */
+@layer components {
+  .ui-page {
+    @apply min-h-screen bg-slate-50 font-sans text-slate-900 antialiased;
+  }
+  .ui-container {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+  .ui-topbar {
+    @apply sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur;
+  }
+  .ui-card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+  .ui-title {
+    @apply text-lg font-semibold tracking-tight text-slate-900;
+  }
+  .ui-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-wider text-slate-500;
+  }
+  .ui-muted {
+    @apply text-slate-500;
+  }
+  .ui-btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium leading-none transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .ui-btn-primary {
+    @apply bg-slate-900 text-white hover:bg-slate-700;
+  }
+  .ui-btn-secondary {
+    @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+  }
+  .ui-btn-accent {
+    @apply bg-amber-500 text-white hover:bg-amber-600;
+  }
+  .ui-btn-danger {
+    @apply border border-red-200 bg-white text-red-600 hover:bg-red-50;
+  }
+  .ui-input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-900 focus:ring-1 focus:ring-slate-900;
+  }
+  .ui-label {
+    @apply mb-1 block text-xs font-medium text-slate-600;
+  }
+  .ui-th {
+    @apply px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+  .ui-td {
+    @apply px-4 py-3 align-middle;
+  }
+  .ui-badge {
+    @apply inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium;
+  }
+  .ui-link {
+    @apply font-medium text-amber-600 hover:text-amber-700 hover:underline;
+  }
+}
+
 /* Cetak: sembunyikan kontrol non-esensial */
 @media print {
   .no-print {

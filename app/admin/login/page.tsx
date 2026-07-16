@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Admin — Masuk', robots: { index: f
 export default function AdminLoginPage() {
   if (currentSession('admin')) redirect('/admin');
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <div className="ui-page">
       <AdminLogin />
     </div>
   );

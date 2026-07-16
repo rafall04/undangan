@@ -201,29 +201,29 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
   const previewPesan = buildMessage(template, previewTamu.nama, previewLink);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <div className="ui-container max-w-3xl py-8">
       {/* Header */}
-      <div className="text-center">
+      <div>
         {isDemo && (
-          <span className="mb-2 inline-block rounded-full bg-brand-gold/15 px-3 py-1 text-xs font-medium text-brand-gold">
+          <span className="mb-2 inline-block rounded-md bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
             MODE DEMO — data contoh
           </span>
         )}
-        <p className="font-brand-script text-3xl text-brand-gold">Alat Kirim Undangan</p>
-        <h1 className="mt-1 font-brand-serif text-2xl font-semibold text-brand-ink sm:text-3xl">{judul}</h1>
-        <p className="mt-2 text-sm text-brand-muted">
-          Sebar undangan ke tamu dengan rapi — tautan personal, template pesan, & QR code.
+        <p className="ui-eyebrow">Alat Kirim Undangan</p>
+        <h1 className="ui-title mt-1 text-2xl">{judul}</h1>
+        <p className="mt-2 text-sm text-slate-500">
+          Sebar undangan ke tamu dengan rapi — tautan personal, template pesan, &amp; QR code.
         </p>
         {serverMode && (
-          <p className="mt-1 text-xs text-green-700">✓ Daftar tamu tersimpan otomatis di server (sinkron lintas-perangkat).</p>
+          <p className="mt-1 text-xs text-emerald-600">✓ Daftar tamu tersimpan otomatis di server (sinkron lintas-perangkat).</p>
         )}
         {syncErr && <p className="mt-1 text-xs text-red-600">⚠ Sebagian perubahan gagal disinkron. Cek koneksi.</p>}
       </div>
 
       {/* Catatan penting */}
-      <div className="mt-6 rounded-2xl border border-brand-line bg-brand-paper px-5 py-4 text-sm text-brand-ink">
+      <div className="ui-card mt-6 px-5 py-4 text-sm text-slate-700">
         <p className="font-medium">ℹ️ Pengiriman dilakukan manual per tamu (satu klik per tamu).</p>
-        <p className="mt-1 text-brand-muted">
+        <p className="mt-1 text-slate-500">
           Ini disengaja agar akun WhatsApp Anda aman dari pemblokiran. Kami tidak melakukan otomasi
           kirim massal.
         </p>
@@ -231,61 +231,58 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
 
       {/* Impor tamu */}
       <section className="mt-8">
-        <h2 className="font-brand-serif text-lg font-semibold text-brand-ink">1. Tambah Daftar Tamu</h2>
-        <p className="mt-1 text-sm text-brand-muted">
-          Tempel dari Excel/Notes — satu tamu per baris. Format: <code>Nama</code> atau{' '}
-          <code>Nama, 08xxxxxxxxxx</code>.
+        <h2 className="ui-title text-base">1. Tambah Daftar Tamu</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Tempel dari Excel/Notes — satu tamu per baris. Format: <code className="rounded bg-slate-100 px-1">Nama</code> atau{' '}
+          <code className="rounded bg-slate-100 px-1">Nama, 08xxxxxxxxxx</code>.
         </p>
         <textarea
           value={paste}
           onChange={(e) => setPaste(e.target.value)}
           placeholder={'Bapak Andi Wijaya, 081234567890\nIbu Siti Rahayu\nRudi Hartanto, 0856-1112-2233'}
-          className="mt-3 min-h-[110px] w-full rounded-xl border border-brand-line bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-gold"
+          className="ui-input mt-3 min-h-[110px]"
         />
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <button
-            onClick={tambahDariPaste}
-            className="rounded-full bg-brand-ink px-5 py-2 text-sm font-medium text-brand-cream hover:opacity-90"
-          >
+          <button onClick={tambahDariPaste} className="ui-btn ui-btn-primary">
             Tambah ke daftar
           </button>
-          <span className="text-sm text-brand-muted">{tamu.length} tamu di daftar</span>
+          <span className="text-sm text-slate-500">{tamu.length} tamu di daftar</span>
         </div>
       </section>
 
       {/* Template pesan */}
       <section className="mt-8">
-        <h2 className="font-brand-serif text-lg font-semibold text-brand-ink">2. Template Pesan</h2>
-        <p className="mt-1 text-sm text-brand-muted">
-          Gunakan <code>{'{nama}'}</code> dan <code>{'{link}'}</code> — otomatis terisi per tamu.
+        <h2 className="ui-title text-base">2. Template Pesan</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Gunakan <code className="rounded bg-slate-100 px-1">{'{nama}'}</code> dan <code className="rounded bg-slate-100 px-1">{'{link}'}</code> — otomatis terisi per tamu.
         </p>
         <textarea
           value={template}
           onChange={(e) => setTemplate(e.target.value)}
-          className="mt-3 min-h-[150px] w-full rounded-xl border border-brand-line bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-gold"
+          className="ui-input mt-3 min-h-[150px]"
         />
         <div className="mt-2 flex items-center gap-3">
-          <button onClick={() => setTemplate(defaultTemplate)} className="text-xs text-brand-gold hover:underline">
+          <button onClick={() => setTemplate(defaultTemplate)} className="ui-link text-xs">
             Kembalikan template default
           </button>
         </div>
-        <details className="mt-3 rounded-xl border border-brand-line bg-brand-paper px-4 py-3">
-          <summary className="cursor-pointer text-sm font-medium text-brand-ink">
+        <details className="ui-card mt-3 px-4 py-3">
+          <summary className="cursor-pointer text-sm font-medium text-slate-700">
             Preview untuk tamu pertama ({previewTamu.nama})
           </summary>
-          <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-brand-muted">{previewPesan}</pre>
+          <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-slate-500">{previewPesan}</pre>
         </details>
       </section>
 
       {/* Progres & toolbar */}
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-brand-serif text-lg font-semibold text-brand-ink">3. Kirim & Lacak</h2>
+          <h2 className="ui-title text-base">3. Kirim & Lacak</h2>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => bukaQR('Undangan Umum', linkUmum)} className="rounded-full border border-brand-line px-3 py-1.5 text-xs text-brand-ink hover:border-brand-gold">
+            <button onClick={() => bukaQR('Undangan Umum', linkUmum)} className="ui-btn ui-btn-secondary px-3 py-1.5 text-xs">
               QR Undangan Umum
             </button>
-            <button onClick={unduhCSV} className="rounded-full border border-brand-line px-3 py-1.5 text-xs text-brand-ink hover:border-brand-gold">
+            <button onClick={unduhCSV} className="ui-btn ui-btn-secondary px-3 py-1.5 text-xs">
               Ekspor CSV
             </button>
           </div>
@@ -293,13 +290,13 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
 
         {/* Progress */}
         <div className="mt-3">
-          <div className="flex items-center justify-between text-xs text-brand-muted">
+          <div className="flex items-center justify-between text-xs text-slate-500">
             <span>{terkirim}/{tamu.length} terkirim</span>
             <span>{tamu.length ? Math.round((terkirim / tamu.length) * 100) : 0}%</span>
           </div>
-          <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-brand-line">
+          <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-200">
             <div
-              className="h-full rounded-full bg-brand-gold transition-all"
+              className="h-full rounded-full bg-amber-500 transition-all"
               style={{ width: `${tamu.length ? (terkirim / tamu.length) * 100 : 0}%` }}
             />
           </div>
@@ -307,7 +304,7 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
 
         {/* Tabel tamu */}
         {tamu.length === 0 ? (
-          <p className="mt-6 rounded-xl border border-dashed border-brand-line py-10 text-center text-sm text-brand-muted">
+          <p className="mt-6 rounded-lg border border-dashed border-slate-300 py-10 text-center text-sm text-slate-500">
             Belum ada tamu. Tambahkan lewat kotak di atas.
           </p>
         ) : (
@@ -320,7 +317,7 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
               return (
                 <li
                   key={rowKey}
-                  className={`rounded-xl border px-4 py-3 ${sent ? 'border-green-300 bg-green-50/60' : 'border-brand-line bg-brand-paper'}`}
+                  className={`rounded-lg border px-4 py-3 ${sent ? 'border-emerald-300 bg-emerald-50/60' : 'border-slate-200 bg-white'}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -329,13 +326,13 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
                           type="checkbox"
                           checked={sent}
                           onChange={() => toggleSent(t)}
-                          className="h-4 w-4 accent-green-600"
+                          className="h-4 w-4 accent-emerald-600"
                           aria-label={`Tandai ${t.nama} terkirim`}
                         />
-                        <span className="truncate font-medium text-brand-ink">{t.nama}</span>
-                        {t.grup && <span className="rounded-full bg-brand-cream px-2 py-0.5 text-[10px] text-brand-muted">{t.grup}</span>}
+                        <span className="truncate font-medium text-slate-900">{t.nama}</span>
+                        {t.grup && <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500">{t.grup}</span>}
                       </div>
-                      <p className="mt-1 truncate text-xs text-brand-muted">
+                      <p className="mt-1 truncate text-xs text-slate-500">
                         {t.telepon ? `📱 ${t.telepon} · ` : ''}
                         {link}
                       </p>
@@ -356,15 +353,15 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
                         Kirim WA
                       </a>
                     ) : (
-                      <span className="rounded-full bg-brand-cream px-3 py-1.5 text-xs text-brand-muted">Tanpa nomor</span>
+                      <span className="rounded-md bg-slate-100 px-3 py-1.5 text-xs text-slate-500">Tanpa nomor</span>
                     )}
-                    <button onClick={() => copy(`link-${rowKey}`, link)} className="rounded-full border border-brand-line px-3 py-1.5 text-xs text-brand-ink hover:border-brand-gold">
+                    <button onClick={() => copy(`link-${rowKey}`, link)} className="ui-btn ui-btn-secondary px-3 py-1.5 text-xs">
                       {copied === `link-${rowKey}` ? 'Tersalin ✓' : 'Salin Link'}
                     </button>
-                    <button onClick={() => copy(`msg-${rowKey}`, pesan)} className="rounded-full border border-brand-line px-3 py-1.5 text-xs text-brand-ink hover:border-brand-gold">
+                    <button onClick={() => copy(`msg-${rowKey}`, pesan)} className="ui-btn ui-btn-secondary px-3 py-1.5 text-xs">
                       {copied === `msg-${rowKey}` ? 'Tersalin ✓' : 'Salin Pesan'}
                     </button>
-                    <button onClick={() => bukaQR(t.nama, link)} className="rounded-full border border-brand-line px-3 py-1.5 text-xs text-brand-ink hover:border-brand-gold">
+                    <button onClick={() => bukaQR(t.nama, link)} className="ui-btn ui-btn-secondary px-3 py-1.5 text-xs">
                       QR
                     </button>
                     <button onClick={() => hapusTamu(t)} className="ml-auto rounded-full px-2 py-1.5 text-xs text-red-500 hover:text-red-700" aria-label={`Hapus ${t.nama}`}>
@@ -382,14 +379,14 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
       {qrTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6" onClick={() => setQrTarget(null)} role="dialog" aria-modal="true">
           <div className="w-full max-w-xs rounded-2xl bg-white p-5 text-center" onClick={(e) => e.stopPropagation()}>
-            <p className="mb-3 font-brand-serif text-lg font-semibold text-brand-ink">{qrTarget.label}</p>
+            <p className="mb-3 ui-title text-base">{qrTarget.label}</p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qrTarget.url} alt={`QR ${qrTarget.label}`} className="mx-auto w-full max-w-[240px] rounded-lg" />
             <div className="mt-4 flex gap-2">
-              <button onClick={() => downloadDataUrl(qrTarget.url, `qr-${qrTarget.label.replace(/\W+/g, '-')}.png`)} className="flex-1 rounded-full bg-brand-ink py-2 text-sm font-medium text-brand-cream hover:opacity-90">
+              <button onClick={() => downloadDataUrl(qrTarget.url, `qr-${qrTarget.label.replace(/\W+/g, '-')}.png`)} className="ui-btn ui-btn-primary flex-1">
                 Unduh PNG
               </button>
-              <button onClick={() => setQrTarget(null)} className="rounded-full border border-brand-line px-4 py-2 text-sm text-brand-ink">
+              <button onClick={() => setQrTarget(null)} className="ui-btn ui-btn-secondary">
                 Tutup
               </button>
             </div>

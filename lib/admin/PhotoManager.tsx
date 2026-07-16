@@ -75,13 +75,13 @@ export function PhotoManager({ slug }: { slug: string }) {
   }
 
   return (
-    <section className="mt-6 rounded-2xl border border-brand-line bg-brand-paper p-5">
+    <section className="ui-card mt-6 p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-brand-serif text-lg font-semibold text-brand-ink">Foto</h2>
-        <span className="text-xs text-brand-muted">{photos.length} file</span>
+        <h2 className="ui-title text-base">Foto</h2>
+        <span className="text-xs text-slate-500">{photos.length} file</span>
       </div>
-      <p className="mt-1 text-[11px] text-brand-muted">
-        Nama file harus cocok dengan config: <code>{SLOT_HINTS}</code>. Upload otomatis dioptimasi (≤1600px, webp).
+      <p className="mt-1 text-[11px] text-slate-500">
+        Nama file harus cocok dengan config: <code className="rounded bg-slate-100 px-1 text-slate-700">{SLOT_HINTS}</code>. Upload otomatis dioptimasi (≤1600px, webp).
       </p>
 
       {/* Dropzone / picker */}
@@ -91,7 +91,7 @@ export function PhotoManager({ slug }: { slug: string }) {
           e.preventDefault();
           upload(e.dataTransfer.files);
         }}
-        className="mt-3 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-brand-line bg-brand-cream/40 py-6 text-center hover:border-brand-gold"
+        className="mt-3 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 py-6 text-center hover:border-slate-900"
       >
         <input
           ref={inputRef}
@@ -101,32 +101,32 @@ export function PhotoManager({ slug }: { slug: string }) {
           className="hidden"
           onChange={(e) => upload(e.target.files)}
         />
-        <span className="text-sm text-brand-ink">{busy ? 'Mengunggah…' : 'Seret foto ke sini atau klik untuk pilih'}</span>
-        <span className="mt-0.5 text-[11px] text-brand-muted">JPG / PNG / WEBP / SVG · maks 10 MB</span>
+        <span className="text-sm text-slate-700">{busy ? 'Mengunggah…' : 'Seret foto ke sini atau klik untuk pilih'}</span>
+        <span className="mt-0.5 text-[11px] text-slate-400">JPG / PNG / WEBP / SVG · maks 10 MB</span>
       </label>
       {err && <p className="mt-2 text-xs text-red-600">{err}</p>}
 
       {/* Grid foto */}
       {loading ? (
-        <p className="mt-4 text-sm text-brand-muted">Memuat…</p>
+        <p className="mt-4 text-sm text-slate-500">Memuat…</p>
       ) : photos.length === 0 ? (
-        <p className="mt-4 rounded-xl border border-dashed border-brand-line py-6 text-center text-sm text-brand-muted">
+        <p className="mt-4 rounded-lg border border-dashed border-slate-300 py-6 text-center text-sm text-slate-500">
           Belum ada foto. Foto yang belum diunggah otomatis memakai placeholder monogram.
         </p>
       ) : (
         <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {photos.map((p) => (
-            <li key={p.file} className="overflow-hidden rounded-xl border border-brand-line bg-brand-cream">
+            <li key={p.file} className="overflow-hidden rounded-lg border border-slate-200 bg-white">
               <div className="aspect-[4/3] w-full bg-black/5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.url} alt={p.file} className="h-full w-full object-cover" loading="lazy" />
               </div>
               <div className="flex items-center justify-between gap-1 px-2 py-1.5">
                 <div className="min-w-0">
-                  <p className="truncate text-[11px] font-medium text-brand-ink">{p.file}</p>
-                  <p className="text-[10px] text-brand-muted">
+                  <p className="truncate text-[11px] font-medium text-slate-700">{p.file}</p>
+                  <p className="text-[10px] text-slate-400">
                     {kb(p.size)}
-                    {p.optimized && <span className="ml-1 text-green-700">· opt ✓</span>}
+                    {p.optimized && <span className="ml-1 text-emerald-600">· opt ✓</span>}
                   </p>
                 </div>
                 <button

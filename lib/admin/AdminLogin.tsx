@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 // ============================================================================
 // Login admin (client) — email + password → /api/admin/login → cookie sesi.
+// UI "app" netral (bukan mood undangan).
 // ============================================================================
 
 export function AdminLogin() {
@@ -39,19 +40,16 @@ export function AdminLogin() {
     }
   }
 
-  const input =
-    'mt-1 w-full rounded-xl border border-brand-line bg-brand-paper px-4 py-2.5 text-sm text-brand-ink outline-none focus:border-brand-gold';
-
   return (
     <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
-      <div className="text-center">
-        <p className="font-brand-script text-3xl text-brand-gold">Rafayana</p>
-        <h1 className="mt-1 font-brand-serif text-2xl font-semibold text-brand-ink">Panel Admin</h1>
-        <p className="mt-2 text-sm text-brand-muted">Masuk untuk mengelola undangan &amp; pesanan.</p>
+      <div className="mb-6 flex flex-col items-center text-center">
+        <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-lg font-bold text-white">R</span>
+        <h1 className="text-xl font-semibold tracking-tight text-slate-900">Rafayana Admin</h1>
+        <p className="mt-1 text-sm text-slate-500">Masuk untuk mengelola undangan &amp; pesanan.</p>
       </div>
-      <form onSubmit={submit} className="mt-6 space-y-3 text-left">
-        <label className="block text-sm">
-          <span className="text-brand-muted">Email</span>
+      <form onSubmit={submit} className="ui-card space-y-4 p-6">
+        <label className="block">
+          <span className="ui-label">Email</span>
           <input
             type="email"
             value={email}
@@ -60,12 +58,12 @@ export function AdminLogin() {
               setErr('');
             }}
             autoFocus
-            className={input}
+            className="ui-input"
             placeholder="admin@rafayana.local"
           />
         </label>
-        <label className="block text-sm">
-          <span className="text-brand-muted">Password</span>
+        <label className="block">
+          <span className="ui-label">Password</span>
           <input
             type="password"
             value={password}
@@ -73,16 +71,12 @@ export function AdminLogin() {
               setPassword(e.target.value);
               setErr('');
             }}
-            className={input}
+            className="ui-input"
             placeholder="••••••••"
           />
         </label>
-        {err && <p className="text-xs text-red-600">{err}</p>}
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-full bg-brand-ink py-2.5 text-sm font-medium text-brand-cream hover:opacity-90 disabled:opacity-60"
-        >
+        {err && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{err}</p>}
+        <button type="submit" disabled={busy} className="ui-btn ui-btn-primary w-full">
           {busy ? 'Memeriksa…' : 'Masuk'}
         </button>
       </form>
@@ -104,11 +98,7 @@ export function AdminLogoutButton() {
     router.refresh();
   }
   return (
-    <button
-      onClick={logout}
-      disabled={busy}
-      className="rounded-full border border-brand-line px-4 py-1.5 text-sm text-brand-ink hover:border-brand-gold disabled:opacity-60"
-    >
+    <button onClick={logout} disabled={busy} className="ui-btn ui-btn-secondary">
       Keluar
     </button>
   );

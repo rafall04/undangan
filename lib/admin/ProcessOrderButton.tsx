@@ -43,7 +43,7 @@ export function ProcessOrderButton({ orderId, suggestedSlug }: { orderId: number
     <button
       onClick={process}
       disabled={busy}
-      className="rounded-full bg-brand-gold px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-60"
+      className="ui-btn ui-btn-accent px-3 py-1.5 text-xs"
     >
       {busy ? 'Memproses…' : 'Proses → Undangan'}
     </button>

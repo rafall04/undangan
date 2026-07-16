@@ -9,7 +9,6 @@ import { RsvpRecap } from '@/lib/kirim/RsvpRecap';
 import { getRsvpRecap } from '@/lib/clients/rsvp';
 import { defaultTemplate } from '@/lib/kirim/utils';
 import { currentSession } from '@/lib/auth/cookies';
-import { Wordmark } from '@/lib/site/Wordmark';
 
 export const metadata: Metadata = {
   title: 'Alat Kirim Undangan',
@@ -30,17 +29,15 @@ export default function KirimPage({ params }: { params: { client: string } }) {
   const authed = session?.subject === params.client;
 
   return (
-    <div className="min-h-screen bg-brand-cream">
-      <header className="border-b border-brand-line bg-brand-cream/90 px-4 py-3 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <Link href="/">
-            <Wordmark size="sm" />
+    <div className="ui-page">
+      <header className="ui-topbar">
+        <div className="ui-container flex max-w-3xl items-center justify-between py-3">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-white">R</span>
+            <span className="text-sm font-semibold text-slate-900">Rafayana</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Link
-              href={`/u/${params.client}`}
-              className="rounded-full border border-brand-line px-4 py-1.5 text-sm text-brand-ink hover:border-brand-gold"
-            >
+            <Link href={`/u/${params.client}`} className="ui-btn ui-btn-secondary">
               Lihat Undangan
             </Link>
             {authed && <ClientLogoutButton />}

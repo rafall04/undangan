@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 // ============================================================================
 // Gerbang login client (pemilik undangan) — verifikasi kode akses di SERVER
-// (/api/client/login) lalu set cookie sesi. Ganti gate lama sisi-browser.
+// (/api/client/login) lalu set cookie sesi. UI "app" netral.
 // ============================================================================
 
 export function ClientLogin({ slug, judul }: { slug: string; judul: string }) {
@@ -31,7 +31,6 @@ export function ClientLogin({ slug, judul }: { slug: string; judul: string }) {
         setBusy(false);
         return;
       }
-      // Cookie sesi sudah di-set server → server re-render menampilkan alat.
       router.refresh();
     } catch {
       setErr('Gagal terhubung. Coba lagi.');
@@ -40,13 +39,13 @@ export function ClientLogin({ slug, judul }: { slug: string; judul: string }) {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center px-6 text-center">
-      <p className="font-brand-script text-3xl text-brand-gold">Alat Kirim</p>
-      <h1 className="mt-1 font-brand-serif text-2xl font-semibold text-brand-ink">{judul}</h1>
-      <p className="mt-3 text-sm text-brand-muted">
-        Halaman ini khusus pemilik undangan. Masukkan kode akses.
-      </p>
-      <form onSubmit={submit}>
+    <div className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center px-6">
+      <div className="mb-5 text-center">
+        <h1 className="text-xl font-semibold tracking-tight text-slate-900">Alat Kirim Undangan</h1>
+        <p className="mt-1 text-sm text-slate-500">{judul}</p>
+        <p className="mt-3 text-sm text-slate-500">Halaman ini khusus pemilik undangan. Masukkan kode akses.</p>
+      </div>
+      <form onSubmit={submit} className="ui-card space-y-3 p-6">
         <input
           type="password"
           value={key}
@@ -56,14 +55,10 @@ export function ClientLogin({ slug, judul }: { slug: string; judul: string }) {
           }}
           placeholder="Kode akses"
           autoFocus
-          className="mt-5 w-full rounded-xl border border-brand-line bg-brand-paper px-4 py-2.5 text-center text-sm outline-none focus:border-brand-gold"
+          className="ui-input text-center"
         />
-        {err && <p className="mt-2 text-xs text-red-600">{err}</p>}
-        <button
-          type="submit"
-          disabled={busy}
-          className="mt-4 w-full rounded-full bg-brand-ink py-2.5 text-sm font-medium text-brand-cream hover:opacity-90 disabled:opacity-60"
-        >
+        {err && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{err}</p>}
+        <button type="submit" disabled={busy} className="ui-btn ui-btn-primary w-full">
           {busy ? 'Memeriksa…' : 'Masuk'}
         </button>
       </form>
@@ -84,11 +79,7 @@ export function ClientLogoutButton() {
     router.refresh();
   }
   return (
-    <button
-      onClick={logout}
-      disabled={busy}
-      className="rounded-full border border-brand-line px-4 py-1.5 text-sm text-brand-ink hover:border-brand-gold disabled:opacity-60"
-    >
+    <button onClick={logout} disabled={busy} className="ui-btn ui-btn-secondary">
       Keluar
     </button>
   );
