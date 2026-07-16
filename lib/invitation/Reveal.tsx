@@ -24,6 +24,9 @@ export function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Browser modern: reveal sudah digerakkan CSS scroll-driven (globals.css)
+    // → observer + re-render tak diperlukan sama sekali.
+    if (typeof CSS !== 'undefined' && CSS.supports?.('animation-timeline: view()')) return;
     if (typeof IntersectionObserver === 'undefined') {
       setVisible(true);
       return;

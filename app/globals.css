@@ -70,6 +70,78 @@ body {
 }
 
 /* ==========================================================================
+   SIGNATURE MOTION — mesin gerak undangan.
+   Browser modern: reveal digerakkan SCROLL secara native (animation-timeline)
+   → jalan di compositor (mulus, tak membebani main thread) dan JS observer
+   dilewati (lihat Reveal.tsx). Browser lama: tetap transition + observer di atas.
+   ========================================================================== */
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ken-burns {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.14) translate3d(-1.6%, -1.4%, 0);
+  }
+}
+@keyframes motif-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -5%, 0);
+  }
+}
+
+/* Ken Burns — foto sampul "bernapas" pelan (berbasis waktu, bukan scroll). */
+.ken-burns {
+  animation: ken-burns 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    /* transition/JS tak dipakai lagi — scroll yang menggerakkan. */
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: reveal-in linear both;
+    animation-timeline: view();
+    animation-range: entry 4% cover 34%;
+  }
+}
+@supports (animation-timeline: scroll()) {
+  /* Latar motif melayang pelan mengikuti scroll → kedalaman berlapis. */
+  .motif-parallax {
+    animation: motif-drift linear both;
+    animation-timeline: scroll();
+    will-change: transform;
+  }
+}
+
+/* Reduced-motion: matikan SEMUA gerak baru (ditaruh sesudah @supports agar menang). */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .ken-burns,
+  .motif-parallax {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
    Buka undangan — kelopak bunga berjatuhan (CSS murni, ~14 elemen, GPU).
    Dipasang hanya beberapa detik lalu di-unmount → tak ada biaya berjalan.
    ========================================================================== */

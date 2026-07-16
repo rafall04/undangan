@@ -121,7 +121,7 @@ function PhotoOrGradient({ ctx, gradient }: { ctx: Ctx; gradient: string }) {
         />
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={ctx.data.fotoCover} alt="Foto sampul" className="absolute inset-0 h-full w-full object-cover" style={ctx.data.fotoCoverFokus ? { objectPosition: ctx.data.fotoCoverFokus } : undefined} />
+      <img src={ctx.data.fotoCover} alt="Foto sampul" className="ken-burns absolute inset-0 h-full w-full object-cover" style={ctx.data.fotoCoverFokus ? { objectPosition: ctx.data.fotoCoverFokus } : undefined} />
       <div className="absolute inset-0" style={{ background: 'var(--cover-gradient)' }} />
     </>
   ) : (

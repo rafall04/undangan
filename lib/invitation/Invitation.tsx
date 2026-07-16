@@ -106,8 +106,8 @@ export function Invitation({
     <div className="invite-root relative min-h-screen font-body text-ink" style={rootStyle}>
       {fontFaceCss && <style dangerouslySetInnerHTML={{ __html: fontFaceCss }} />}
 
-      {/* Latar motif tetap (di belakang konten) */}
-      <div className="pointer-events-none fixed inset-0 z-0">
+      {/* Latar motif tetap (di belakang konten) — melayang pelan mengikuti scroll */}
+      <div className="motif-parallax pointer-events-none fixed inset-0 z-0">
         <MotifPattern
           motifId={temaEff.motifId}
           color="var(--primary)"
