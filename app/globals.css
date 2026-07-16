@@ -75,16 +75,6 @@ body {
    → jalan di compositor (mulus, tak membebani main thread) dan JS observer
    dilewati (lihat Reveal.tsx). Browser lama: tetap transition + observer di atas.
    ========================================================================== */
-@keyframes reveal-in {
-  from {
-    opacity: 0;
-    transform: translateY(28px) scale(0.985);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 @keyframes ken-burns {
   from {
     transform: scale(1.02);
@@ -108,17 +98,13 @@ body {
   will-change: transform;
 }
 
-@supports (animation-timeline: view()) {
-  .reveal {
-    /* transition/JS tak dipakai lagi — scroll yang menggerakkan. */
-    opacity: 1;
-    transform: none;
-    transition: none;
-    animation: reveal-in linear both;
-    animation-timeline: view();
-    animation-range: entry 4% cover 34%;
-  }
-}
+/* CATATAN PENTING (regresi 2026-07-16, jangan diulang):
+   Reveal section SENGAJA memakai IntersectionObserver (Reveal.tsx), BUKAN
+   scroll-driven `animation-timeline: view()`. Dengan scroll-timeline, section
+   di DASAR halaman tak pernah mencapai akhir animation-range (halaman keburu
+   mentok) → animasinya macet di tengah → teks tinggal separuh opacity dan
+   PERMANEN pucat. Observer bersifat sekali-jalan: begitu terlihat, tetap
+   terlihat. Visibilitas konten tak boleh bergantung pada posisi scroll. */
 @supports (animation-timeline: scroll()) {
   /* Latar motif melayang pelan mengikuti scroll → kedalaman berlapis. */
   .motif-parallax {
@@ -179,37 +165,35 @@ body {
 }
 
 /* ==========================================================================
-   Nama mempelai — kilau emas melintas halus (CSS murni, 0 KB).
-   AMAN: efek hanya aktif bila background-clip:text didukung DAN pengguna tidak
-   meminta reduced-motion. Di luar itu, nama tetap memakai warna aslinya
-   (text-white) — mustahil jadi tak terlihat.
+   Nama mempelai — animasi MUNCUL, sekali jalan.
+   Menggantikan efek kilau lama yang memakai background-clip:text. Teknik itu
+   membuat huruf ikut hilang bila gradient tak menutupi elemen (background-size
+   300% hanya tertutup pada posisi 0–100%), dan animasinya berakhir di luar
+   rentang itu → NAMA MEMPELAI LENYAP. Jangan diulang.
+   Di sini animasi hanya menyentuh opacity/transform dan BERAKHIR pada keadaan
+   terlihat penuh; warna teks tak pernah diutak-atik.
    ========================================================================== */
-@keyframes shimmer-names {
-  0%,
-  10% {
-    background-position: 200% 0;
+@keyframes names-in {
+  from {
+    transform: translateY(18px) scale(0.965);
   }
-  50%,
-  100% {
-    background-position: -100% 0;
+  to {
+    transform: none;
   }
 }
-@supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  @media (prefers-reduced-motion: no-preference) {
-    .shimmer-names {
-      background-image: linear-gradient(
-        100deg,
-        #fff 42%,
-        color-mix(in srgb, var(--accent) 60%, #fff) 50%,
-        #fff 58%
-      );
-      background-size: 300% 100%;
-      background-repeat: no-repeat;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shimmer-names 7s ease-in-out 1.5s infinite;
-    }
+/* GAGAL-AMAN, disengaja: animasi HANYA menyentuh `transform`, tidak `opacity`,
+   tanpa delay & tanpa fill-mode. Nama mempelai adalah elemen terpenting di
+   produk — visibilitasnya tidak boleh bergantung pada animasi selesai atau
+   tidak. Skenario terburuk (animasi gagal/mandek/tak didukung): nama tetap
+   terbaca penuh, hanya bergeser beberapa piksel. Bandingkan regresi sebelumnya
+   (background-clip:text + opacity) yang membuat nama LENYAP. */
+.names-reveal {
+  animation: names-in 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Tanpa animasi → elemen memakai keadaan alaminya (terlihat penuh). */
+  .names-reveal {
+    animation: none;
   }
 }
 
