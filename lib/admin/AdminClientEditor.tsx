@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { PhotoManager } from './PhotoManager';
 import { StudioEditor } from '@/lib/studio/StudioEditor';
 import { DeleteClientButton } from './DeleteClientButton';
+import { BRAND, waLink } from '@/lib/brand';
+import { normalizePhone } from '@/lib/kirim/utils';
 
 // ============================================================================
 // Editor undangan (admin): kelola status publish/paket/masa-berlaku + edit
@@ -51,6 +53,8 @@ export function AdminClientEditor({
   const [issues, setIssues] = useState<string[]>([]);
   const [msg, setMsg] = useState('');
   const [magic, setMagic] = useState('');
+  const [magicMsg, setMagicMsg] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
   const [magicBusy, setMagicBusy] = useState(false);
 
   const parsedConfig = useMemo(() => {
@@ -62,6 +66,16 @@ export function AdminClientEditor({
   }, [initialJson]);
   // Sinkronkan editor JSON mentah bila config server berubah (mis. sesudah simpan form).
   useEffect(() => setJson(initialJson), [initialJson]);
+
+  // Ingat No. WA client per undangan (lokal di browser admin).
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(`rafayana:clientwa:${slug}`);
+      if (v) setClientPhone(v);
+    } catch {
+      /* abaikan */
+    }
+  }, [slug]);
 
   async function saveConfig() {
     setIssues([]);
@@ -107,14 +121,40 @@ export function AdminClientEditor({
     }
   }
 
+  function onboardingMsg(url: string): string {
+    const kirimUrl = `${BRAND.baseUrl}/u/${slug}/kirim`;
+    const accessKey = (parsedConfig?.accessKey as string) ?? '';
+    return `Halo, ${judul} 👋
+
+Undangan digital Anda sudah siap! Untuk mulai menyebar undangan ke tamu, silakan masuk lewat tautan ini (langsung masuk, tanpa kata sandi):
+
+${url}
+
+Setelah masuk, tambahkan daftar tamu lalu kirim undangannya ke WhatsApp mereka satu per satu.
+
+—
+Cadangan bila tautan kedaluwarsa — buka: ${kirimUrl}
+Kode akses: ${accessKey}
+
+Terima kasih 🙏
+${BRAND.penuh}`;
+  }
+
+  function copyText(t: string) {
+    navigator.clipboard?.writeText(t);
+    setMsg('Tersalin ✓');
+  }
+
   async function genMagic() {
     setMagicBusy(true);
     setMsg('');
     try {
       const res = await fetch(`/api/admin/clients/${slug}/magic`, { method: 'POST' });
       const j = (await res.json().catch(() => null)) as { ok?: boolean; url?: string } | null;
-      if (res.ok && j?.ok && j.url) setMagic(j.url);
-      else setMsg('Gagal membuat link login.');
+      if (res.ok && j?.ok && j.url) {
+        setMagic(j.url);
+        setMagicMsg(onboardingMsg(j.url));
+      } else setMsg('Gagal membuat link login.');
     } catch {
       setMsg('Gagal terhubung.');
     } finally {
@@ -186,23 +226,69 @@ export function AdminClientEditor({
           </button>
         </div>
 
-        {/* Magic-link login untuk client */}
+        {/* Kirim akun (magic-link) ke client via WhatsApp */}
         <div className="mt-5 border-t border-slate-200 pt-4">
-          <p className="text-sm font-medium text-slate-800">Link login client (magic-link)</p>
+          <p className="text-sm font-medium text-slate-800">Kirim akun ke client (via WhatsApp)</p>
           <p className="mt-0.5 text-xs text-slate-500">
-            Kirim ke client via WA — sekali klik langsung masuk ke alat kirim, tanpa kode akses. Berlaku 7 hari, sekali pakai.
+            Buat tautan masuk sekali-klik (tanpa kata sandi). Berlaku 7 hari &amp; bisa dipakai berulang — aman dari pratinjau WA. Client tinggal ketuk → langsung masuk ke alat kirim tamu.
           </p>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
+          <div className="mt-2">
             <button onClick={genMagic} disabled={magicBusy} className="ui-btn ui-btn-secondary">
-              {magicBusy ? 'Membuat…' : 'Buat link login'}
+              {magicBusy ? 'Membuat…' : magic ? 'Buat ulang tautan' : 'Buat tautan login'}
             </button>
-            {magic && (
-              <button onClick={() => navigator.clipboard?.writeText(magic)} className="ui-btn ui-btn-secondary">
-                Salin
-              </button>
-            )}
           </div>
-          {magic && <input readOnly value={magic} onFocus={(e) => e.target.select()} className="ui-input mt-2 text-xs" />}
+
+          {magic && (
+            <div className="mt-3 space-y-3">
+              <div>
+                <label className="ui-label">No. WhatsApp client (opsional)</label>
+                <input
+                  value={clientPhone}
+                  onChange={(e) => {
+                    setClientPhone(e.target.value);
+                    try {
+                      localStorage.setItem(`rafayana:clientwa:${slug}`, e.target.value);
+                    } catch {
+                      /* abaikan */
+                    }
+                  }}
+                  placeholder="08xxxxxxxxxx"
+                  inputMode="tel"
+                  className="ui-input"
+                />
+              </div>
+              <div>
+                <label className="ui-label">Pesan (bisa diedit)</label>
+                <textarea
+                  value={magicMsg}
+                  onChange={(e) => setMagicMsg(e.target.value)}
+                  className="ui-input min-h-[160px] text-xs leading-relaxed"
+                />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={waLink(magicMsg, normalizePhone(clientPhone))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3.5 py-2 text-sm font-medium text-white hover:opacity-90"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.3.5-.3.4c-.1.1-.3.3-.1.5.1.3.7 1.1 1.5 1.8 1 .9 1.8 1.1 2 1.2.3.1.4.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.5.3 0 .1 0 .7-.1 1.1Z" />
+                  </svg>
+                  Kirim ke WhatsApp
+                </a>
+                <button onClick={() => copyText(magic)} className="ui-btn ui-btn-secondary">
+                  Salin tautan
+                </button>
+                <button onClick={() => copyText(magicMsg)} className="ui-btn ui-btn-secondary">
+                  Salin pesan
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Nomor kosong → WhatsApp terbuka lalu Anda pilih kontak client. Isi nomor → langsung ke chat client.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

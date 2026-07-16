@@ -16,4 +16,6 @@ export const CONFIG = {
   adminPassword: process.env.ADMIN_PASSWORD || (isProd ? '' : 'admin123'),
   /** Umur sesi login (hari). */
   sessionTtlDays: Number(process.env.SESSION_TTL_DAYS || 30),
+  /** URL publik situs (untuk magic-link & redirect di balik proxy). Kosong → fallback origin/BRAND. */
+  appUrl: process.env.APP_URL || '',
 };

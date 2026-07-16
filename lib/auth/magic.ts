@@ -19,14 +19,19 @@ export function createMagicToken(slug: string): string {
   return token;
 }
 
-/** Tukar token → slug (sekali pakai). null bila tidak valid/kedaluwarsa/terpakai. */
+/**
+ * Tukar token → slug. MULTI-PAKAI selama masa berlaku (7 hari): ini disengaja
+ * agar aman dari crawler pratinjau WhatsApp/sosial yang mem-fetch link — kalau
+ * sekali-pakai, token bisa terkonsumsi oleh preview sebelum client mengekliknya.
+ * null bila tidak valid / kedaluwarsa. `used_at` = waktu pemakaian pertama (audit).
+ */
 export function consumeMagicToken(rawToken: string): string | null {
   const db = getDb();
   const h = sha(rawToken);
   const row = db
-    .prepare('SELECT slug, expires_at, used_at FROM magic_links WHERE token = ?')
-    .get(h) as { slug: string; expires_at: number; used_at: number | null } | undefined;
-  if (!row || row.used_at || row.expires_at < Date.now()) return null;
-  db.prepare('UPDATE magic_links SET used_at = ? WHERE token = ?').run(Date.now(), h);
+    .prepare('SELECT slug, expires_at FROM magic_links WHERE token = ?')
+    .get(h) as { slug: string; expires_at: number } | undefined;
+  if (!row || row.expires_at < Date.now()) return null;
+  db.prepare('UPDATE magic_links SET used_at = COALESCE(used_at, ?) WHERE token = ?').run(Date.now(), h);
   return row.slug;
 }
