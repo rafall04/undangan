@@ -13,6 +13,8 @@ export interface RsvpEntry {
   jumlah: number | null;
   pesan: string | null;
   created_at: number;
+  /** 1 = disembunyikan dari undangan publik (dimoderasi pemilik). */
+  hidden: number;
 }
 
 export interface RsvpCounts {
@@ -25,6 +27,9 @@ export interface RsvpCounts {
 export interface RsvpRecapData extends RsvpCounts {
   /** Perkiraan jumlah orang hadir (pakai kolom jumlah bila ada, else 1/RSVP hadir). */
   estimasiHadir: number;
+  /** Jumlah entri yang disembunyikan (tidak ikut dihitung di counts). */
+  tersembunyi: number;
+  /** Berisi entri tersembunyi juga → pemilik bisa menampilkannya kembali. */
   entries: RsvpEntry[];
 }
 
@@ -68,11 +73,17 @@ export function getRsvpRecap(slug: string, limit = 300): RsvpRecapData {
     )
     .get(slug) as { orang: number };
 
+  // Entri SENGAJA memuat yang tersembunyi (beda dari counts) agar pemilik bisa
+  // meninjau & menampilkannya kembali. Undangan publik tetap menyaring hidden=0.
   const entries = db
     .prepare(
-      'SELECT id, nama, kehadiran, jumlah, pesan, created_at FROM rsvps WHERE slug = ? AND hidden = 0 ORDER BY created_at DESC LIMIT ?',
+      'SELECT id, nama, kehadiran, jumlah, pesan, created_at, hidden FROM rsvps WHERE slug = ? ORDER BY created_at DESC LIMIT ?',
     )
     .all(slug, limit) as RsvpEntry[];
 
-  return { ...counts, estimasiHadir: est.orang, entries };
+  const h = db
+    .prepare('SELECT COUNT(*) AS c FROM rsvps WHERE slug = ? AND hidden = 1')
+    .get(slug) as { c: number };
+
+  return { ...counts, estimasiHadir: est.orang, tersembunyi: h.c, entries };
 }

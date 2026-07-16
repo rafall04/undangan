@@ -49,7 +49,7 @@ export default function KirimPage({ params }: { params: { client: string } }) {
         <ClientLogin slug={params.client} judul={judul} />
       ) : (
         <>
-          <RsvpRecap recap={getRsvpRecap(params.client)} />
+          <RsvpRecap recap={getRsvpRecap(params.client)} slug={params.client} />
           <KirimTool
             basePath={`/u/${params.client}`}
             judul={judul}

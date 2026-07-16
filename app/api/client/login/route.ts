@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { loadClientConfig } from '@/lib/clients/load';
 import { createSession } from '@/lib/auth/session';
 import { setSessionCookie } from '@/lib/auth/cookies';
+import { clientIpHash, isLimited, recordFailure, clearLimit, retryAfterSec, LOGIN_LIMIT, LOGIN_WINDOW_MS } from '@/lib/rate-limit';
 
 // ============================================================================
 // Login client: verifikasi accessKey DI SERVER (bukan lagi dibandingkan di
@@ -27,6 +28,10 @@ function safeEqual(a: string, b: string): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  // Rem brute-force kode akses: 5 KEGAGALAN / 10 menit per IP+undangan.
+  // Di-key per-slug agar serangan ke satu undangan tak mengunci undangan lain.
+  const ip = clientIpHash(req);
+
   let body: unknown;
   try {
     body = await req.json();
@@ -39,6 +44,15 @@ export async function POST(req: NextRequest) {
   }
   const { slug, accessKey } = parsed.data;
 
+  const rlKey = `login:client:${ip}:${slug}`;
+  if (isLimited(rlKey, LOGIN_LIMIT, LOGIN_WINDOW_MS)) {
+    const sec = retryAfterSec(rlKey, LOGIN_WINDOW_MS);
+    return NextResponse.json(
+      { ok: false, error: `Terlalu banyak percobaan gagal. Coba lagi dalam ${Math.ceil(sec / 60)} menit.` },
+      { status: 429, headers: { 'retry-after': String(sec) } },
+    );
+  }
+
   let cfg;
   try {
     cfg = loadClientConfig(slug);
@@ -50,9 +64,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (!safeEqual(accessKey, cfg.accessKey)) {
+    recordFailure(rlKey, LOGIN_WINDOW_MS);
     return NextResponse.json({ ok: false, error: 'Kode akses salah.' }, { status: 401 });
   }
 
+  clearLimit(rlKey);
   const token = createSession('client', slug);
   const res = NextResponse.json({ ok: true });
   setSessionCookie(res, 'client', token);

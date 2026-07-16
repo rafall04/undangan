@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { getDb } from '@/lib/db';
 import { listClientSlugs } from '@/lib/clients/load';
+import { clientIpHash, hitLimit } from '@/lib/rate-limit';
 import type { Ucapan, StatusKehadiran } from '@/lib/invitation/types';
 
 // ============================================================================
@@ -22,24 +22,6 @@ const SubmitSchema = z.object({
   jumlah: z.number().int().min(1).max(20).optional(),
   to: z.string().trim().max(80).optional(),
 });
-
-// Rate-limit sederhana per-proses (IP+slug). Cukup untuk redam spam kasar.
-const rl = new Map<string, number[]>();
-function rateLimited(key: string, limit = 6, windowMs = 60_000): boolean {
-  const now = Date.now();
-  const arr = (rl.get(key) ?? []).filter((t) => now - t < windowMs);
-  arr.push(now);
-  rl.set(key, arr);
-  return arr.length > limit;
-}
-
-function ipHash(req: NextRequest): string {
-  const ip =
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    'local';
-  return createHash('sha256').update(ip).digest('hex').slice(0, 16);
-}
 
 function waktuRelatif(ms: number): string {
   const diff = Math.max(0, Date.now() - ms);
@@ -93,8 +75,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Undangan tidak ditemukan.' }, { status: 404 });
   }
 
-  const ip = ipHash(req);
-  if (rateLimited(`${ip}:${slug}`)) {
+  // Rem spam kiriman: 6 kiriman / menit per IP+undangan (modul bersama).
+  const ip = clientIpHash(req);
+  if (hitLimit(`rsvp:${ip}:${slug}`, 6, 60_000)) {
     return NextResponse.json(
       { ok: false, error: 'Terlalu banyak kiriman. Coba lagi sebentar.' },
       { status: 429 },

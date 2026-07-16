@@ -51,7 +51,7 @@ export default function AdminClientPage({ params }: { params: { slug: string } }
       />
       {/* Admin melihat daftar RSVP masuk */}
       <div className="pb-10">
-        <RsvpRecap recap={recap} />
+        <RsvpRecap recap={recap} slug={params.slug} />
       </div>
     </div>
   );
