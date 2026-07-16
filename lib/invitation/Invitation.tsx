@@ -11,6 +11,7 @@ import { track } from '@/lib/analytics';
 import { Cover } from './sections/Cover';
 import { MusikButton } from './sections/Musik';
 import { InvitationBody } from './InvitationBody';
+import { Petals } from './Petals';
 
 // ============================================================================
 // Orkestrator undangan (client): gerbang cover → buka → tampil isi + musik.
@@ -49,7 +50,15 @@ export function Invitation({
 
   const [opened, setOpened] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [petals, setPetals] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Kelopak hanya hidup sebentar sesudah dibuka, lalu di-unmount (nol biaya).
+  useEffect(() => {
+    if (!petals) return;
+    const t = setTimeout(() => setPetals(false), 9000);
+    return () => clearTimeout(t);
+  }, [petals]);
 
   // Nama tamu (?to=) dibaca di CLIENT, bukan server — agar halaman undangan bisa
   // di-cache/ISR (server tak lagi bergantung pada searchParams). Prop guestName
@@ -71,6 +80,7 @@ export function Invitation({
 
   function handleOpen() {
     setOpened(true);
+    setPetals(true);
     track('invitation_open', { context: analyticsContext, theme: tema.slug });
     // Mulai musik di dalam gesture agar tidak diblokir autoplay.
     const a = audioRef.current;
@@ -128,11 +138,15 @@ export function Invitation({
         </>
       )}
 
-      {/* Cover overlay */}
+      {/* Kelopak jatuh sesaat setelah dibuka (CSS murni, auto-unmount) */}
+      {petals && <Petals />}
+
+      {/* Cover overlay — dibuka dengan gerak "tirai naik" (transform+opacity, GPU) */}
       <div
-        className={`fixed inset-0 z-40 transition-all duration-700 ${
-          opened ? 'pointer-events-none -translate-y-6 opacity-0' : 'opacity-100'
+        className={`fixed inset-0 z-40 transition-[transform,opacity] duration-[900ms] ${
+          opened ? 'pointer-events-none -translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
+        style={{ transitionTimingFunction: 'cubic-bezier(0.7, 0, 0.25, 1)' }}
         aria-hidden={opened}
       >
         <Cover data={data} tema={temaEff} guestName={guest} variant={style.cover} onOpen={handleOpen} />
