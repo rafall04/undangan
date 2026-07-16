@@ -113,7 +113,7 @@ function PhotoOrGradient({ ctx, gradient }: { ctx: Ctx; gradient: string }) {
   return ctx.data.fotoCover ? (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={ctx.data.fotoCover} alt="Foto sampul" className="absolute inset-0 h-full w-full object-cover" />
+      <img src={ctx.data.fotoCover} alt="Foto sampul" className="absolute inset-0 h-full w-full object-cover" style={ctx.data.fotoCoverFokus ? { objectPosition: ctx.data.fotoCoverFokus } : undefined} />
       <div className="absolute inset-0" style={{ background: 'var(--cover-gradient)' }} />
     </>
   ) : (
@@ -409,7 +409,7 @@ function ScrapbookCover({ ctx }: { ctx: Ctx }) {
           <div className="flex aspect-[4/5] items-center justify-center" style={{ background: `linear-gradient(135deg, ${tema.palet.primary}, ${tema.palet.accent})` }}>
             {data.fotoCover ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={data.fotoCover} alt="Foto" className="h-full w-full object-cover" />
+              <img src={data.fotoCover} alt="Foto" className="h-full w-full object-cover" style={data.fotoCoverFokus ? { objectPosition: data.fotoCoverFokus } : undefined} />
             ) : (
               <span className="font-script text-4xl text-white/85">{monogramPasangan(data).replace(/\s/g, '')}</span>
             )}

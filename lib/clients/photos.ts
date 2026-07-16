@@ -11,6 +11,19 @@ const IMG_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.svg']);
 const RASTER = new Set(['.jpg', '.jpeg', '.png']);
 const MAX_SIDE = 1600;
 
+export type PhotoRole = 'cover' | 'groom' | 'bride' | 'gallery' | 'story';
+export const PHOTO_ROLES: PhotoRole[] = ['cover', 'groom', 'bride', 'gallery', 'story'];
+const SINGLE_BASE: Partial<Record<PhotoRole, string>> = { cover: 'cover', groom: 'groom', bride: 'bride' };
+
+/** Peran (slot) sebuah nama file, ditebak dari basename → untuk badge di UI. */
+export function roleOfFile(file: string): PhotoRole | 'lainnya' {
+  const base = basename(file, extname(file)).toLowerCase();
+  if (base === 'cover' || base === 'groom' || base === 'bride') return base as PhotoRole;
+  if (/^gallery-\d+$/.test(base)) return 'gallery';
+  if (/^story-\d+$/.test(base)) return 'story';
+  return 'lainnya';
+}
+
 export interface PhotoInfo {
   file: string;
   size: number;
@@ -78,6 +91,82 @@ export async function savePhoto(slug: string, name: string, buf: Buffer): Promis
     }
   }
   return { ok: true, file: safe };
+}
+
+function pickExt(name: string): string {
+  const e = extname(name).toLowerCase();
+  return IMG_EXT.has(e) ? e : '.jpg';
+}
+
+/** Indeks bebas berikutnya untuk gallery-NN / story-NN. */
+function nextIndexed(dir: string, prefix: 'gallery' | 'story'): number {
+  let max = 0;
+  if (existsSync(dir)) {
+    for (const f of readdirSync(dir)) {
+      if (f.includes('.opt.webp')) continue;
+      const m = f.match(new RegExp(`^${prefix}-(\\d+)\\.`, 'i'));
+      if (m) max = Math.max(max, parseInt(m[1], 10));
+    }
+  }
+  return max + 1;
+}
+
+/** Hapus semua file (asli + .opt.webp) untuk sebuah base, mis. "cover". */
+function removeByBase(dir: string, base: string): void {
+  if (!existsSync(dir)) return;
+  for (const f of readdirSync(dir)) {
+    const b = basename(f, extname(f));
+    if (b === base || b === `${base}.opt`) {
+      try {
+        unlinkSync(join(dir, f));
+      } catch {
+        /* abaikan */
+      }
+    }
+  }
+}
+
+/**
+ * Simpan foto ke slot berdasar PERAN → nama kanonik (cover/groom/bride/
+ * gallery-NN/story-NN) + varian .opt.webp. Slot tunggal mengganti foto lama.
+ * Mengembalikan nama file kanonik (untuk disambungkan ke config).
+ */
+export async function savePhotoForRole(
+  slug: string,
+  role: PhotoRole,
+  origName: string,
+  buf: Buffer,
+): Promise<{ ok: true; file: string } | { ok: false; error: string }> {
+  const ext = pickExt(origName);
+  const dir = photosDir(slug);
+  mkdirSync(dir, { recursive: true });
+
+  let file: string;
+  const singleBase = SINGLE_BASE[role];
+  if (singleBase) {
+    removeByBase(dir, singleBase); // ganti foto lama di slot ini
+    file = `${singleBase}${ext}`;
+  } else if (role === 'gallery' || role === 'story') {
+    file = `${role}-${String(nextIndexed(dir, role)).padStart(2, '0')}${ext}`;
+  } else {
+    return { ok: false, error: 'Peran tidak dikenal.' };
+  }
+
+  writeFileSync(join(dir, file), buf);
+  const base = basename(file, ext);
+  if (RASTER.has(ext)) {
+    try {
+      const sharp = (await import('sharp')).default;
+      await sharp(buf)
+        .rotate()
+        .resize({ width: MAX_SIDE, height: MAX_SIDE, fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(join(dir, `${base}.opt.webp`));
+    } catch {
+      /* biarkan pakai file asli */
+    }
+  }
+  return { ok: true, file };
 }
 
 export function deletePhoto(slug: string, name: string): boolean {

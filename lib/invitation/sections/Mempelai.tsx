@@ -96,6 +96,7 @@ function OrangCard({
           frame={!polaroid && !stamp && !tape && !arch}
           monogram={initial}
           rounded={rounded}
+          objectPosition={m.fotoFokus}
         />
       </div>
       <h3

@@ -38,7 +38,7 @@ export function CeritaCinta({
             <span className="absolute -left-[31px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent ring-4 ring-page" />
             {m.foto && (
               <div className="mb-3 w-40 rotate-[-1.5deg]">
-                <FotoSlot src={m.foto} alt={m.judul} ratio="4/3" rounded="rounded-lg" monogram="❦" />
+                <FotoSlot src={m.foto} alt={m.judul} ratio="4/3" rounded="rounded-lg" monogram="❦" objectPosition={m.fotoFokus} />
               </div>
             )}
             <h3 className="font-heading text-lg font-semibold text-primary">{m.judul}</h3>

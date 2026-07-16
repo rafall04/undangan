@@ -20,6 +20,8 @@ export interface Mempelai {
   instagram?: string;
   /** URL foto (sudah diresolve). Kosong → placeholder monogram. */
   foto?: string;
+  /** object-position crop, mis. "50% 30%". Kosong → center. */
+  fotoFokus?: string;
 }
 
 export interface Acara {
@@ -42,6 +44,8 @@ export interface MomenCerita {
   tanggal?: string;
   deskripsi: string;
   foto?: string;
+  /** object-position crop, mis. "50% 30%". Kosong → center. */
+  fotoFokus?: string;
 }
 
 export interface Ucapan {
@@ -121,6 +125,8 @@ export interface DataUndangan {
   /** URL foto galeri (sudah diresolve, sudah terurut). */
   galeri?: string[];
   fotoCover?: string;
+  /** object-position crop foto sampul, mis. "50% 30%". Kosong → center. */
+  fotoCoverFokus?: string;
   musik?: { judul?: string; src: string };
   ucapanContoh?: Ucapan[];
   penutup?: string;

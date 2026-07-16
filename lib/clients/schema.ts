@@ -109,6 +109,8 @@ export const configKlienSchema = z.object({
   /** Daftar nama file foto galeri, urut. */
   galeri: z.array(z.string()).optional(),
   fotoCover: z.string().optional(),
+  /** Titik fokus object-position per nama file foto, mis. {"cover.jpg":"50% 30%"}. */
+  fotoFokus: z.record(z.string(), z.string()).optional(),
   musik: z
     .object({ judul: z.string().optional(), file: z.string().optional(), src: z.string().optional() })
     .optional(),

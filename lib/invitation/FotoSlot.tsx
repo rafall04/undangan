@@ -21,6 +21,8 @@ export interface FotoSlotProps {
   rounded?: string;
   className?: string;
   imgClassName?: string;
+  /** object-position crop, mis. "50% 30%". Kosong → center (default browser). */
+  objectPosition?: string;
 }
 
 export function FotoSlot({
@@ -33,6 +35,7 @@ export function FotoSlot({
   rounded = 'rounded-2xl',
   className = '',
   imgClassName = '',
+  objectPosition,
 }: FotoSlotProps) {
   const [w, h] = ratio.split('/');
   const aspectRatio = `${w.trim()} / ${(h ?? '1').trim()}`;
@@ -50,6 +53,7 @@ export function FotoSlot({
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
           className={`absolute inset-0 h-full w-full object-cover ${imgClassName}`}
+          style={objectPosition ? { objectPosition } : undefined}
         />
       ) : (
         <Placeholder monogram={monogram} />
