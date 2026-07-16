@@ -19,19 +19,32 @@ const paketSchema = z.object({
   fitur: z.array(z.string().min(1).max(200)).max(30).default([]),
 });
 
+/** Track musik yang DIUNGGAH admin (file ada di content/media/, persisten). */
+const trackSchema = z.object({
+  id: z.string().min(1).max(80),
+  judul: z.string().min(1, 'judul wajib').max(80),
+  mood: z.string().max(60).default(''),
+  /** Nama file di content/media/ — disajikan lewat /media/lib/<file>. */
+  file: z.string().min(1).max(200),
+});
+
 const settingsSchema = z.object({
   /** Nomor WA bisnis, format internasional tanpa "+" (mis. 6285233047094). */
   whatsapp: z.string().regex(/^\d{8,15}$/, 'Nomor WA: 8–15 digit, format 62xxx'),
   paket: z.array(paketSchema).min(1, 'minimal 1 paket').max(8),
+  /** Playlist tambahan hasil unggahan admin (di luar library bawaan). */
+  musik: z.array(trackSchema).max(60).default([]),
 });
 
 export type PaketSetting = z.infer<typeof paketSchema>;
+export type TrackSetting = z.infer<typeof trackSchema>;
 export type AppSettings = z.infer<typeof settingsSchema>;
 
 const KEY = 'app';
 
 export const DEFAULT_SETTINGS: AppSettings = {
   whatsapp: '6285233047094',
+  musik: [],
   paket: [
     {
       id: 'dasar',

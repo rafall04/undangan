@@ -10,6 +10,7 @@ import { getRsvpRecap } from '@/lib/clients/rsvp';
 import { AdminClientEditor } from '@/lib/admin/AdminClientEditor';
 import { RsvpRecap } from '@/lib/kirim/RsvpRecap';
 import { getSettings } from '@/lib/settings';
+import { effectiveMusicTracks } from '@/lib/music/store';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Admin — Kelola Undangan', robots: { index: false, follow: false } };
@@ -46,6 +47,7 @@ export default function AdminClientPage({ params }: { params: { slug: string } }
         initialExpiresAt={meta?.expires_at ?? null}
         rsvpCount={recap.total}
         paketOptions={getSettings().paket.map((p) => ({ id: p.id, nama: p.nama, durasiBulan: p.durasiBulan }))}
+        musicTracks={effectiveMusicTracks()}
       />
       {/* Admin melihat daftar RSVP masuk */}
       <div className="pb-10">

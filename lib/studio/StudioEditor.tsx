@@ -7,7 +7,7 @@ import { configKlienSchema } from '@/lib/clients/schema';
 import { type Draft, DEFAULT_DRAFT, loadDraft, draftToConfigJson, STUDIO_KEY } from './draft';
 import { generatePalette } from './palette-gen';
 import { type StylePreset, loadPresets, saveUserPreset, deleteUserPreset, BUILTIN_PRESETS } from './presets';
-import { MUSIC_LIBRARY, isLibraryTrack } from '@/lib/music/library';
+import { MUSIC_LIBRARY, type MusicTrack } from '@/lib/music/library';
 
 const PALETTE_KEYS: Array<['bg' | 'surface' | 'primary' | 'accent' | 'ink' | 'muted', string]> = [
   ['bg', 'Latar'],
@@ -53,6 +53,7 @@ export function StudioEditor({
   initialConfig,
   onSaved,
   paketOptions = [],
+  musicTracks = MUSIC_LIBRARY,
 }: {
   /** 'studio' = mandiri (localStorage + unduh); 'admin' = simpan ke server. */
   mode?: 'studio' | 'admin';
@@ -61,6 +62,8 @@ export function StudioEditor({
   onSaved?: () => void;
   /** Paket dari Pengaturan (DB) — bukan hardcode. Kosong → pilihan disembunyikan. */
   paketOptions?: Array<{ id: string; nama: string; durasiBulan: number }>;
+  /** Library bawaan + lagu unggahan admin (dari Pengaturan). */
+  musicTracks?: MusicTrack[];
 } = {}) {
   // Preview membaca localStorage; pakai key per-slug di mode admin agar tak
   // menimpa draft studio pengguna lain.
@@ -209,7 +212,9 @@ export function StudioEditor({
   const setRek = (next: typeof rek) => set({ amplop: { ...draft.amplop, rekening: next } });
 
   // --- Musik latar ---
-  const musikMode = !draft.musik ? '' : isLibraryTrack(draft.musik.src) ? draft.musik.src ?? '' : '__custom__';
+  // "Library" = bawaan + unggahan admin (musicTracks), bukan hanya MUSIC_LIBRARY.
+  const isInLibrary = (src?: string) => !!src && musicTracks.some((t) => t.src === src);
+  const musikMode = !draft.musik ? '' : isInLibrary(draft.musik.src) ? draft.musik.src ?? '' : '__custom__';
   const setMusik = (patch: Partial<{ judul: string; src: string }>) =>
     setDraft((d) => ({ ...d, musik: { judul: d.musik?.judul, src: d.musik?.src ?? '', ...patch } }));
   function pickMusik(val: string) {
@@ -217,9 +222,9 @@ export function StudioEditor({
     if (val === '__custom__')
       return setDraft((d) => ({
         ...d,
-        musik: { judul: d.musik?.judul ?? 'Lagu Pilihan', src: isLibraryTrack(d.musik?.src) ? '' : d.musik?.src ?? '' },
+        musik: { judul: d.musik?.judul ?? 'Lagu Pilihan', src: isInLibrary(d.musik?.src) ? '' : d.musik?.src ?? '' },
       }));
-    const t = MUSIC_LIBRARY.find((x) => x.src === val);
+    const t = musicTracks.find((x) => x.src === val);
     if (t) setDraft((d) => ({ ...d, musik: { judul: t.judul, src: t.src } }));
   }
 
@@ -480,10 +485,11 @@ export function StudioEditor({
           <Field label="Pilihan musik">
             <select className={inputCls} value={musikMode} onChange={(e) => pickMusik(e.target.value)}>
               <option value="">Tanpa musik</option>
-              <optgroup label="Library (bebas royalti)">
-                {MUSIC_LIBRARY.map((t) => (
+              <optgroup label="Playlist">
+                {musicTracks.map((t) => (
                   <option key={t.id} value={t.src}>
-                    {t.judul} — {t.mood}
+                    {t.judul}
+                    {t.mood ? ` — ${t.mood}` : ''}
                   </option>
                 ))}
               </optgroup>

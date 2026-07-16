@@ -8,6 +8,7 @@ import { StudioEditor } from '@/lib/studio/StudioEditor';
 import { DeleteClientButton } from './DeleteClientButton';
 import { BRAND, waLink } from '@/lib/brand';
 import { normalizePhone } from '@/lib/kirim/utils';
+import type { MusicTrack } from '@/lib/music/library';
 
 // ============================================================================
 // Editor undangan (admin): kelola status publish/paket/masa-berlaku + edit
@@ -49,6 +50,7 @@ export function AdminClientEditor({
   initialExpiresAt,
   rsvpCount,
   paketOptions,
+  musicTracks,
 }: {
   slug: string;
   judul: string;
@@ -59,6 +61,8 @@ export function AdminClientEditor({
   rsvpCount: number;
   /** Dari Pengaturan (DB) — bukan hardcode, ikut paket yang admin atur. */
   paketOptions: PaketOption[];
+  /** Library bawaan + lagu unggahan admin (dari Pengaturan). */
+  musicTracks: MusicTrack[];
 }) {
   const router = useRouter();
   const [json, setJson] = useState(initialJson);
@@ -333,6 +337,7 @@ ${BRAND.penuh}`;
           initialConfig={parsedConfig}
           onSaved={() => router.refresh()}
           paketOptions={paketOptions}
+          musicTracks={musicTracks}
         />
       </div>
 
