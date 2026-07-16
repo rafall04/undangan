@@ -31,13 +31,13 @@ export default function KirimPage({ params }: { params: { client: string } }) {
   return (
     <div className="ui-page">
       <header className="ui-topbar">
-        <div className="ui-container flex max-w-3xl items-center justify-between py-3">
-          <Link href="/" className="flex items-center gap-2">
+        <div className="ui-container flex max-w-3xl flex-wrap items-center justify-between gap-2 py-3">
+          <Link href="/" className="flex shrink-0 items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-white">R</span>
             <span className="text-sm font-semibold text-slate-900">Rafayana</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <Link href={`/u/${params.client}`} className="ui-btn ui-btn-secondary">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href={`/u/${params.client}`} className="ui-btn ui-btn-secondary whitespace-nowrap">
               Lihat Undangan
             </Link>
             {authed && <ClientLogoutButton />}

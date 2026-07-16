@@ -41,23 +41,75 @@ export function AdminClientsTable({ rows }: { rows: AdminClientRow[] }) {
 
   return (
     <>
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama / slug…" className="ui-input w-56" />
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ui-input w-auto">
-          <option value="">Semua status</option>
-          <option value="published">Terbit</option>
-          <option value="draft">Draft</option>
-          <option value="disabled">Nonaktif</option>
-        </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="ui-input w-auto">
-          <option value="judul">Urut: Nama</option>
-          <option value="acara">Urut: Tanggal acara</option>
-          <option value="rsvp">Urut: RSVP terbanyak</option>
-        </select>
-        <span className="text-xs text-slate-500">{filtered.length} undangan</span>
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama / slug…" className="ui-input sm:w-56" />
+        <div className="flex gap-2">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ui-input w-full sm:w-auto">
+            <option value="">Semua status</option>
+            <option value="published">Terbit</option>
+            <option value="draft">Draft</option>
+            <option value="disabled">Nonaktif</option>
+          </select>
+          <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="ui-input w-full sm:w-auto">
+            <option value="judul">Urut: Nama</option>
+            <option value="acara">Urut: Tanggal acara</option>
+            <option value="rsvp">Urut: RSVP terbanyak</option>
+          </select>
+        </div>
+        <span className="text-xs text-slate-500 sm:ml-1">{filtered.length} undangan</span>
       </div>
 
-      <div className="ui-card overflow-x-auto">
+      {/* Mobile (< sm): daftar kartu — tabel menyembunyikan diri agar tidak meluber */}
+      <div className="grid gap-3 sm:hidden">
+        {filtered.length === 0 ? (
+          <div className="ui-card p-6 text-center text-sm text-slate-500">
+            {rows.length === 0 ? 'Belum ada undangan. Klik “+ Undangan Baru”.' : 'Tidak ada yang cocok.'}
+          </div>
+        ) : (
+          filtered.map((c) => (
+            <div key={c.slug} className="ui-card p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="font-medium text-slate-900">{c.judul}</div>
+                  <div className="truncate text-xs text-slate-400">/{c.slug}</div>
+                </div>
+                <span className={`ui-badge shrink-0 ${STATUS_BADGE[c.status] ?? 'bg-slate-100 text-slate-600'}`}>
+                  {STATUS_LABEL[c.status] ?? c.status}
+                </span>
+              </div>
+              {!c.valid && <p className="mt-2 text-xs text-red-600">config bermasalah</p>}
+              <dl className="mt-3 grid grid-cols-3 gap-2 text-sm">
+                <div>
+                  <dt className="text-[11px] uppercase tracking-wide text-slate-400">Tema</dt>
+                  <dd className="mt-0.5 text-slate-600">{c.tema}</dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] uppercase tracking-wide text-slate-400">Acara</dt>
+                  <dd className="mt-0.5 text-slate-600">{tglAcara(c.tanggalUtama)}</dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] uppercase tracking-wide text-slate-400">RSVP</dt>
+                  <dd className="mt-0.5 text-slate-600">
+                    <span className="font-medium text-slate-900">{c.rsvp}</span>{' '}
+                    <span className="text-xs text-slate-400">({c.hadir})</span>
+                  </dd>
+                </div>
+              </dl>
+              <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+                <Link href={`/admin/clients/${c.slug}`} className="ui-btn ui-btn-primary flex-1">
+                  Kelola
+                </Link>
+                <Link href={`/u/${c.slug}`} target="_blank" className="ui-btn ui-btn-secondary flex-1">
+                  Lihat
+                </Link>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop (sm+): tabel penuh */}
+      <div className="ui-card hidden overflow-x-auto sm:block">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50">
             <tr>

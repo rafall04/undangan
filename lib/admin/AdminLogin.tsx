@@ -98,7 +98,7 @@ export function AdminLogoutButton() {
     router.refresh();
   }
   return (
-    <button onClick={logout} disabled={busy} className="ui-btn ui-btn-secondary">
+    <button onClick={logout} disabled={busy} className="ui-btn ui-btn-secondary whitespace-nowrap">
       Keluar
     </button>
   );

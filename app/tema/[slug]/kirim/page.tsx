@@ -29,12 +29,12 @@ export default function DemoKirimPage({ params }: { params: { slug: string } }) 
   return (
     <div className="ui-page">
       <header className="ui-topbar">
-        <div className="ui-container flex max-w-3xl items-center justify-between py-3">
-          <Link href="/tema" className="flex items-center gap-2">
+        <div className="ui-container flex max-w-3xl flex-wrap items-center justify-between gap-2 py-3">
+          <Link href="/tema" className="flex shrink-0 items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-white">R</span>
             <span className="text-sm font-semibold text-slate-900">Rafayana</span>
           </Link>
-          <Link href={`/tema/${params.slug}`} className="ui-btn ui-btn-secondary">
+          <Link href={`/tema/${params.slug}`} className="ui-btn ui-btn-secondary whitespace-nowrap">
             ← Kembali ke demo tema
           </Link>
         </div>
