@@ -12,6 +12,7 @@ import {
   statusKey,
   toCSV,
 } from './utils';
+import { MESSAGE_TEMPLATES } from './templates';
 import { qrDataUrl, downloadDataUrl } from './qr';
 
 // ============================================================================
@@ -43,6 +44,7 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
   const [tamu, setTamu] = useState<Row[]>(initialTamu);
   const [paste, setPaste] = useState('');
   const [template, setTemplate] = useState(defaultTemplate);
+  const [templateId, setTemplateId] = useState('');
   const [status, setStatus] = useState<Record<string, boolean>>({}); // hanya mode lokal
   const [copied, setCopied] = useState('');
   const [qrTarget, setQrTarget] = useState<{ label: string; url: string } | null>(null);
@@ -122,6 +124,13 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
       setCopied(id);
       setTimeout(() => setCopied((c) => (c === id ? '' : c)), 1400);
     });
+  }
+
+  /** Terapkan template pustaka → isi kotak pesan; {pasangan} langsung diisi. */
+  function applyTemplate(id: string) {
+    setTemplateId(id);
+    const t = MESSAGE_TEMPLATES.find((x) => x.id === id);
+    if (t) setTemplate(t.teks.replace(/\{pasangan\}/g, judul));
   }
 
   async function tambahDariPaste() {
@@ -254,8 +263,20 @@ export function KirimTool({ basePath, judul, defaultTemplate, initialTamu = [], 
       <section className="mt-8">
         <h2 className="ui-title text-base">2. Template Pesan</h2>
         <p className="mt-1 text-sm text-slate-500">
-          Gunakan <code className="rounded bg-slate-100 px-1">{'{nama}'}</code> dan <code className="rounded bg-slate-100 px-1">{'{link}'}</code> — otomatis terisi per tamu.
+          Pilih template siap-pakai lalu edit bila perlu. <code className="rounded bg-slate-100 px-1">{'{nama}'}</code> &amp; <code className="rounded bg-slate-100 px-1">{'{link}'}</code> terisi otomatis per tamu; nama pasangan sudah terisi.
         </p>
+        <div className="mt-3">
+          <label className="ui-label">Template siap-pakai</label>
+          <select value={templateId} onChange={(e) => applyTemplate(e.target.value)} className="ui-input">
+            <option value="">— Pilih template —</option>
+            {MESSAGE_TEMPLATES.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nama}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-[11px] text-slate-400">Memilih akan mengganti isi kotak di bawah (masih bisa diedit bebas).</p>
+        </div>
         <textarea
           value={template}
           onChange={(e) => setTemplate(e.target.value)}
