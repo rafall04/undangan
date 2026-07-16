@@ -4,28 +4,11 @@ import Link from 'next/link';
 import { currentSession } from '@/lib/auth/cookies';
 import { listAdminClients, listOrders } from '@/lib/admin/queries';
 import { AdminLogoutButton } from '@/lib/admin/AdminLogin';
-import { ProcessOrderButton } from '@/lib/admin/ProcessOrderButton';
+import { AdminClientsTable } from '@/lib/admin/AdminClientsTable';
+import { OrderActions } from '@/lib/admin/OrderActions';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Admin — Dashboard', robots: { index: false, follow: false } };
-
-const STATUS_BADGE: Record<string, string> = {
-  published: 'bg-green-600/12 text-green-800',
-  draft: 'bg-amber-600/14 text-amber-800',
-  disabled: 'bg-red-600/12 text-red-800',
-};
-const STATUS_LABEL: Record<string, string> = {
-  published: 'Terbit',
-  draft: 'Draft',
-  disabled: 'Nonaktif',
-};
-
-function tglAcara(iso: string): string {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-}
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
@@ -77,62 +60,10 @@ export default function AdminDashboard() {
           <Stat label="Pesanan" value={orders.length} />
         </div>
 
-        {/* Undangan */}
+        {/* Undangan (cari + filter + sort di komponen) */}
         <section className="mt-8">
-          <h2 className="font-brand-serif text-lg font-semibold text-brand-ink">Undangan</h2>
-          <div className="mt-3 overflow-x-auto rounded-2xl border border-brand-line">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="bg-brand-paper text-xs uppercase tracking-wide text-brand-muted">
-                <tr>
-                  <th className="px-4 py-3">Pasangan</th>
-                  <th className="px-4 py-3">Tema</th>
-                  <th className="px-4 py-3">Acara</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">RSVP</th>
-                  <th className="px-4 py-3 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-brand-line">
-                {clients.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-brand-muted">
-                      Belum ada undangan. Klik “+ Undangan Baru”.
-                    </td>
-                  </tr>
-                ) : (
-                  clients.map((c) => (
-                    <tr key={c.slug} className="bg-brand-cream/40">
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-brand-ink">{c.judul}</div>
-                        <div className="text-xs text-brand-muted">/{c.slug}</div>
-                        {!c.valid && <span className="text-xs text-red-600">config bermasalah</span>}
-                      </td>
-                      <td className="px-4 py-3 text-brand-muted">{c.tema}</td>
-                      <td className="px-4 py-3 text-brand-muted">{tglAcara(c.tanggalUtama)}</td>
-                      <td className="px-4 py-3">
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_BADGE[c.status] ?? ''}`}>
-                          {STATUS_LABEL[c.status] ?? c.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-brand-muted">
-                        {c.rsvp} <span className="text-xs">({c.hadir} hadir)</span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-2 text-xs">
-                          <Link href={`/admin/clients/${c.slug}`} className="text-brand-gold hover:underline">
-                            Kelola
-                          </Link>
-                          <Link href={`/u/${c.slug}`} target="_blank" className="text-brand-ink hover:underline">
-                            Lihat
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <h2 className="mb-3 font-brand-serif text-lg font-semibold text-brand-ink">Undangan</h2>
+          <AdminClientsTable rows={clients} />
         </section>
 
         {/* Pesanan */}
@@ -161,16 +92,8 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3 text-brand-muted">{o.kontak ?? '—'}</td>
                       <td className="px-4 py-3 text-brand-muted">{o.paket ?? '—'}</td>
                       <td className="px-4 py-3 text-brand-muted">{o.status}</td>
-                      <td className="px-4 py-3 text-right">
-                        {o.status === 'baru' ? (
-                          <ProcessOrderButton orderId={o.id} suggestedSlug={o.suggestedSlug} />
-                        ) : o.slug ? (
-                          <Link href={`/admin/clients/${o.slug}`} className="text-xs text-brand-gold hover:underline">
-                            Buka /{o.slug}
-                          </Link>
-                        ) : (
-                          <span className="text-xs text-brand-muted">—</span>
-                        )}
+                      <td className="px-4 py-3">
+                        <OrderActions order={o} />
                       </td>
                     </tr>
                   ))}

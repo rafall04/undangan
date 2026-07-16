@@ -3,6 +3,7 @@ import type { StatusKehadiran } from '@/lib/invitation/types';
 
 // ============================================================================
 // Query RSVP untuk sisi pemilik (client/admin). Server-only.
+// Angka dihitung via agregat DB (bukan memuat semua baris ke memori).
 // ============================================================================
 
 export interface RsvpEntry {
@@ -14,34 +15,64 @@ export interface RsvpEntry {
   created_at: number;
 }
 
-export interface RsvpRecapData {
+export interface RsvpCounts {
   total: number;
   hadir: number;
   tidak: number;
   ragu: number;
+}
+
+export interface RsvpRecapData extends RsvpCounts {
   /** Perkiraan jumlah orang hadir (pakai kolom jumlah bila ada, else 1/RSVP hadir). */
   estimasiHadir: number;
   entries: RsvpEntry[];
 }
 
-export function getRsvpRecap(slug: string): RsvpRecapData {
-  const entries = getDb()
+const EMPTY: RsvpCounts = { total: 0, hadir: 0, tidak: 0, ragu: 0 };
+
+/** Hitung RSVP SEMUA slug dalam 1 query (untuk dashboard admin — hindari N+1). */
+export function rsvpCountsAll(): Map<string, RsvpCounts> {
+  const rows = getDb()
+    .prepare('SELECT slug, kehadiran, COUNT(*) AS c FROM rsvps WHERE hidden = 0 GROUP BY slug, kehadiran')
+    .all() as { slug: string; kehadiran: StatusKehadiran; c: number }[];
+  const map = new Map<string, RsvpCounts>();
+  for (const r of rows) {
+    const cur = map.get(r.slug) ?? { ...EMPTY };
+    cur.total += r.c;
+    if (r.kehadiran === 'hadir') cur.hadir += r.c;
+    else if (r.kehadiran === 'tidak') cur.tidak += r.c;
+    else if (r.kehadiran === 'ragu') cur.ragu += r.c;
+    map.set(r.slug, cur);
+  }
+  return map;
+}
+
+/** Recap 1 undangan: angka dari agregat (akurat), daftar entri dibatasi `limit`. */
+export function getRsvpRecap(slug: string, limit = 300): RsvpRecapData {
+  const db = getDb();
+  const counts: RsvpCounts = { ...EMPTY };
+  const cRows = db
+    .prepare('SELECT kehadiran, COUNT(*) AS c FROM rsvps WHERE slug = ? AND hidden = 0 GROUP BY kehadiran')
+    .all(slug) as { kehadiran: StatusKehadiran; c: number }[];
+  for (const r of cRows) {
+    counts.total += r.c;
+    if (r.kehadiran === 'hadir') counts.hadir += r.c;
+    else if (r.kehadiran === 'tidak') counts.tidak += r.c;
+    else if (r.kehadiran === 'ragu') counts.ragu += r.c;
+  }
+
+  const est = db
     .prepare(
-      'SELECT id, nama, kehadiran, jumlah, pesan, created_at FROM rsvps WHERE slug = ? AND hidden = 0 ORDER BY created_at DESC',
+      "SELECT COALESCE(SUM(CASE WHEN jumlah IS NOT NULL AND jumlah > 0 THEN jumlah ELSE 1 END), 0) AS orang " +
+        "FROM rsvps WHERE slug = ? AND hidden = 0 AND kehadiran = 'hadir'",
     )
-    .all(slug) as RsvpEntry[];
+    .get(slug) as { orang: number };
 
-  const count = (k: StatusKehadiran) => entries.filter((e) => e.kehadiran === k).length;
-  const estimasiHadir = entries
-    .filter((e) => e.kehadiran === 'hadir')
-    .reduce((sum, e) => sum + (e.jumlah && e.jumlah > 0 ? e.jumlah : 1), 0);
+  const entries = db
+    .prepare(
+      'SELECT id, nama, kehadiran, jumlah, pesan, created_at FROM rsvps WHERE slug = ? AND hidden = 0 ORDER BY created_at DESC LIMIT ?',
+    )
+    .all(slug, limit) as RsvpEntry[];
 
-  return {
-    total: entries.length,
-    hadir: count('hadir'),
-    tidak: count('tidak'),
-    ragu: count('ragu'),
-    estimasiHadir,
-    entries,
-  };
+  return { ...counts, estimasiHadir: est.orang, entries };
 }

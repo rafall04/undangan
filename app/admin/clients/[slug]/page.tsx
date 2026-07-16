@@ -8,6 +8,7 @@ import { pasanganPanggilan } from '@/lib/invitation/types';
 import { getMeta } from '@/lib/clients/meta';
 import { getRsvpRecap } from '@/lib/clients/rsvp';
 import { AdminClientEditor } from '@/lib/admin/AdminClientEditor';
+import { RsvpRecap } from '@/lib/kirim/RsvpRecap';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Admin — Kelola Undangan', robots: { index: false, follow: false } };
@@ -20,7 +21,7 @@ export default function AdminClientPage({ params }: { params: { slug: string } }
   const initialJson = readFileSync(file, 'utf8');
 
   const meta = getMeta(params.slug);
-  const rsvpCount = getRsvpRecap(params.slug).total;
+  const recap = getRsvpRecap(params.slug);
 
   let judul = params.slug;
   try {
@@ -42,8 +43,12 @@ export default function AdminClientPage({ params }: { params: { slug: string } }
         initialStatus={meta?.status ?? 'published'}
         initialPaket={meta?.paket ?? null}
         initialExpiresAt={meta?.expires_at ?? null}
-        rsvpCount={rsvpCount}
+        rsvpCount={recap.total}
       />
+      {/* Admin melihat daftar RSVP masuk */}
+      <div className="pb-10">
+        <RsvpRecap recap={recap} />
+      </div>
     </div>
   );
 }

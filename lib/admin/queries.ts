@@ -1,11 +1,13 @@
-import { listClientSlugs, loadClient } from '@/lib/clients/load';
-import { pasanganPanggilan } from '@/lib/invitation/types';
-import { getRsvpRecap } from '@/lib/clients/rsvp';
+import { listClientSlugs, loadClientConfig } from '@/lib/clients/load';
+import { getTemaBySlug } from '@/lib/engine';
+import { rsvpCountsAll } from '@/lib/clients/rsvp';
 import { effectiveStatus, type ClientStatus } from '@/lib/clients/meta';
 import { getDb } from '@/lib/db';
 
 // ============================================================================
 // Agregasi data untuk dashboard admin. Server-only.
+// RSVP dihitung sekali (rsvpCountsAll), config dibaca ringan (loadClientConfig,
+// bukan full loadClient dengan resolusi foto).
 // ============================================================================
 
 export interface AdminClientRow {
@@ -20,6 +22,8 @@ export interface AdminClientRow {
 }
 
 export function listAdminClients(): AdminClientRow[] {
+  const counts = rsvpCountsAll(); // 1 query untuk semua slug
+
   return listClientSlugs()
     .map((slug): AdminClientRow => {
       let judul = slug;
@@ -27,20 +31,32 @@ export function listAdminClients(): AdminClientRow[] {
       let tanggalUtama = '';
       let valid = true;
       try {
-        const b = loadClient(slug);
-        if (b) {
-          const [a, c] = pasanganPanggilan(b.data);
-          judul = `${a} & ${c}`;
-          tema = b.tema.namaTampilan;
-          tanggalUtama = b.data.tanggalUtama;
+        const cfg = loadClientConfig(slug);
+        if (cfg) {
+          const [x, y] =
+            cfg.urutanNama === 'wanita-dulu'
+              ? [cfg.mempelai.wanita.panggilan, cfg.mempelai.pria.panggilan]
+              : [cfg.mempelai.pria.panggilan, cfg.mempelai.wanita.panggilan];
+          judul = `${x} & ${y}`;
+          tema = getTemaBySlug(cfg.temaSlug)?.namaTampilan ?? cfg.temaSlug;
+          tanggalUtama = cfg.tanggalUtama;
         } else {
           valid = false;
         }
       } catch {
         valid = false;
       }
-      const r = getRsvpRecap(slug);
-      return { slug, judul, tema, status: effectiveStatus(slug), rsvp: r.total, hadir: r.hadir, tanggalUtama, valid };
+      const c = counts.get(slug);
+      return {
+        slug,
+        judul,
+        tema,
+        status: effectiveStatus(slug),
+        rsvp: c?.total ?? 0,
+        hadir: c?.hadir ?? 0,
+        tanggalUtama,
+        valid,
+      };
     })
     .sort((a, b) => a.judul.localeCompare(b.judul));
 }
@@ -53,7 +69,7 @@ export interface OrderRow {
   slug: string | null;
   status: string;
   created_at: number;
-  /** Saran slug dari nama pasangan di config order (untuk tombol Proses). */
+  /** Saran slug dari nama pasangan di config order (hanya order 'baru'). */
   suggestedSlug: string;
 }
 
@@ -75,13 +91,16 @@ export function listOrders(): OrderRow[] {
 
   return rows.map((o) => {
     let suggestedSlug = '';
-    try {
-      const c = o.config_json ? JSON.parse(o.config_json) : null;
-      const a = c?.mempelai?.pria?.panggilan;
-      const b = c?.mempelai?.wanita?.panggilan;
-      if (a && b) suggestedSlug = slugify(`${a}-${b}`);
-    } catch {
-      /* abaikan */
+    // Hanya parse config utk order yang masih 'baru' (butuh saran slug).
+    if (o.status === 'baru' && o.config_json) {
+      try {
+        const c = JSON.parse(o.config_json);
+        const a = c?.mempelai?.pria?.panggilan;
+        const b = c?.mempelai?.wanita?.panggilan;
+        if (a && b) suggestedSlug = slugify(`${a}-${b}`);
+      } catch {
+        /* abaikan */
+      }
     }
     return {
       id: o.id,

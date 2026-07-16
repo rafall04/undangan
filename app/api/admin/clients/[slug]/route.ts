@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { currentSession } from '@/lib/auth/cookies';
-import { saveClientConfig } from '@/lib/clients/write';
+import { saveClientConfig, deleteClient, slugExists } from '@/lib/clients/write';
 import { setStatus, setPaketExpiry } from '@/lib/clients/meta';
 
 export const runtime = 'nodejs';
@@ -51,5 +51,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { slug: stri
   if (paket !== undefined || expiresAt !== undefined) {
     setPaketExpiry(params.slug, paket ?? null, expiresAt ?? null);
   }
+  return NextResponse.json({ ok: true });
+}
+
+// Hapus undangan (file + data DB terkait). Destruktif.
+export async function DELETE(_req: NextRequest, { params }: { params: { slug: string } }) {
+  if (!currentSession('admin')) return unauthorized();
+  if (!slugExists(params.slug)) {
+    return NextResponse.json({ ok: false, error: 'Undangan tidak ditemukan.' }, { status: 404 });
+  }
+  deleteClient(params.slug);
   return NextResponse.json({ ok: true });
 }

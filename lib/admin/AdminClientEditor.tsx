@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PhotoManager } from './PhotoManager';
 import { StudioEditor } from '@/lib/studio/StudioEditor';
+import { DeleteClientButton } from './DeleteClientButton';
 
 // ============================================================================
 // Editor undangan (admin): kelola status publish/paket/masa-berlaku + edit
@@ -142,6 +143,7 @@ export function AdminClientEditor({
           <Link href={`/u/${slug}/kirim`} target="_blank" className="rounded-full border border-brand-line px-4 py-1.5 text-brand-ink hover:border-brand-gold">
             Alat Kirim
           </Link>
+          <DeleteClientButton slug={slug} />
         </div>
       </div>
 

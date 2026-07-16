@@ -1,10 +1,11 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { CLIENTS_DIR } from '@/lib/clients/load';
 import { configKlienSchema } from '@/lib/clients/schema';
 import { getTemaBySlug } from '@/lib/engine';
 import { DEFAULT_DRAFT, draftToConfigJson } from '@/lib/studio/draft';
+import { getDb } from '@/lib/db';
 
 // ============================================================================
 // Tulis config klien ke file (server-only). Sumber kebenaran render TETAP file;
@@ -63,6 +64,19 @@ export function createClientScaffold(slug: string): CreateResult {
   };
   writeFileSync(join(clientDir(s), 'config.json'), draftToConfigJson(template), 'utf8');
   return { ok: true, slug: s };
+}
+
+/** Hapus undangan: folder file + semua baris DB terkait (rsvps, tamu, meta, sesi). */
+export function deleteClient(slug: string): boolean {
+  if (!SLUG_RE.test(slug)) return false;
+  const dir = clientDir(slug);
+  if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });
+  const db = getDb();
+  db.prepare('DELETE FROM client_meta WHERE slug = ?').run(slug);
+  db.prepare('DELETE FROM rsvps WHERE slug = ?').run(slug);
+  db.prepare('DELETE FROM guests WHERE slug = ?').run(slug);
+  db.prepare("DELETE FROM sessions WHERE kind = 'client' AND subject = ?").run(slug);
+  return true;
 }
 
 /**
