@@ -15,6 +15,10 @@ export interface MusicTrack {
 }
 
 export const MUSIC_LIBRARY: MusicTrack[] = [
+  // Nuansa Jawa (gamelan slendro, instrumental orisinil).
+  { id: 'gamelan-asmara', judul: 'Gamelan Asmara', mood: 'Jawa · Romantis', src: '/media/library/gamelan-asmara.mp3' },
+  { id: 'langgam-tresna', judul: 'Langgam Tresna', mood: 'Jawa · Lembut', src: '/media/library/langgam-tresna.mp3' },
+  // Instrumental lembut (music-box).
   { id: 'tenang', judul: 'Tenang', mood: 'Lembut', src: '/media/library/tenang.mp3' },
   { id: 'romantis', judul: 'Romantis', mood: 'Romantis', src: '/media/library/romantis.mp3' },
   { id: 'ceria', judul: 'Ceria', mood: 'Ceria', src: '/media/library/ceria.mp3' },

@@ -172,7 +172,7 @@ export function buildDemoData(tema: TemaResolved): DataUndangan {
     quote: islami ? undefined : QUOTE,
     ceritaCinta: c.cerita.map((m) => ({ judul: m.judul, tanggal: m.tanggal, deskripsi: m.deskripsi })),
     galeri: ['', '', '', '', '', '', '', ''], // 8 slot → placeholder monogram (mosaic 6–9)
-    musik: { judul: 'Romantis', src: '/media/library/romantis.mp3' },
+    musik: { judul: 'Gamelan Asmara', src: '/media/library/gamelan-asmara.mp3' },
     ucapanContoh: UCAPAN_CONTOH,
     hashtag: c.hashtag,
     amplop: {

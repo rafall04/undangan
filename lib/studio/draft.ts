@@ -33,7 +33,7 @@ export const DEFAULT_DRAFT: Draft = {
   ],
   quote: { teks: 'Cinta sejati adalah perjalanan dua hati yang memilih berjalan searah.', sumber: 'Rafayana' },
   galeri: [],
-  musik: { judul: 'Tenang', src: '/media/library/tenang.mp3' },
+  musik: { judul: 'Gamelan Asmara', src: '/media/library/gamelan-asmara.mp3' },
   ucapanContoh: [{ nama: 'Sahabat', pesan: 'Selamat menempuh hidup baru!', kehadiran: 'hadir', waktu: 'Baru saja' }],
   penutup: 'Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.',
   amplop: { rekening: [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Nama', jenis: 'bank' }] },

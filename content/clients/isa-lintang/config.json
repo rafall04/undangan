@@ -89,7 +89,7 @@
 
   "fotoCover": "cover.jpg",
 
-  "musik": { "judul": "Tenang", "src": "/media/library/tenang.mp3" },
+  "musik": { "judul": "Gamelan Asmara", "src": "/media/library/gamelan-asmara.mp3" },
 
   "ucapanContoh": [
     { "nama": "Keluarga Besar Abdullah", "pesan": "Barakallahu lakuma. Semoga menjadi keluarga yang sakinah, mawaddah, warahmah.", "kehadiran": "hadir", "waktu": "2 hari lalu" },
