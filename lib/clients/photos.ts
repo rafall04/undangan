@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, writeFileSync, unlinkSync, statSync } from 'node:fs';
 import { join, extname, basename } from 'node:path';
 import { clientDir } from './write';
+import { sanitizeAudioName, MAX_AUDIO_BYTES } from '@/lib/music/store';
 
 // ============================================================================
 // Kelola foto klien (server-only). Simpan ke content/clients/<slug>/photos/,
@@ -131,7 +132,7 @@ function removeByBase(dir: string, base: string): void {
  * (~24px, biasanya <1 KB). Ditanam di config → tampil instan sebagai latar
  * sementara foto asli dimuat, lalu tertutup foto asli. Best-effort.
  */
-async function makeLqip(buf: Buffer): Promise<string | undefined> {
+export async function makeLqip(buf: Buffer): Promise<string | undefined> {
   try {
     const sharp = (await import('sharp')).default;
     const tiny = await sharp(buf)
@@ -189,6 +190,33 @@ export async function savePhotoForRole(
     lqip = await makeLqip(buf);
   }
   return { ok: true, file, lqip };
+}
+
+/**
+ * Simpan lagu MILIK CLIENT ke folder fotonya → nama kanonik "lagu.<ext>".
+ * Ditaruh di sini (bukan content/media) karena lagu ini khusus 1 undangan, dan
+ * route /u/<slug>/photos/<file> sudah menyajikan MIME audio. Config cukup
+ * menunjuk `musik.file` → loader me-resolve URL-nya otomatis.
+ */
+export function saveClientAudio(
+  slug: string,
+  origName: string,
+  buf: Buffer,
+): { ok: true; file: string } | { ok: false; error: string } {
+  const safe = sanitizeAudioName(origName);
+  if (!safe) return { ok: false, error: 'Format tidak didukung (mp3/m4a/ogg/wav).' };
+  if (buf.byteLength > MAX_AUDIO_BYTES) return { ok: false, error: 'Ukuran melebihi 8 MB.' };
+  const dir = photosDir(slug);
+  mkdirSync(dir, { recursive: true });
+  removeByBase(dir, 'lagu'); // ganti lagu lama, jangan menumpuk
+  const file = `lagu${extname(safe).toLowerCase()}`;
+  writeFileSync(join(dir, file), buf);
+  return { ok: true, file };
+}
+
+/** Hapus lagu unggahan client (semua varian lagu.*). */
+export function deleteClientAudio(slug: string): void {
+  removeByBase(photosDir(slug), 'lagu');
 }
 
 export function deletePhoto(slug: string, name: string): boolean {

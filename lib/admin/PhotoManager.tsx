@@ -62,6 +62,7 @@ export function PhotoManager({ slug }: { slug: string }) {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
+  const [msg, setMsg] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const base = `/api/admin/clients/${slug}/photos`;
@@ -108,6 +109,35 @@ export function PhotoManager({ slug }: { slug: string }) {
       const res = await fetch(`${base}?file=${encodeURIComponent(file)}`, { method: 'DELETE' });
       const j = (await res.json()) as { ok?: boolean; photos?: Photo[] };
       if (res.ok && Array.isArray(j.photos)) setPhotos(j.photos);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** Buat placeholder blur untuk foto yang diunggah sebelum fitur blur-up ada. */
+  async function backfill() {
+    setBusy(true);
+    setErr('');
+    setMsg('');
+    try {
+      const res = await fetch(`${base}/backfill`, { method: 'POST' });
+      const j = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        generated?: number;
+        skipped?: number;
+        error?: string;
+      } | null;
+      if (!res.ok || !j?.ok) {
+        setErr(j?.error ?? 'Gagal membuat placeholder.');
+        return;
+      }
+      setMsg(
+        j.generated
+          ? `${j.generated} placeholder blur dibuat ✓ (${j.skipped} dilewati)`
+          : 'Semua foto sudah punya placeholder ✓',
+      );
+    } catch {
+      setErr('Gagal terhubung.');
     } finally {
       setBusy(false);
     }
@@ -180,6 +210,17 @@ export function PhotoManager({ slug }: { slug: string }) {
         </label>
       </div>
       {err && <p className="mt-2 text-xs text-red-600">{err}</p>}
+      {msg && <p className="mt-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{msg}</p>}
+
+      {/* Foto lama (sebelum fitur blur-up) belum punya placeholder → buatkan. */}
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <button onClick={backfill} disabled={busy || photos.length === 0} className="ui-btn ui-btn-secondary">
+          Buat placeholder blur untuk foto lama
+        </button>
+        <span className="text-[11px] text-slate-400">
+          Foto yang diunggah sebelum fitur ini ada belum punya efek blur-up. Aman dijalankan berulang.
+        </span>
+      </div>
 
       {/* Grid foto */}
       {loading ? (

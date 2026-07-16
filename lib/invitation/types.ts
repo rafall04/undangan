@@ -128,6 +128,8 @@ export interface DataUndangan {
   ceritaCinta?: MomenCerita[];
   /** URL foto galeri (sudah diresolve, sudah terurut). */
   galeri?: string[];
+  /** Placeholder blur-up galeri — indeks SEJAJAR dengan `galeri`. '' = tak ada. */
+  galeriBlur?: string[];
   fotoCover?: string;
   /** object-position crop foto sampul, mis. "50% 30%". Kosong → center. */
   fotoCoverFokus?: string;

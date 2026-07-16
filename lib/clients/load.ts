@@ -81,6 +81,12 @@ export function loadClientConfig(slug: string): ConfigKlien | null {
 
 /** Ubah ConfigKlien → DataUndangan (foto diresolve ke URL). */
 export function configToData(slug: string, cfg: ConfigKlien): DataUndangan {
+  // Galeri dibangun BERPASANGAN (url + blur) lalu disaring, supaya indeks blur
+  // tetap sejajar dengan foto setelah entri yang filenya tak ada dibuang.
+  const galeriPairs = (cfg.galeri ?? [])
+    .map((f) => ({ url: resolveFoto(slug, f) ?? '', blur: blurOf(cfg, f) ?? '' }))
+    .filter((g) => g.url !== '');
+
   return {
     temaSlug: cfg.temaSlug,
     islami: cfg.islami,
@@ -95,7 +101,8 @@ export function configToData(slug: string, cfg: ConfigKlien): DataUndangan {
     ayat: cfg.ayat,
     quote: cfg.quote,
     ceritaCinta: cfg.ceritaCinta?.map((m) => ({ ...m, foto: resolveFoto(slug, m.foto), fotoFokus: fokusOf(cfg, m.foto), fotoBlur: blurOf(cfg, m.foto) })),
-    galeri: (cfg.galeri ?? []).map((f) => resolveFoto(slug, f) ?? '').filter((u) => u !== ''),
+    galeri: galeriPairs.map((g) => g.url),
+    galeriBlur: galeriPairs.map((g) => g.blur),
     fotoCover: resolveFoto(slug, cfg.fotoCover),
     fotoCoverFokus: fokusOf(cfg, cfg.fotoCover),
     fotoCoverBlur: blurOf(cfg, cfg.fotoCover),

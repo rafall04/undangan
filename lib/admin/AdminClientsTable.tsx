@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { AdminClientRow } from './queries';
 
@@ -23,6 +23,8 @@ export function AdminClientsTable({ rows }: { rows: AdminClientRow[] }) {
   const [q, setQ] = useState('');
   const [sort, setSort] = useState<SortKey>('judul');
   const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(() => {
     const t = q.trim().toLowerCase();
@@ -38,6 +40,17 @@ export function AdminClientsTable({ rows }: { rows: AdminClientRow[] }) {
     });
     return r;
   }, [rows, q, sort, statusFilter]);
+
+  // Halaman dipotong SETELAH filter/sort → nomor halaman selalu relevan dengan
+  // hasil yang sedang dilihat. Kembali ke hal. 1 bila kriteria berubah.
+  useEffect(() => setPage(1), [q, statusFilter, sort, pageSize]);
+
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / pageSize));
+  const current = Math.min(page, pages);
+  const from = total === 0 ? 0 : (current - 1) * pageSize + 1;
+  const to = Math.min(current * pageSize, total);
+  const shown = filtered.slice((current - 1) * pageSize, current * pageSize);
 
   return (
     <>
@@ -56,7 +69,9 @@ export function AdminClientsTable({ rows }: { rows: AdminClientRow[] }) {
             <option value="rsvp">Urut: RSVP terbanyak</option>
           </select>
         </div>
-        <span className="text-xs text-slate-500 sm:ml-1">{filtered.length} undangan</span>
+        <span className="text-xs text-slate-500 sm:ml-1">
+          {total === 0 ? '0 undangan' : `${from}–${to} dari ${total} undangan`}
+        </span>
       </div>
 
       {/* Mobile (< sm): daftar kartu — tabel menyembunyikan diri agar tidak meluber */}
@@ -66,7 +81,7 @@ export function AdminClientsTable({ rows }: { rows: AdminClientRow[] }) {
             {rows.length === 0 ? 'Belum ada undangan. Klik “+ Undangan Baru”.' : 'Tidak ada yang cocok.'}
           </div>
         ) : (
-          filtered.map((c) => (
+          shown.map((c) => (
             <div key={c.slug} className="ui-card p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -129,7 +144,7 @@ export function AdminClientsTable({ rows }: { rows: AdminClientRow[] }) {
                 </td>
               </tr>
             ) : (
-              filtered.map((c) => (
+              shown.map((c) => (
                 <tr key={c.slug} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60">
                   <td className="ui-td">
                     <div className="font-medium text-slate-900">{c.judul}</div>
@@ -162,6 +177,47 @@ export function AdminClientsTable({ rows }: { rows: AdminClientRow[] }) {
           </tbody>
         </table>
       </div>
+
+      {/* Navigasi halaman — hanya tampil bila memang lebih dari 1 halaman. */}
+      {pages > 1 && (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+          <label className="flex items-center gap-2 text-xs text-slate-500">
+            Tampilkan
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="ui-input w-auto py-1 text-xs"
+            >
+              {[10, 25, 50].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            per halaman
+          </label>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={current <= 1}
+              className="ui-btn ui-btn-secondary px-3 py-1.5 text-xs"
+            >
+              ← Sebelumnya
+            </button>
+            <span className="text-xs text-slate-500">
+              Hal. {current}/{pages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(pages, p + 1))}
+              disabled={current >= pages}
+              className="ui-btn ui-btn-secondary px-3 py-1.5 text-xs"
+            >
+              Berikutnya →
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

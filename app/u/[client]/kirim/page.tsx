@@ -6,6 +6,7 @@ import { pasanganPanggilan } from '@/lib/invitation/types';
 import { KirimTool } from '@/lib/kirim/KirimTool';
 import { ClientLogin, ClientLogoutButton } from '@/lib/kirim/ClientLogin';
 import { RsvpRecap } from '@/lib/kirim/RsvpRecap';
+import { ClientMusic } from '@/lib/kirim/ClientMusic';
 import { getRsvpRecap } from '@/lib/clients/rsvp';
 import { defaultTemplate } from '@/lib/kirim/utils';
 import { currentSession } from '@/lib/auth/cookies';
@@ -50,6 +51,7 @@ export default function KirimPage({ params }: { params: { client: string } }) {
       ) : (
         <>
           <RsvpRecap recap={getRsvpRecap(params.client)} slug={params.client} />
+          <ClientMusic judul={bundle.data.musik?.judul} src={bundle.data.musik?.src} />
           <KirimTool
             basePath={`/u/${params.client}`}
             judul={judul}

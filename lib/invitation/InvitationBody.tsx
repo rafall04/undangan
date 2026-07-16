@@ -41,7 +41,7 @@ export function InvitationBody({
       <CeritaCinta data={data} style={style} motifId={motifId} />
       <Acara data={data} style={style} motifId={motifId} />
       <Peta data={data} style={style} motifId={motifId} />
-      <Galeri foto={data.galeri ?? []} style={style} motifId={motifId} />
+      <Galeri foto={data.galeri ?? []} blur={data.galeriBlur} style={style} motifId={motifId} />
       <LiveStreaming data={data} style={style} motifId={motifId} />
       <RSVP
         seed={data.ucapanContoh ?? []}

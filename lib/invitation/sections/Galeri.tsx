@@ -35,12 +35,15 @@ function Tile({
   onOpen,
   className = '',
   polaroid = false,
+  blur,
 }: {
   src?: string;
   index: number;
   onOpen: (i: number) => void;
   className?: string;
   polaroid?: boolean;
+  /** Placeholder blur-up (data-URI) — tampil instan sebelum foto termuat. */
+  blur?: string;
 }) {
   const clickable = Boolean(src);
   const rot = polaroid ? (index % 2 === 0 ? 'rotate-[-2deg]' : 'rotate-[1.5deg]') : '';
@@ -52,7 +55,12 @@ function Tile({
       style={{ cursor: clickable ? 'zoom-in' : 'default' }}
       aria-label={clickable ? `Buka foto ${index + 1}` : `Foto ${index + 1}`}
     >
-      <span className="relative block h-full w-full overflow-hidden rounded-[inherit]">
+      {/* Blur-up: dipasang sebagai BACKGROUND wrapper → <img> otomatis menimpanya
+          saat termuat, tanpa perlu elemen absolut (menghindari urutan paint). */}
+      <span
+        className="relative block h-full w-full overflow-hidden rounded-[inherit] bg-cover bg-center"
+        style={src && blur ? { backgroundImage: `url(${blur})` } : undefined}
+      >
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -144,10 +152,13 @@ export function Galeri({
   foto,
   style,
   motifId,
+  blur,
 }: {
   foto: string[];
   style: LayoutStyle;
   motifId: string;
+  /** Placeholder blur-up per foto — indeks sejajar dengan `foto`. */
+  blur?: string[];
 }) {
   const [open, setOpen] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -166,17 +177,17 @@ export function Galeri({
     grid = (
       <div className="space-y-4">
         {foto.map((s, i) => (
-          <Tile key={i} src={s || undefined} index={i} onOpen={onOpen} polaroid={polaroid} className="aspect-[4/3] w-full" />
+          <Tile key={i} src={s || undefined} index={i} onOpen={onOpen} polaroid={polaroid} blur={blur?.[i]} className="aspect-[4/3] w-full" />
         ))}
       </div>
     );
   } else if (n <= 5) {
     grid = (
       <div className="space-y-3">
-        <Tile src={foto[0] || undefined} index={0} onOpen={onOpen} polaroid={polaroid} className="aspect-[16/10] w-full" />
+        <Tile src={foto[0] || undefined} index={0} onOpen={onOpen} polaroid={polaroid} blur={blur?.[0]} className="aspect-[16/10] w-full" />
         <div className="grid grid-cols-2 gap-3">
           {foto.slice(1).map((s, i) => (
-            <Tile key={i + 1} src={s || undefined} index={i + 1} onOpen={onOpen} polaroid={polaroid} className="aspect-square w-full" />
+            <Tile key={i + 1} src={s || undefined} index={i + 1} onOpen={onOpen} polaroid={polaroid} blur={blur?.[i + 1]} className="aspect-square w-full" />
           ))}
         </div>
       </div>
@@ -193,6 +204,7 @@ export function Galeri({
               index={i}
               onOpen={onOpen}
               polaroid={polaroid}
+              blur={blur?.[i]}
               className={`h-full w-full ${i === 0 ? 'col-span-2 row-span-2' : ''}`}
             />
           ))}
