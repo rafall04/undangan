@@ -9,8 +9,9 @@ export const BRAND = {
   tagline: 'Setiap perjalanan cinta layak diabadikan.',
   domain: 'undangan.raf.my.id',
   baseUrl: 'https://undangan.raf.my.id',
-  // Nomor WhatsApp bisnis (format internasional tanpa +). GANTI sesuai milik Anda.
-  whatsapp: '6281234567890',
+  // Nomor WA bisnis — hanya FALLBACK. Nilai yang dipakai diambil dari
+  // Pengaturan (DB, bisa diedit admin di /admin/settings). Lihat lib/settings.ts.
+  whatsapp: '6285233047094',
   instagram: 'rafundangan',
   email: 'halo@raf.my.id',
 };
@@ -20,65 +21,9 @@ export function waLink(pesan: string, nomor: string = BRAND.whatsapp): string {
   return `https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`;
 }
 
-export interface Paket {
-  id: string;
-  nama: string;
-  harga: string;
-  hargaAngka: number;
-  ringkas: string;
-  populer?: boolean;
-  fitur: string[];
-}
-
-// Tiga paket harga (silakan sesuaikan).
-export const PAKET: Paket[] = [
-  {
-    id: 'perak',
-    nama: 'Perak',
-    harga: 'Rp99.000',
-    hargaAngka: 99000,
-    ringkas: 'Cukup untuk undangan yang manis & lengkap.',
-    fitur: [
-      'Pilih dari 250+ tema',
-      'Data lengkap: mempelai, akad & resepsi',
-      'Hitung mundur & Google Calendar',
-      'Galeri hingga 8 foto',
-      'RSVP & ucapan tamu',
-      'Aktif 3 bulan',
-    ],
-  },
-  {
-    id: 'emas',
-    nama: 'Emas',
-    harga: 'Rp199.000',
-    hargaAngka: 199000,
-    ringkas: 'Paling populer — fitur lengkap untuk hari besar Anda.',
-    populer: true,
-    fitur: [
-      'Semua fitur paket Perak',
-      'Galeri tanpa batas + love story',
-      'Musik latar & peta lokasi',
-      'Alat kirim massal + QR code',
-      'Kelola daftar tamu & pelacakan',
-      'Aktif 6 bulan',
-    ],
-  },
-  {
-    id: 'platinum',
-    nama: 'Platinum',
-    harga: 'Rp349.000',
-    hargaAngka: 349000,
-    ringkas: 'Sentuhan eksklusif & pendampingan penuh.',
-    fitur: [
-      'Semua fitur paket Emas',
-      'Kustomisasi warna & font khusus',
-      'Domain personal (nama Anda)',
-      'Prioritas pengerjaan 1x24 jam',
-      'Pendampingan via WhatsApp',
-      'Aktif 12 bulan',
-    ],
-  },
-];
+// CATATAN: Paket & harga TIDAK lagi di sini — sekarang tersimpan di DB dan
+// dapat diedit admin lewat /admin/settings. Lihat DEFAULT_SETTINGS di
+// lib/settings.ts (satu sumber kebenaran, agar harga tak pernah berbeda antar tempat).
 
 // Langkah cara pesan.
 export const CARA_PESAN = [

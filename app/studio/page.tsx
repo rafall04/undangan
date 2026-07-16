@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Header } from '@/lib/site/Header';
 import { StudioEditor } from '@/lib/studio/StudioEditor';
+import { getSettings } from '@/lib/settings';
 
 export const metadata: Metadata = {
   title: 'Studio — Buat Undangan Sendiri',
@@ -21,7 +22,9 @@ export default function StudioPage() {
             ke admin. Draft tersimpan otomatis di browser Anda.
           </p>
         </div>
-        <StudioEditor />
+        <StudioEditor
+          paketOptions={getSettings().paket.map((p) => ({ id: p.id, nama: p.nama, durasiBulan: p.durasiBulan }))}
+        />
       </main>
     </div>
   );

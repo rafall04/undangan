@@ -6,7 +6,8 @@ import { Footer } from '@/lib/site/Footer';
 import { Wordmark } from '@/lib/site/Wordmark';
 import { ThemeMiniCard } from '@/lib/catalog/ThemeMiniCard';
 import { getTemaBySlug, statistikRegistry } from '@/lib/engine';
-import { BRAND, waLink, PAKET, CARA_PESAN, KEUNGGULAN, FAQ } from '@/lib/brand';
+import { BRAND, waLink, CARA_PESAN, KEUNGGULAN, FAQ } from '@/lib/brand';
+import { getSettings, formatRupiah } from '@/lib/settings';
 import { MotifPattern } from '@/lib/engine/motifs';
 
 export const metadata: Metadata = {
@@ -38,6 +39,8 @@ function Check() {
 }
 
 export default function LandingPage() {
+  // Paket/harga & nomor WA dari Pengaturan (DB) → admin bisa mengubah kapan saja.
+  const settings = getSettings();
   return (
     <div className="min-h-screen bg-brand-cream text-brand-ink">
       <Header />
@@ -69,7 +72,7 @@ export default function LandingPage() {
               Lihat Katalog Tema
             </Link>
             <a
-              href={waLink('Halo Rafayana, saya ingin memesan undangan digital.')}
+              href={waLink('Halo Rafayana, saya ingin memesan undangan digital.', settings.whatsapp)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-brand-gold px-7 py-3 text-sm font-medium text-brand-ink transition-colors hover:bg-brand-gold hover:text-white sm:w-auto"
@@ -193,8 +196,12 @@ export default function LandingPage() {
             per tamu.
           </p>
         </div>
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {PAKET.map((p) => (
+        <div
+          className={`mt-10 grid gap-6 ${
+            settings.paket.length >= 3 ? 'lg:grid-cols-3' : 'mx-auto max-w-3xl sm:grid-cols-2'
+          }`}
+        >
+          {settings.paket.map((p) => (
             <div
               key={p.id}
               className={`relative flex flex-col rounded-3xl border p-7 ${
@@ -210,7 +217,8 @@ export default function LandingPage() {
               )}
               <h3 className="font-brand-serif text-2xl font-semibold text-brand-ink">{p.nama}</h3>
               <p className="mt-1 text-sm text-brand-muted">{p.ringkas}</p>
-              <p className="mt-4 font-brand-serif text-4xl font-bold text-brand-ink">{p.harga}</p>
+              <p className="mt-4 font-brand-serif text-4xl font-bold text-brand-ink">{formatRupiah(p.hargaAngka)}</p>
+              <p className="mt-0.5 text-xs text-brand-muted">Aktif {p.durasiBulan} bulan</p>
               <ul className="mt-6 flex-1 space-y-2.5">
                 {p.fitur.map((f) => (
                   <li key={f} className="flex gap-2 text-sm text-brand-ink">
@@ -219,7 +227,7 @@ export default function LandingPage() {
                 ))}
               </ul>
               <a
-                href={waLink(`Halo Rafayana, saya tertarik dengan paket ${p.nama} (${p.harga}).`)}
+                href={waLink(`Halo Rafayana, saya tertarik dengan paket ${p.nama} (${formatRupiah(p.hargaAngka)}).`, settings.whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`mt-7 inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition-colors ${
@@ -257,7 +265,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-12 text-center">
             <a
-              href={waLink('Halo Rafayana, saya ingin memesan undangan digital.')}
+              href={waLink('Halo Rafayana, saya ingin memesan undangan digital.', settings.whatsapp)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-brand-gold px-8 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
@@ -291,7 +299,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-8 text-center">
             <a
-              href={waLink('Halo Rafayana, saya ada pertanyaan tentang undangan digital.')}
+              href={waLink('Halo Rafayana, saya ada pertanyaan tentang undangan digital.', settings.whatsapp)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-brand-gold hover:underline"

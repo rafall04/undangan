@@ -5,6 +5,7 @@ import { effectiveStatus } from '@/lib/clients/meta';
 import { Invitation } from '@/lib/invitation';
 import { pasanganPanggilan } from '@/lib/invitation/types';
 import { BRAND, waLink } from '@/lib/brand';
+import { getSettings } from '@/lib/settings';
 
 // FASE 4 — Undangan klien nyata dari content/clients/<slug>/. Dukungan ?to=.
 // ISR: HTML di-cache & di-serve cepat; di-render ulang tiap `revalidate` detik
@@ -38,7 +39,7 @@ export function generateMetadata({ params }: { params: { client: string } }): Me
   };
 }
 
-function UndanganNonaktif() {
+function UndanganNonaktif({ whatsapp }: { whatsapp: string }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-brand-cream px-6 text-center">
       <p className="font-brand-script text-4xl text-brand-gold">Rafayana</p>
@@ -47,7 +48,7 @@ function UndanganNonaktif() {
         Masa aktif undangan ini telah berakhir. Silakan hubungi admin untuk mengaktifkannya kembali.
       </p>
       <a
-        href={waLink(`Halo ${BRAND.nama}, saya ingin mengaktifkan kembali undangan saya.`)}
+        href={waLink(`Halo ${BRAND.nama}, saya ingin mengaktifkan kembali undangan saya.`, whatsapp)}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-5 rounded-full bg-brand-ink px-6 py-2.5 text-sm font-medium text-brand-cream hover:opacity-90"
@@ -64,7 +65,7 @@ export default function ClientInvitationPage({ params }: { params: { client: str
 
   // Masa aktif / status: expired atau dinonaktifkan → halaman nonaktif.
   if (effectiveStatus(params.client) === 'disabled') {
-    return <UndanganNonaktif />;
+    return <UndanganNonaktif whatsapp={getSettings().whatsapp} />;
   }
 
   return (

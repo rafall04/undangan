@@ -9,6 +9,7 @@ import { getMeta } from '@/lib/clients/meta';
 import { getRsvpRecap } from '@/lib/clients/rsvp';
 import { AdminClientEditor } from '@/lib/admin/AdminClientEditor';
 import { RsvpRecap } from '@/lib/kirim/RsvpRecap';
+import { getSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Admin — Kelola Undangan', robots: { index: false, follow: false } };
@@ -44,6 +45,7 @@ export default function AdminClientPage({ params }: { params: { slug: string } }
         initialPaket={meta?.paket ?? null}
         initialExpiresAt={meta?.expires_at ?? null}
         rsvpCount={recap.total}
+        paketOptions={getSettings().paket.map((p) => ({ id: p.id, nama: p.nama, durasiBulan: p.durasiBulan }))}
       />
       {/* Admin melihat daftar RSVP masuk */}
       <div className="pb-10">

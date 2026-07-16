@@ -27,6 +27,19 @@ function toDateInput(ms: number | null): string {
   return Number.isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
 }
 
+/** Tanggal (YYYY-MM-DD) N bulan dari hari ini — untuk auto-isi masa berlaku paket. */
+function plusMonths(months: number): string {
+  const d = new Date();
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().slice(0, 10);
+}
+
+export interface PaketOption {
+  id: string;
+  nama: string;
+  durasiBulan: number;
+}
+
 export function AdminClientEditor({
   slug,
   judul,
@@ -35,6 +48,7 @@ export function AdminClientEditor({
   initialPaket,
   initialExpiresAt,
   rsvpCount,
+  paketOptions,
 }: {
   slug: string;
   judul: string;
@@ -43,6 +57,8 @@ export function AdminClientEditor({
   initialPaket: string | null;
   initialExpiresAt: number | null;
   rsvpCount: number;
+  /** Dari Pengaturan (DB) — bukan hardcode, ikut paket yang admin atur. */
+  paketOptions: PaketOption[];
 }) {
   const router = useRouter();
   const [json, setJson] = useState(initialJson);
@@ -207,11 +223,23 @@ ${BRAND.penuh}`;
         <div className="mt-4 flex flex-wrap items-end gap-4">
           <label className="text-sm">
             <span className="ui-label">Paket</span>
-            <select value={paket} onChange={(e) => setPaket(e.target.value)} className="ui-input w-auto">
+            <select
+              value={paket}
+              onChange={(e) => {
+                const id = e.target.value;
+                setPaket(id);
+                // Pilih paket → masa berlaku otomatis = hari ini + durasi paket.
+                const opt = paketOptions.find((p) => p.id === id);
+                if (opt) setExpiry(plusMonths(opt.durasiBulan));
+              }}
+              className="ui-input w-auto"
+            >
               <option value="">—</option>
-              <option value="perak">Perak</option>
-              <option value="emas">Emas</option>
-              <option value="platinum">Platinum</option>
+              {paketOptions.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nama} · {p.durasiBulan} bln
+                </option>
+              ))}
             </select>
           </label>
           <label className="text-sm">
@@ -304,6 +332,7 @@ ${BRAND.penuh}`;
           slug={slug}
           initialConfig={parsedConfig}
           onSaved={() => router.refresh()}
+          paketOptions={paketOptions}
         />
       </div>
 

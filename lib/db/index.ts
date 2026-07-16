@@ -86,6 +86,14 @@ function migrate(db: Database.Database): void {
       updated_at   INTEGER NOT NULL
     );
 
+    -- Pengaturan aplikasi (key → JSON). Dipakai agar admin bisa mengubah
+    -- nomor WA, paket & harga, dsb TANPA deploy ulang.
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key        TEXT PRIMARY KEY,
+      value      TEXT NOT NULL,                       -- JSON
+      updated_at INTEGER NOT NULL
+    );
+
     -- Magic-link login client (admin membuat → client 1 klik masuk).
     CREATE TABLE IF NOT EXISTS magic_links (
       token      TEXT PRIMARY KEY,                   -- sha256(token mentah)

@@ -52,12 +52,15 @@ export function StudioEditor({
   slug,
   initialConfig,
   onSaved,
+  paketOptions = [],
 }: {
   /** 'studio' = mandiri (localStorage + unduh); 'admin' = simpan ke server. */
   mode?: 'studio' | 'admin';
   slug?: string;
   initialConfig?: unknown;
   onSaved?: () => void;
+  /** Paket dari Pengaturan (DB) — bukan hardcode. Kosong → pilihan disembunyikan. */
+  paketOptions?: Array<{ id: string; nama: string; durasiBulan: number }>;
 } = {}) {
   // Preview membaca localStorage; pakai key per-slug di mode admin agar tak
   // menimpa draft studio pengguna lain.
@@ -598,9 +601,11 @@ export function StudioEditor({
                     onChange={(e) => setOrder((o) => ({ ...o, paket: e.target.value }))}
                   >
                     <option value="">Paket (opsional)</option>
-                    <option value="perak">Perak</option>
-                    <option value="emas">Emas</option>
-                    <option value="platinum">Platinum</option>
+                    {paketOptions.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nama}
+                      </option>
+                    ))}
                   </select>
                   <button
                     onClick={submitOrder}

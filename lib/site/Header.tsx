@@ -2,12 +2,15 @@ import React from 'react';
 import Link from 'next/link';
 import { Wordmark } from './Wordmark';
 import { waLink } from '@/lib/brand';
+import { getSettings } from '@/lib/settings';
 
 // ============================================================================
 // Header brand (landing & katalog). Warna gading hangat.
+// Nomor WA diambil dari Pengaturan (DB) → admin bisa mengubahnya tanpa deploy.
 // ============================================================================
 
 export function Header() {
+  const { whatsapp } = getSettings();
   return (
     <header className="sticky top-0 z-40 border-b border-brand-line/70 bg-brand-cream/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
@@ -28,7 +31,7 @@ export function Header() {
             Studio
           </Link>
           <a
-            href={waLink('Halo Rafayana, saya ingin memesan undangan digital.')}
+            href={waLink('Halo Rafayana, saya ingin memesan undangan digital.', whatsapp)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full bg-brand-ink px-4 py-2 text-sm font-medium text-brand-cream transition-opacity hover:opacity-90"
