@@ -75,6 +75,71 @@ const TILES: Record<string, TileDef> = {
     tile: (c) =>
       `<svg xmlns='${NS}' width='40' height='40' viewBox='0 0 40 40'><g fill='none' stroke='${c}' stroke-width='1.2' stroke-linecap='round'><path d='M0,10 q10,-8 20,0 t20,0'/><path d='M0,30 q10,-8 20,0 t20,0'/></g></svg>`,
   },
+
+  // --- JEPANG -------------------------------------------------------------
+  // Seigaiha: barisan gelombang setengah lingkaran bertingkat, tiap baris
+  // digeser setengah langkah (0/10) sehingga tiling mulus di kedua sumbu.
+  'seigaiha': {
+    size: 40,
+    tile: (c) => {
+      const arc = (cx: number, cy: number) =>
+        [9, 6, 3].map((r) => `<path d='M${cx - r},${cy} a${r},${r} 0 0 1 ${r * 2},0'/>`).join('');
+      const row = (cy: number, off: number) =>
+        [-10, 10, 30, 50].map((x) => arc(x + off, cy)).join('');
+      return `<svg xmlns='${NS}' width='40' height='40' viewBox='0 0 40 40'><g fill='none' stroke='${c}' stroke-width='0.85'>${row(10, 10)}${row(20, 0)}${row(30, 10)}${row(40, 0)}</g></svg>`;
+    },
+  },
+  // Asanoha: kisi bintang (daun rami) — garis lurus, tiling mulus di tepi.
+  'asanoha': {
+    size: 36,
+    tile: (c) =>
+      `<svg xmlns='${NS}' width='36' height='36' viewBox='0 0 36 36'><g fill='none' stroke='${c}' stroke-width='0.8'><path d='M18,0 L36,18 L18,36 L0,18 Z'/><path d='M0,0 L36,36 M36,0 L0,36'/><path d='M18,0 L18,36 M0,18 L36,18'/></g></svg>`,
+  },
+  // Sakura: bunga 5 kelopak — pusat + sudut (tiling: sudut saling melengkapi).
+  'sakura': {
+    size: 48,
+    tile: (c) => {
+      const bloom = (s: number) =>
+        [0, 72, 144, 216, 288]
+          .map((a) => `<ellipse cx='0' cy='${-6.5 * s}' rx='${3 * s}' ry='${5.5 * s}' transform='rotate(${a})'/>`)
+          .join('') + `<circle r='${1.3 * s}' fill='${c}'/>`;
+      return `<svg xmlns='${NS}' width='48' height='48' viewBox='0 0 48 48'><g fill='none' stroke='${c}' stroke-width='0.85'><g transform='translate(24,24)'>${bloom(1)}</g><g transform='translate(0,0)'>${bloom(0.6)}</g><g transform='translate(48,0)'>${bloom(0.6)}</g><g transform='translate(0,48)'>${bloom(0.6)}</g><g transform='translate(48,48)'>${bloom(0.6)}</g></g></svg>`;
+    },
+  },
+  // Kumiko: kisi kayu — persegi + belah ketupat + diagonal.
+  'kumiko': {
+    size: 32,
+    tile: (c) =>
+      `<svg xmlns='${NS}' width='32' height='32' viewBox='0 0 32 32'><g fill='none' stroke='${c}' stroke-width='0.85'><rect x='0' y='0' width='32' height='32'/><path d='M16,0 L32,16 L16,32 L0,16 Z'/><path d='M0,0 L32,32 M32,0 L0,32'/></g></svg>`,
+  },
+
+  // --- CHINA --------------------------------------------------------------
+  // Awan Ruyi: gulungan awan berkepala lobus — motif tersebar (bukan garis
+  // sambung), dipakai tipis sebagai latar.
+  'awan-ruyi': {
+    size: 48,
+    tile: (c) => {
+      const cloud = `<path d='M2,13 a3.6,3.6 0 1 1 5.5,-2.8 a5,5 0 0 1 9,0.9 a3.6,3.6 0 1 1 5.5,2.8'/><path d='M7,13 q4.5,3.6 9,0'/>`;
+      return `<svg xmlns='${NS}' width='48' height='48' viewBox='0 0 48 48'><g fill='none' stroke='${c}' stroke-width='0.9' stroke-linecap='round'><g transform='translate(1,3)'>${cloud}</g><g transform='translate(25,27)'>${cloud}</g></g></svg>`;
+    },
+  },
+  // Kisi Jendela: kisi jendela klasik — persegi bersarang + siku sudut.
+  'kisi-jendela': {
+    size: 36,
+    tile: (c) =>
+      `<svg xmlns='${NS}' width='36' height='36' viewBox='0 0 36 36'><g fill='none' stroke='${c}' stroke-width='0.85'><rect x='0' y='0' width='36' height='36'/><rect x='9' y='9' width='18' height='18'/><path d='M0,0 L9,9 M36,0 L27,9 M0,36 L9,27 M36,36 L27,27'/><path d='M18,0 L18,9 M18,27 L18,36 M0,18 L9,18 M27,18 L36,18'/></g></svg>`,
+  },
+  // Peoni: bunga berlapis — dua lingkar kelopak + inti.
+  'peoni': {
+    size: 52,
+    tile: (c) => {
+      const ring = (n: number, cy: number, rx: number, ry: number) =>
+        Array.from({ length: n }, (_, i) => i * (360 / n))
+          .map((a) => `<ellipse cx='0' cy='${cy}' rx='${rx}' ry='${ry}' transform='rotate(${a})'/>`)
+          .join('');
+      return `<svg xmlns='${NS}' width='52' height='52' viewBox='0 0 52 52'><g fill='none' stroke='${c}' stroke-width='0.85'><g transform='translate(26,26)'>${ring(8, -11, 3.6, 4.8)}${ring(6, -6, 3.2, 4.2)}<circle r='2.2'/></g></g></svg>`;
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -156,6 +221,59 @@ const GLYPHS: Record<string, Glyph> = {
   'wave-line': (c) => (
     <g fill="none" stroke={c} strokeWidth={1.3} strokeLinecap="round">
       <path d="M-12,0 q6,-6 12,0 t12,0" />
+    </g>
+  ),
+
+  // --- JEPANG ---
+  seigaiha: (c) => (
+    <g fill="none" stroke={c} strokeWidth={1.1}>
+      <path d="M-10,6 a10,10 0 0 1 20,0" />
+      <path d="M-6.5,6 a6.5,6.5 0 0 1 13,0" />
+      <path d="M-3,6 a3,3 0 0 1 6,0" />
+    </g>
+  ),
+  asanoha: (c) => (
+    <g fill="none" stroke={c} strokeWidth={1.05}>
+      <path d="M0,-11 L9.5,-5.5 L9.5,5.5 L0,11 L-9.5,5.5 L-9.5,-5.5 Z" />
+      <path d="M0,-11 L0,11 M-9.5,-5.5 L9.5,5.5 M9.5,-5.5 L-9.5,5.5" />
+    </g>
+  ),
+  sakura: (c) => (
+    <g fill="none" stroke={c} strokeWidth={1.05}>
+      {[0, 72, 144, 216, 288].map((a) => (
+        <ellipse key={a} cx={0} cy={-6.5} rx={3} ry={5.5} transform={`rotate(${a})`} />
+      ))}
+      <circle cx={0} cy={0} r={1.3} fill={c} />
+    </g>
+  ),
+  kumiko: (c) => (
+    <g fill="none" stroke={c} strokeWidth={1.05}>
+      <rect x={-10} y={-10} width={20} height={20} />
+      <path d="M0,-10 L10,0 L0,10 L-10,0 Z" />
+      <path d="M-10,-10 L10,10 M10,-10 L-10,10" />
+    </g>
+  ),
+
+  // --- CHINA ---
+  'awan-ruyi': (c) => (
+    <g fill="none" stroke={c} strokeWidth={1.05} strokeLinecap="round">
+      <path d="M-11,3 a3.6,3.6 0 1 1 5.5,-2.8 a5,5 0 0 1 9,0.9 a3.6,3.6 0 1 1 5.5,2.8" />
+      <path d="M-6,3 q4.5,3.6 9,0" />
+    </g>
+  ),
+  'kisi-jendela': (c) => (
+    <g fill="none" stroke={c} strokeWidth={1.05}>
+      <rect x={-10} y={-10} width={20} height={20} />
+      <rect x={-4.5} y={-4.5} width={9} height={9} />
+      <path d="M-10,-10 L-4.5,-4.5 M10,-10 L4.5,-4.5 M-10,10 L-4.5,4.5 M10,10 L4.5,4.5" />
+    </g>
+  ),
+  peoni: (c) => (
+    <g fill="none" stroke={c} strokeWidth={1} >
+      {[0, 60, 120, 180, 240, 300].map((a) => (
+        <ellipse key={a} cx={0} cy={-7} rx={3.2} ry={4.2} transform={`rotate(${a})`} />
+      ))}
+      <circle cx={0} cy={0} r={2} />
     </g>
   ),
 };

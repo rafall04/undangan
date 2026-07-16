@@ -250,6 +250,62 @@ export const PALETTES: Palet[] = [
     coverGradient:
       'linear-gradient(to top, rgba(22,22,12,0.82) 0%, rgba(22,22,12,0.38) 50%, rgba(22,22,12,0.14) 100%)',
   },
+
+  // --- Jepang ---------------------------------------------------------------
+  {
+    id: 'indigo-washi',
+    nama: 'Indigo Washi',
+    kategori: 'Elegan',
+    bg: '#eceff2',
+    surface: '#f6f8fa',
+    primary: '#1f3a5f',
+    accent: '#b23a48',
+    ink: '#161f2a',
+    muted: '#46536b',
+    coverGradient:
+      'linear-gradient(to top, rgba(12,20,32,0.85) 0%, rgba(12,20,32,0.4) 50%, rgba(12,20,32,0.15) 100%)',
+  },
+  {
+    id: 'sakura-sumi',
+    nama: 'Sakura Sumi',
+    kategori: 'Soft',
+    bg: '#f6eef0',
+    surface: '#fcf7f8',
+    primary: '#6f2f45',
+    accent: '#c4788f',
+    ink: '#291f24',
+    muted: '#57454e',
+    coverGradient:
+      'linear-gradient(to top, rgba(30,18,24,0.82) 0%, rgba(30,18,24,0.38) 50%, rgba(30,18,24,0.14) 100%)',
+  },
+
+  // --- China ----------------------------------------------------------------
+  {
+    id: 'merah-kencana',
+    nama: 'Merah Kencana',
+    kategori: 'Elegan',
+    bg: '#f7ece6',
+    surface: '#fdf6f1',
+    primary: '#9a1b1b',
+    accent: '#b1832f',
+    ink: '#2a1713',
+    muted: '#63443c',
+    coverGradient:
+      'linear-gradient(to top, rgba(38,14,12,0.85) 0%, rgba(38,14,12,0.4) 50%, rgba(38,14,12,0.15) 100%)',
+  },
+  {
+    id: 'giok-kencana',
+    nama: 'Giok Kencana',
+    kategori: 'Elegan',
+    bg: '#e7efea',
+    surface: '#f2f8f4',
+    primary: '#1c5a49',
+    accent: '#ab8a3d',
+    ink: '#11211b',
+    muted: '#3b574c',
+    coverGradient:
+      'linear-gradient(to top, rgba(10,28,22,0.85) 0%, rgba(10,28,22,0.4) 50%, rgba(10,28,22,0.15) 100%)',
+  },
 ];
 
 export const PALETTE_BY_ID: Record<string, Palet> = Object.fromEntries(

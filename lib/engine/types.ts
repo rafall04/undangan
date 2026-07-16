@@ -63,10 +63,34 @@ export interface PasanganFont {
 // --- Motif ornamen ---------------------------------------------------------
 export type MotifNuansa = 'nusantara' | 'floral' | 'geometris' | 'netral';
 
+/**
+ * Sumbu KEDUA katalog (selain `kategori` yang mengurusi GAYA). Dipakai agar
+ * pelanggan bisa mencari "Jawa + Elegan" atau "Jepang + Minimalis".
+ *
+ * ATURAN: budaya sebuah tema mengikuti MOTIFNYA, bukan namanya. Jangan pernah
+ * memberi nama berbudaya X pada tema yang memakai motif budaya Y (dulu ada
+ * "Minang Saiyo" memakai batik parang Jawa — itu keliru dan sudah diperbaiki).
+ * 'universal' = pola dekoratif tanpa klaim budaya tertentu.
+ */
+export type Budaya = 'jawa' | 'nusantara' | 'jepang' | 'china' | 'barat' | 'universal';
+
+export const SEMUA_BUDAYA: Budaya[] = ['jawa', 'nusantara', 'jepang', 'china', 'barat', 'universal'];
+
+export const LABEL_BUDAYA: Record<Budaya, string> = {
+  jawa: 'Jawa',
+  nusantara: 'Nusantara',
+  jepang: 'Jepang',
+  china: 'China',
+  barat: 'Barat',
+  universal: 'Universal',
+};
+
 export interface MotifMeta {
   id: string;
   nama: string;
   nuansa: MotifNuansa;
+  /** Asal budaya motif — sumber kebenaran untuk `Tema.budaya`. */
+  budaya: Budaya;
 }
 
 // --- Layout ----------------------------------------------------------------
@@ -107,7 +131,10 @@ export interface LayoutMeta {
 export interface Tema {
   slug: string;
   namaTampilan: string;
+  /** Sumbu GAYA. */
   kategori: KategoriTema;
+  /** Sumbu BUDAYA — diturunkan dari motif oleh generator, bukan dari nama. */
+  budaya: Budaya;
   layoutId: LayoutId;
   paletId: string;
   fontId: string;

@@ -17,12 +17,17 @@ import { PALETTE_BY_ID } from '../lib/engine/palettes';
 import { FONT_BY_ID } from '../lib/engine/fonts';
 import { MOTIF_META_BY_ID } from '../lib/engine/motifs-meta';
 import { LAYOUT_META_BY_ID } from '../lib/engine/layouts-meta';
-import type { KategoriTema, LayoutId } from '../lib/engine/types';
+import type { KategoriTema, LayoutId, Budaya } from '../lib/engine/types';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface CategoryPool {
   kategori: KategoriTema;
+  /**
+   * Bila diisi, SEMUA motif pool ini wajib berbudaya sama — dijaga generator.
+   * Ini yang mencegah terulangnya "nama Minang tapi motif batik Jawa".
+   */
+  budaya?: Budaya;
   palettes: string[];
   fonts: string[];
   motifs: string[];
@@ -34,6 +39,7 @@ interface CategoryPool {
 const POOLS: CategoryPool[] = [
   {
     kategori: 'Adat & Tradisional',
+    budaya: 'jawa', // semua motif pool ini memang batik/wayang Jawa
     palettes: [
       'sogan-keraton',
       'parang-emas',
@@ -47,7 +53,10 @@ const POOLS: CategoryPool[] = [
     layouts: ['royal', 'classic-scroll', 'frame', 'timeless', 'arch', 'ornate', 'band', 'circular', 'letter', 'editorial'],
     names: [
       'Kawung Ratri', 'Adiwangsa', 'Sekar Jagad', 'Wastra Kencana', 'Purnama Keraton',
-      'Parang Seling', 'Mendung Kirana', 'Gunungan Emas', 'Songket Sriwijaya', 'Minang Saiyo',
+      // 'Songket Sriwijaya' & 'Minang Saiyo' DIHAPUS: keduanya memakai motif
+      // batik Jawa — menamainya Palembang/Minang itu keliru. Nama Minang &
+      // Songket akan dipakai lagi setelah motif aslinya benar-benar dibuat.
+      'Parang Seling', 'Mendung Kirana', 'Gunungan Emas', 'Sekar Kedhaton', 'Tirta Wening',
       'Lurik Senja', 'Sogan Wangi', 'Nawasena Jawa', 'Adiluhung', 'Puspita Nagari',
       'Larasati Ayu', 'Hastungkara', 'Kusuma Bangsa', 'Cakrawala Rani', 'Wilujeng Rawuh',
       'Truntum Sari', 'Sidomukti', 'Sidoluhur', 'Wahyu Tumurun', 'Semen Rama',
@@ -244,6 +253,56 @@ const POOLS: CategoryPool[] = [
       'Klasik, abadi, penuh rasa.',
     ],
   },
+  {
+    kategori: 'Modern & Minimalis',
+    budaya: 'jepang', // seigaiha/asanoha/sakura/kumiko — semuanya motif Jepang
+    palettes: ['indigo-washi', 'sakura-sumi', 'ivory-minimal'],
+    fonts: ['serene-tenor', 'modern-josefin', 'klasik-anggun', 'editorial-marcellus'],
+    motifs: ['seigaiha', 'asanoha', 'sakura', 'kumiko'],
+    layouts: ['minimalis', 'timeless', 'split', 'editorial', 'frame', 'poster', 'band', 'duotone'],
+    names: [
+      'Sakura Fubuki', 'Aoi Nami', 'Kumiko Kayu', 'Asanoha Putih', 'Hanami',
+      'Yuki Sakura', 'Ai Indigo', 'Ombak Seigaiha', 'Sumi Bunga', 'Kiyomi',
+      'Haruka', 'Shizuka', 'Momiji Senja', 'Tsuki Malam', 'Sora Biru',
+      'Nami Perak', 'Hoshi Kirana', 'Kaze Sakura', 'Miyabi', 'Wabi Sabi',
+      'Zen Putih', 'Komorebi', 'Sakura Senja', 'Indigo Tenang',
+    ],
+    taglines: [
+      'Tenang seperti taman batu.',
+      'Sederhana, dalam, bermakna.',
+      'Seindah sakura yang gugur pelan.',
+      'Ketenangan yang menyatukan.',
+      'Keheningan yang berbicara.',
+      'Ombak yang tak pernah berhenti berjanji.',
+      'Cinta dalam kesederhanaan.',
+      'Sekali bertemu, selamanya berarti.',
+    ],
+  },
+  {
+    kategori: 'Elegan & Mewah',
+    budaya: 'china', // awan-ruyi/kisi-jendela/peoni — semuanya motif China
+    palettes: ['merah-kencana', 'giok-kencana', 'black-tie'],
+    fonts: ['royal-cinzel', 'editorial-marcellus', 'klasik-anggun', 'abadi-garamond'],
+    motifs: ['awan-ruyi', 'kisi-jendela', 'peoni'],
+    layouts: ['royal', 'frame', 'ornate', 'circular', 'timeless', 'letter', 'band', 'classic-scroll'],
+    names: [
+      'Merah Kencana', 'Giok Kirana', 'Awan Ruyi', 'Peoni Emas', 'Naga Kencana',
+      'Lentera Merah', 'Giok Harmoni', 'Shuang Xi', 'Bunga Persik', 'Kirana Timur',
+      'Phoenix Kencana', 'Teratai Merah', 'Sutra Merah', 'Kisi Kencana', 'Mutiara Timur',
+      'Anggrek Giok', 'Bambu Emas', 'Awan Kirana', 'Peoni Senja', 'Merah Delima',
+      'Kencana Timur', 'Lentera Giok', 'Tirai Merah', 'Purnama Timur',
+    ],
+    taglines: [
+      'Kebahagiaan berlipat dua.',
+      'Merah yang membawa restu.',
+      'Seindah peoni yang mekar penuh.',
+      'Awan membawa harapan baik.',
+      'Kemakmuran dan cinta bersatu.',
+      'Dua keluarga, satu kehormatan.',
+      'Keberuntungan mengiringi janji.',
+      'Anggun dalam warna keberkahan.',
+    ],
+  },
 ];
 
 // Bila nama tema menyebut warna tertentu, utamakan palet yang cocok (jika ada
@@ -262,10 +321,45 @@ const COLOR_MAP: Array<[RegExp, string[]]> = [
   [/mauve|taupe/i, ['mauve-taupe']],
   [/maroon|minang/i, ['maroon-minang']],
   [/sogan/i, ['sogan-keraton']],
+  [/sakura|sumi|momiji/i, ['sakura-sumi']],
+  [/indigo|aoi|\bai\b/i, ['indigo-washi']],
+  [/giok|jade/i, ['giok-kencana']],
+  [/merah|delima/i, ['merah-kencana']],
 ];
 
 function preferredPalette(name: string, pool: string[]): string | null {
   for (const [re, cands] of COLOR_MAP) {
+    if (re.test(name)) {
+      const hit = cands.find((c) => pool.includes(c));
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
+// Bila nama tema menyebut motif tertentu, utamakan motif itu — supaya "Sakura
+// Fubuki" benar-benar bermotif sakura (bukan gelombang), dan "Kawung Ratri"
+// benar-benar berkawung. Hanya memilih dari motif milik pool, jadi nama satu
+// budaya tak mungkin menarik motif budaya lain.
+const MOTIF_MAP: Array<[RegExp, string[]]> = [
+  // Jawa
+  [/kawung/i, ['batik-kawung']],
+  [/parang/i, ['batik-parang']],
+  [/mendung/i, ['mega-mendung']],
+  [/gunungan|wayang/i, ['wayang-gunungan']],
+  // Jepang
+  [/sakura|hanami|momiji/i, ['sakura']],
+  [/seigaiha|nami|ombak/i, ['seigaiha']],
+  [/asanoha/i, ['asanoha']],
+  [/kumiko/i, ['kumiko']],
+  // China
+  [/ruyi|awan/i, ['awan-ruyi']],
+  [/peoni/i, ['peoni']],
+  [/kisi|jendela/i, ['kisi-jendela']],
+];
+
+function preferredMotif(name: string, pool: string[]): string | null {
+  for (const [re, cands] of MOTIF_MAP) {
     if (re.test(name)) {
       const hit = cands.find((c) => pool.includes(c));
       if (hit) return hit;
@@ -290,6 +384,7 @@ interface Entry {
   slug: string;
   namaTampilan: string;
   kategori: KategoriTema;
+  budaya: Budaya;
   layoutId: LayoutId;
   paletId: string;
   fontId: string;
@@ -303,6 +398,20 @@ const usedSlug = new Set<string>();
 const problems: string[] = [];
 
 for (const pool of POOLS) {
+  // JAGA KEJUJURAN LABEL: bila pool mengklaim sebuah budaya, semua motifnya
+  // wajib benar-benar berasal dari budaya itu. Inilah yang membuat kasus lama
+  // ("Minang Saiyo" memakai batik parang Jawa) mustahil terulang.
+  if (pool.budaya) {
+    for (const m of pool.motifs) {
+      const meta = MOTIF_META_BY_ID[m];
+      if (meta && meta.budaya !== pool.budaya) {
+        problems.push(
+          `Pool ${pool.kategori} mengklaim budaya "${pool.budaya}" tapi motif "${m}" berbudaya "${meta.budaya}"`,
+        );
+      }
+    }
+  }
+
   const n = pool.names.length;
   for (let i = 0; i < n; i++) {
     const name = pool.names[i];
@@ -315,7 +424,8 @@ for (const pool of POOLS) {
       preferredPalette(name, pool.palettes) ?? pool.palettes[i % pool.palettes.length];
     const fontId = pool.fonts[i % pool.fonts.length];
     // Motif digeser sampai kombinasi (layout,palet,font,motif) unik global.
-    let motifId = pool.motifs[i % pool.motifs.length];
+    // Mulai dari motif yang cocok dengan namanya bila ada.
+    let motifId = preferredMotif(name, pool.motifs) ?? pool.motifs[i % pool.motifs.length];
     let guard = 0;
     while (usedCombo.has(`${layoutId}|${paletId}|${fontId}|${motifId}`)) {
       guard++;
@@ -337,6 +447,8 @@ for (const pool of POOLS) {
       slug,
       namaTampilan: name,
       kategori: pool.kategori,
+      // Budaya DITURUNKAN dari motif — bukan dari nama tema. Ini aturannya.
+      budaya: MOTIF_META_BY_ID[motifId]?.budaya ?? 'universal',
       layoutId,
       paletId,
       fontId,
@@ -369,7 +481,8 @@ for (const e of entries) {
   }
   const obj =
     `  { slug: ${JSON.stringify(e.slug)}, namaTampilan: ${JSON.stringify(e.namaTampilan)}, ` +
-    `kategori: ${JSON.stringify(e.kategori)}, layoutId: ${JSON.stringify(e.layoutId)}, ` +
+    `kategori: ${JSON.stringify(e.kategori)}, budaya: ${JSON.stringify(e.budaya)}, ` +
+    `layoutId: ${JSON.stringify(e.layoutId)}, ` +
     `paletId: ${JSON.stringify(e.paletId)}, fontId: ${JSON.stringify(e.fontId)}, ` +
     `motifId: ${JSON.stringify(e.motifId)}, tagline: ${JSON.stringify(e.tagline)} },`;
   lines.push(obj);
