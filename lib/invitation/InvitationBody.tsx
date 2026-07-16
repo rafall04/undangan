@@ -1,7 +1,8 @@
 import React from 'react';
 import type { TemaResolved } from '@/lib/engine';
 import type { DataUndangan } from './types';
-import type { LayoutStyle } from './layout-styles';
+import type { LayoutStyle, SectionId } from './layout-styles';
+import { getSignature } from './layout-styles';
 import { Pembuka } from './sections/Pembuka';
 import { Countdown } from './sections/Countdown';
 import { Mempelai } from './sections/Mempelai';
@@ -15,8 +16,13 @@ import { AmplopDigital } from './sections/AmplopDigital';
 import { Penutup } from './sections/Penutup';
 
 // ============================================================================
-// Komposer isi undangan — merangkai semua bagian sesuai gaya layout.
-// Satu komposer untuk kelima layout (Prinsip Utama #1).
+// Komposer isi undangan — satu komposer untuk SEMUA layout (Prinsip Utama #1).
+//
+// Urutannya TIDAK lagi hardcoded. Dulu kesebelas bagian dirangkai dalam satu
+// urutan tetap untuk 300 tema, sehingga setelah sampul dibuka semua tema tampil
+// nyaris sama. Sekarang tatanan datang dari `style.urutan`, dan ciri khas budaya
+// (`signature`) diturunkan dari tema — bukan dari layout — supaya dua tema
+// berbudaya beda yang kebetulan memakai layout sama tetap punya karakter beda.
 // ============================================================================
 
 export function InvitationBody({
@@ -33,16 +39,20 @@ export function InvitationBody({
   clientSlug?: string;
 }) {
   const motifId = tema.motifId;
-  return (
-    <div className={`relative z-10 mx-auto w-full ${style.containerClass} pb-16 pt-10`}>
-      <Pembuka data={data} style={style} motifId={motifId} />
-      <Countdown target={data.tanggalUtama} style={style} motifId={motifId} />
-      <Mempelai data={data} style={style} motifId={motifId} />
-      <CeritaCinta data={data} style={style} motifId={motifId} />
-      <Acara data={data} style={style} motifId={motifId} />
-      <Peta data={data} style={style} motifId={motifId} />
-      <Galeri foto={data.galeri ?? []} blur={data.galeriBlur} style={style} motifId={motifId} />
-      <LiveStreaming data={data} style={style} motifId={motifId} />
+  const signature = getSignature(tema.budaya);
+
+  // Record<SectionId, …> yang lengkap: menambah SectionId tanpa merendernya di
+  // sini akan gagal saat tsc, bukan diam-diam hilang dari halaman tamu.
+  const bagian: Record<SectionId, React.ReactNode> = {
+    pembuka: <Pembuka data={data} style={style} motifId={motifId} signature={signature} />,
+    countdown: <Countdown target={data.tanggalUtama} style={style} motifId={motifId} />,
+    mempelai: <Mempelai data={data} style={style} motifId={motifId} />,
+    cerita: <CeritaCinta data={data} style={style} motifId={motifId} />,
+    acara: <Acara data={data} style={style} motifId={motifId} />,
+    peta: <Peta data={data} style={style} motifId={motifId} />,
+    galeri: <Galeri foto={data.galeri ?? []} blur={data.galeriBlur} style={style} motifId={motifId} />,
+    live: <LiveStreaming data={data} style={style} motifId={motifId} />,
+    rsvp: (
       <RSVP
         seed={data.ucapanContoh ?? []}
         defaultNama={guestName}
@@ -50,8 +60,16 @@ export function InvitationBody({
         motifId={motifId}
         clientSlug={clientSlug}
       />
-      <AmplopDigital data={data} style={style} motifId={motifId} />
-      <Penutup data={data} style={style} motifId={motifId} namaTema={tema.namaTampilan} />
+    ),
+    amplop: <AmplopDigital data={data} style={style} motifId={motifId} />,
+    penutup: <Penutup data={data} style={style} motifId={motifId} namaTema={tema.namaTampilan} />,
+  };
+
+  return (
+    <div className={`relative z-10 mx-auto w-full ${style.containerClass} pb-16 pt-10`}>
+      {style.urutan.map((id) => (
+        <React.Fragment key={id}>{bagian[id]}</React.Fragment>
+      ))}
     </div>
   );
 }

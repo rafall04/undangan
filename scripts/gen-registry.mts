@@ -36,6 +36,41 @@ interface CategoryPool {
   taglines: string[];
 }
 
+/**
+ * Layout yang DIKUNCI untuk satu budaya. Pool berbudaya lain tak boleh
+ * memakainya — dijaga oleh guard di bawah.
+ *
+ * Kenapa ada: dulu pool Jawa dan pool China memakai delapan layout yang sama
+ * persis (royal/frame/ornate/circular/timeless/letter/band/classic-scroll),
+ * jadi "Kawung Ratri" (Jawa) dan "Merah Kencana" (China) benar-benar tema yang
+ * sama — hanya beda palet, font, dan motif. Sampulnya beda karena Cover punya
+ * 19 varian; begitu dibuka, keduanya identik.
+ *
+ * Layout yang TIDAK terdaftar di sini bebas dipakai pool mana pun. Itu disengaja:
+ * pool bergaya (Elegan/Modern/Rustic/Islami/Vintage) tak mengklaim budaya
+ * tertentu, jadi berbagi layout di antara mereka memang wajar.
+ */
+const LAYOUT_EKSKLUSIF: Partial<Record<Budaya, LayoutId[]>> = {
+  jawa: ['pendhapa', 'ornate', 'arch', 'band', 'circular'],
+  jepang: ['washi', 'noren', 'minimalis', 'duotone', 'split'],
+  china: ['shuangxi', 'lantern', 'frame', 'letter'],
+  nusantara: ['tenun', 'tropis', 'botanical'],
+};
+
+/** Peta balik: layout -> budaya pemiliknya. */
+const PEMILIK_LAYOUT = new Map<LayoutId, Budaya>();
+(Object.keys(LAYOUT_EKSKLUSIF) as Budaya[]).forEach((b) => {
+  (LAYOUT_EKSKLUSIF[b] ?? []).forEach((l) => {
+    const sudah = PEMILIK_LAYOUT.get(l);
+    if (sudah) {
+      throw new Error(
+        `Layout "${l}" diklaim eksklusif oleh dua budaya: "${sudah}" dan "${b}".`,
+      );
+    }
+    PEMILIK_LAYOUT.set(l, b);
+  });
+});
+
 const POOLS: CategoryPool[] = [
   {
     kategori: 'Adat & Tradisional',
@@ -50,7 +85,7 @@ const POOLS: CategoryPool[] = [
     ],
     fonts: ['royal-cinzel', 'abadi-garamond', 'sastra-lora', 'editorial-marcellus', 'klasik-anggun'],
     motifs: ['batik-kawung', 'batik-parang', 'mega-mendung', 'wayang-gunungan'],
-    layouts: ['royal', 'classic-scroll', 'frame', 'timeless', 'arch', 'ornate', 'band', 'circular', 'letter', 'editorial'],
+    layouts: ['pendhapa', 'ornate', 'arch', 'band', 'circular'],
     names: [
       'Kawung Ratri', 'Adiwangsa', 'Sekar Jagad', 'Wastra Kencana', 'Purnama Keraton',
       // 'Songket Sriwijaya' & 'Minang Saiyo' DIHAPUS: keduanya memakai motif
@@ -89,7 +124,7 @@ const POOLS: CategoryPool[] = [
     ],
     fonts: ['royal-cinzel', 'klasik-anggun', 'editorial-marcellus', 'abadi-garamond', 'romansa'],
     motifs: ['art-deco', 'floral-line', 'moroccan-tile', 'geometric-dots'],
-    layouts: ['royal', 'frame', 'timeless', 'magazine', 'circular', 'letter', 'ornate', 'split', 'band', 'classic-scroll'],
+    layouts: ['royal', 'timeless', 'magazine', 'classic-scroll', 'gazette', 'poster'],
     names: [
       'Menara Gading', 'Svarga', 'Aurora Emas', 'Noble Navy', 'Anggun Burgundy',
       'Zamrud Raya', 'Midnight Champagne', 'Ungu Kirana', 'Beludru Anggur', 'Deco Lumière',
@@ -124,7 +159,7 @@ const POOLS: CategoryPool[] = [
     ],
     fonts: ['modern-josefin', 'serene-tenor', 'romansa', 'klasik-anggun'],
     motifs: ['geometric-dots', 'wave-line', 'art-deco', 'floral-line'],
-    layouts: ['minimalis', 'editorial', 'split', 'magazine', 'poster', 'duotone', 'band', 'ticket', 'circular', 'classic-scroll'],
+    layouts: ['poster', 'editorial', 'magazine', 'timeless', 'ticket', 'classic-scroll'],
     names: [
       'Serene', 'Ruang Putih', 'Garis Waktu', 'Biru Kabut', 'Taupe Lembut',
       'Monokrom', 'Simfoni Sunyi', 'Nordika', 'Metropolis', 'Lembayung Muda',
@@ -148,6 +183,9 @@ const POOLS: CategoryPool[] = [
     ],
   },
   {
+    // Motif tropical-leaves DIPINDAH ke pool Nusantara di bawah. Sebabnya: pool
+    // ini tak berbudaya, sehingga tema nusantara di sini akan berbagi layout
+    // dengan tema universal — persis pola bug yang sedang kita berantas.
     kategori: 'Rustic & Garden',
     palettes: [
       'sage-garden',
@@ -157,18 +195,17 @@ const POOLS: CategoryPool[] = [
       'mauve-taupe',
     ],
     fonts: ['sastra-lora', 'editorial-marcellus', 'modern-josefin', 'romansa'],
-    motifs: ['floral-line', 'tropical-leaves', 'wave-line', 'geometric-dots'],
-    layouts: ['polaroid', 'stamp', 'botanical', 'tropis', 'arch', 'scrapbook', 'letter', 'classic-scroll', 'editorial', 'circular'],
+    motifs: ['floral-line', 'wave-line', 'geometric-dots'],
+    layouts: ['polaroid', 'stamp', 'scrapbook', 'classic-scroll', 'editorial'],
     names: [
-      'Taman Sekar', 'Terakota Senja', 'Zaitun Desa', 'Rimba Tropis', 'Kebun Mawar',
-      'Dedaunan', 'Panen Raya', 'Rustika', 'Bunga Rumput', 'Senja Kebun',
-      'Sabana', 'Pucuk Daun', 'Ladang Bunga', 'Embun Pagi', 'Rimbun',
-      'Serai & Sekar', 'Tanah Liat', 'Pekarangan', 'Hutan Kecil', 'Mekar Desa',
-      'Kirana Taman', 'Bunga Matahari', 'Anggrek Hutan', 'Lereng Hijau', 'Padi Menguning',
-      'Kabut Kebun', 'Daun Talas', 'Rumput Ilalang', 'Bougenville', 'Serumpun',
-      'Taman Anggrek', 'Melati Desa', 'Kemuning', 'Palem Senja', 'Beranda Hijau',
-      'Kembang Sepatu', 'Semak Bunga', 'Pagi Berembun', 'Lembah Sekar', 'Akar & Ranting',
-      'Teratai Kolam', 'Sawah Senja',
+      'Taman Sekar', 'Terakota Senja', 'Zaitun Desa', 'Kebun Mawar',
+      'Panen Raya', 'Rustika', 'Bunga Rumput', 'Senja Kebun',
+      'Ladang Bunga', 'Embun Pagi', 'Rimbun',
+      'Serai & Sekar', 'Tanah Liat', 'Pekarangan', 'Mekar Desa',
+      'Kirana Taman', 'Bunga Matahari',
+      'Kabut Kebun', 'Rumput Ilalang', 'Serumpun',
+      'Taman Anggrek', 'Melati Desa', 'Kemuning', 'Beranda Hijau',
+      'Semak Bunga', 'Pagi Berembun', 'Lembah Sekar', 'Akar & Ranting',
     ],
     taglines: [
       'Cinta yang tumbuh seperti taman.',
@@ -194,7 +231,7 @@ const POOLS: CategoryPool[] = [
     ],
     fonts: ['royal-cinzel', 'abadi-garamond', 'editorial-marcellus', 'klasik-anggun', 'serene-tenor'],
     motifs: ['moroccan-tile', 'geometric-dots', 'art-deco', 'floral-line'],
-    layouts: ['frame', 'timeless', 'royal', 'lantern', 'arch', 'ornate', 'letter', 'manuscript', 'band', 'classic-scroll'],
+    layouts: ['manuscript', 'timeless', 'royal', 'classic-scroll', 'gazette'],
     names: [
       'Barakah', 'Sakinah', 'Mawaddah', 'Warahmah', 'Samara',
       'Andalusia', 'Nur Cahaya', 'Baiturrahman', 'Mitsaqan Ghaliza', 'Firdaus',
@@ -230,7 +267,7 @@ const POOLS: CategoryPool[] = [
     ],
     fonts: ['editorial-marcellus', 'klasik-anggun', 'romansa', 'sastra-lora', 'abadi-garamond'],
     motifs: ['art-deco', 'floral-line', 'moroccan-tile', 'wave-line'],
-    layouts: ['stamp', 'polaroid', 'timeless', 'gazette', 'letter', 'manuscript', 'ticket', 'ornate', 'magazine', 'classic-scroll'],
+    layouts: ['stamp', 'polaroid', 'gazette', 'ticket', 'manuscript', 'magazine'],
     names: [
       'Nostalgia', 'Sepia Kenangan', 'Deco Vintage', 'Beludru Lawas', 'Kembang Lawas',
       'Antique Rose', 'Retropolis', 'Masa Silam', 'Sekar Lawas', 'Gramofon',
@@ -259,7 +296,7 @@ const POOLS: CategoryPool[] = [
     palettes: ['indigo-washi', 'sakura-sumi', 'ivory-minimal'],
     fonts: ['serene-tenor', 'modern-josefin', 'klasik-anggun', 'editorial-marcellus'],
     motifs: ['seigaiha', 'asanoha', 'sakura', 'kumiko'],
-    layouts: ['minimalis', 'timeless', 'split', 'editorial', 'frame', 'poster', 'band', 'duotone'],
+    layouts: ['washi', 'noren', 'minimalis', 'duotone', 'split'],
     names: [
       'Sakura Fubuki', 'Aoi Nami', 'Kumiko Kayu', 'Asanoha Putih', 'Hanami',
       'Yuki Sakura', 'Ai Indigo', 'Ombak Seigaiha', 'Sumi Bunga', 'Kiyomi',
@@ -279,12 +316,40 @@ const POOLS: CategoryPool[] = [
     ],
   },
   {
+    kategori: 'Rustic & Garden',
+    budaya: 'nusantara', // tropical-leaves — dedaunan tropis Nusantara
+    palettes: ['emerald-songket', 'sage-garden', 'terracotta-sunset', 'olive-rustic', 'maroon-minang'],
+    fonts: ['sastra-lora', 'editorial-marcellus', 'romansa', 'klasik-anggun'],
+    motifs: ['tropical-leaves'],
+    layouts: ['tenun', 'tropis', 'botanical'],
+    // Nama sengaja bertema alam & bahari Nusantara secara UMUM. Jangan pakai
+    // nama yang mengklaim suku tertentu (Minang, Palembang, Bali, …) selama
+    // motifnya masih dedaunan tropis generik — itu kekeliruan yang sama dengan
+    // "Minang Saiyo" memakai batik Jawa. Pakai lagi kalau motif aslinya sudah ada.
+    names: [
+      'Rimba Tropis', 'Nusa Kirana', 'Sabana Senja', 'Pucuk Daun', 'Palem Senja',
+      'Teratai Kolam', 'Sawah Senja', 'Padi Menguning', 'Daun Talas', 'Anggrek Hutan',
+      'Bougenville', 'Dedaunan', 'Hutan Kecil', 'Lereng Hijau', 'Kembang Sepatu',
+      'Khatulistiwa', 'Pesisir Senja', 'Rimbun Nusa',
+    ],
+    taglines: [
+      'Cinta yang tumbuh di tanah khatulistiwa.',
+      'Sehijau rimba, sehangat mentari.',
+      'Merayakan cinta di pelukan Nusantara.',
+      'Dari pesisir sampai pegunungan.',
+      'Subur, rimbun, dan bersahaja.',
+      'Alam Nusantara menjadi saksi.',
+      'Tumbuh bersama, seperti akar dan tanah.',
+      'Di antara dedaunan dan cahaya senja.',
+    ],
+  },
+  {
     kategori: 'Elegan & Mewah',
     budaya: 'china', // awan-ruyi/kisi-jendela/peoni — semuanya motif China
     palettes: ['merah-kencana', 'giok-kencana', 'black-tie'],
     fonts: ['royal-cinzel', 'editorial-marcellus', 'klasik-anggun', 'abadi-garamond'],
     motifs: ['awan-ruyi', 'kisi-jendela', 'peoni'],
-    layouts: ['royal', 'frame', 'ornate', 'circular', 'timeless', 'letter', 'band', 'classic-scroll'],
+    layouts: ['shuangxi', 'lantern', 'frame', 'letter'],
     names: [
       'Merah Kencana', 'Giok Kirana', 'Awan Ruyi', 'Peoni Emas', 'Naga Kencana',
       'Lentera Merah', 'Giok Harmoni', 'Shuang Xi', 'Bunga Persik', 'Kirana Timur',
@@ -409,6 +474,19 @@ for (const pool of POOLS) {
           `Pool ${pool.kategori} mengklaim budaya "${pool.budaya}" tapi motif "${m}" berbudaya "${meta.budaya}"`,
         );
       }
+    }
+  }
+
+  // JAGA KEKHASAN BUDAYA: layout yang dikunci untuk satu budaya tak boleh bocor
+  // ke pool berbudaya lain. Tanpa ini, tema Jawa & tema China kembali memakai
+  // layout yang sama dan — begitu sampul dibuka — tampil identik lagi.
+  for (const l of pool.layouts) {
+    const pemilik = PEMILIK_LAYOUT.get(l);
+    if (pemilik && pemilik !== pool.budaya) {
+      problems.push(
+        `Pool ${pool.kategori} (budaya "${pool.budaya ?? 'tak diklaim'}") memakai layout "${l}" ` +
+          `yang eksklusif milik budaya "${pemilik}"`,
+      );
     }
   }
 

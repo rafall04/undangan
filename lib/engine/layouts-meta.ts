@@ -74,6 +74,14 @@ export const LAYOUTS_META: LayoutMeta[] = [
   { id: 'lantern', nama: 'Lantern', deskripsi: 'Lengkung & ornamen ala lentera Maroko — hangat & islami.' },
   { id: 'tropis', nama: 'Tropis', deskripsi: 'Dedaunan tropis full-bleed & foto polaroid — nuansa resort.' },
   { id: 'manuscript', nama: 'Manuscript', deskripsi: 'Surat klasik dua kolom, garis ganda — anggun & tenang.' },
+
+  // --- Layout EKSKLUSIF per budaya ----------------------------------------
+  // Dikunci ke satu budaya lewat LAYOUT_EKSKLUSIF di scripts/gen-registry.mts.
+  { id: 'pendhapa', nama: 'Pendhapa', deskripsi: 'Atap joglo bertingkat menaungi salam; keluarga & restu didahulukan — Jawa.' },
+  { id: 'tenun', nama: 'Tenun', deskripsi: 'Pita tenun belah ketupat, foto tersebar, nuansa tropis — Nusantara.' },
+  { id: 'washi', nama: 'Washi', deskripsi: 'Salam mengalir vertikal (tategaki) dengan ruang kosong lapang — Jepang.' },
+  { id: 'noren', nama: 'Noren', deskripsi: 'Tategaki berpita, galeri mengalir tinggi-rendah — Jepang.' },
+  { id: 'shuangxi', nama: 'Shuangxi', deskripsi: 'Bait berpasangan mengapit cap, simetris penuh — China.' },
 ];
 
 export const LAYOUT_META_BY_ID: Record<LayoutId, LayoutMeta> = Object.fromEntries(

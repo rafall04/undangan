@@ -119,7 +119,18 @@ export type LayoutId =
   | 'gazette'
   | 'lantern'
   | 'tropis'
-  | 'manuscript';
+  | 'manuscript'
+  // Layout EKSKLUSIF per budaya. Tidak boleh dipakai pool budaya lain —
+  // dijaga oleh guard di gen-registry. Inilah yang membuat tema Jawa dan
+  // tema China tidak lagi tampil identik (dulu keduanya sama-sama 'royal').
+  | 'pendhapa' // jawa
+  // 'tenun', bukan 'songket': motif nusantara kita masih dedaunan tropis yang
+  // generik. Songket itu tenun khas Melayu/Minang/Palembang — menamainya begitu
+  // mengulang kekeliruan "Minang Saiyo memakai batik Jawa" yang sudah kita buang.
+  | 'tenun' // nusantara
+  | 'washi' // jepang
+  | 'noren' // jepang
+  | 'shuangxi'; // china
 
 export interface LayoutMeta {
   id: LayoutId;

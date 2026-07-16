@@ -6,11 +6,20 @@ import { SectionShell } from '../SectionShell';
 import { SectionHeading } from '../Ornaments';
 
 // ============================================================================
-// Galeri — 4 varian tatanan otomatis sesuai jumlah foto:
-//   1–2  : full-width stack
-//   3–5  : hero + grid 2 kolom
-//   6–9  : mosaic 3 kolom (tile besar pertama)
-//   10+  : mosaic + "lihat semua"
+// Galeri — DUA lapis tatanan:
+//
+//   Lapis 1, style.galeri (dari layout) — bentuk dasarnya:
+//     grid/polaroid : adaptif jumlah foto (lihat lapis 2)
+//     masonry       : kolom tinggi-rendah, mengalir
+//     filmstrip     : gulung mendatar ber-snap, seperti rol film
+//     scatter       : foto tersebar miring, seperti ditempel manual
+//
+//   Lapis 2, hanya untuk grid/polaroid — adaptif jumlah foto:
+//     1–2  : full-width stack
+//     3–5  : hero + grid 2 kolom
+//     6–9  : mosaic 3 kolom (tile besar pertama)
+//     10+  : mosaic + "lihat semua"
+//
 // Rasio dikunci / object-cover → tak ada foto gepeng. Klik foto → lightbox.
 // ============================================================================
 
@@ -75,6 +84,19 @@ function Tile({
         )}
       </span>
     </button>
+  );
+}
+
+function TombolSemua({ n, onClick }: { n: number; onClick: () => void }) {
+  return (
+    <div className="mt-4 text-center">
+      <button
+        onClick={onClick}
+        className="rounded-full border border-accent px-5 py-2 text-xs font-medium text-primary hover:bg-accent hover:text-white"
+      >
+        Lihat semua {n} foto
+      </button>
+    </div>
   );
 }
 
@@ -167,13 +189,76 @@ export function Galeri({
   if (!foto || foto.length === 0) return null;
 
   const n = foto.length;
-  const polaroid = style.galeriPolaroid;
+  const v = style.galeri;
+  const polaroid = v === 'polaroid';
   // Hanya foto asli (bukan placeholder kosong) yang bisa dibuka lightbox.
   const realFotos = foto.filter(Boolean);
 
   let grid: React.ReactNode;
 
-  if (n <= 2) {
+  if (v === 'masonry') {
+    // Kolom CSS + tinggi berselang-seling → aliran tak seragam tanpa JS.
+    const visible = n > 9 && !showAll ? foto.slice(0, 9) : foto;
+    grid = (
+      <>
+        <div className="columns-2 gap-3 [column-fill:balance]">
+          {visible.map((s, i) => (
+            <div key={i} className="mb-3 break-inside-avoid">
+              <Tile
+                src={s || undefined}
+                index={i}
+                onOpen={onOpen}
+                blur={blur?.[i]}
+                className={`w-full ${i % 3 === 0 ? 'aspect-[3/4]' : i % 3 === 1 ? 'aspect-square' : 'aspect-[4/5]'}`}
+              />
+            </div>
+          ))}
+        </div>
+        {n > 9 && !showAll && <TombolSemua n={n} onClick={() => setShowAll(true)} />}
+      </>
+    );
+  } else if (v === 'filmstrip') {
+    // Gulung mendatar: tak perlu "lihat semua" — semua foto sudah terjangkau.
+    grid = (
+      <div className="no-scrollbar -mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2">
+        {foto.map((s, i) => (
+          <Tile
+            key={i}
+            src={s || undefined}
+            index={i}
+            onOpen={onOpen}
+            blur={blur?.[i]}
+            className="aspect-[3/4] w-[62%] shrink-0 snap-start sm:w-[44%]"
+          />
+        ))}
+      </div>
+    );
+  } else if (v === 'scatter') {
+    const visible = n > 9 && !showAll ? foto.slice(0, 9) : foto;
+    grid = (
+      <>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+          {visible.map((s, i) => (
+            <div
+              key={i}
+              // Ganjil turun sedikit → barisnya tak pernah rata, terkesan ditempel tangan.
+              className={i % 2 === 1 ? 'mt-5' : ''}
+            >
+              <Tile
+                src={s || undefined}
+                index={i}
+                onOpen={onOpen}
+                polaroid
+                blur={blur?.[i]}
+                className="aspect-square w-full"
+              />
+            </div>
+          ))}
+        </div>
+        {n > 9 && !showAll && <TombolSemua n={n} onClick={() => setShowAll(true)} />}
+      </>
+    );
+  } else if (n <= 2) {
     grid = (
       <div className="space-y-4">
         {foto.map((s, i) => (
@@ -209,16 +294,7 @@ export function Galeri({
             />
           ))}
         </div>
-        {n > 9 && !showAll && (
-          <div className="mt-4 text-center">
-            <button
-              onClick={() => setShowAll(true)}
-              className="rounded-full border border-accent px-5 py-2 text-xs font-medium text-primary hover:bg-accent hover:text-white"
-            >
-              Lihat semua {n} foto
-            </button>
-          </div>
-        )}
+        {n > 9 && !showAll && <TombolSemua n={n} onClick={() => setShowAll(true)} />}
       </>
     );
   }

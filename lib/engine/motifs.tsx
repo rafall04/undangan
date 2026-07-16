@@ -343,6 +343,20 @@ export function MotifDivider({
   );
 }
 
+/**
+ * Lambang motif tunggal, tanpa garis pendamping. Untuk dipakai di dalam SVG
+ * lain (mis. stempel) — karena itu ia mengembalikan <g>, bukan <svg>.
+ * Glyph digambar berpusat di (0,0) dengan radius ±12.
+ */
+export function MotifGlyph({
+  motifId,
+  color = 'currentColor',
+  size = 24,
+}: MotifVisualProps & { size?: number }) {
+  const glyph = GLYPHS[motifId] ?? GLYPHS['geometric-dots'];
+  return <g transform={`scale(${size / 24})`}>{glyph(color)}</g>;
+}
+
 /** Hiasan sudut untuk cover. Default orientasi kiri-atas; putar via CSS. */
 export function MotifCorner({
   motifId,
