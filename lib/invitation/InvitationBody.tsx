@@ -9,6 +9,7 @@ import { CeritaCinta } from './sections/CeritaCinta';
 import { Acara } from './sections/Acara';
 import { Peta } from './sections/Peta';
 import { Galeri } from './sections/Galeri';
+import { LiveStreaming } from './sections/LiveStreaming';
 import { RSVP } from './sections/RSVP';
 import { AmplopDigital } from './sections/AmplopDigital';
 import { Penutup } from './sections/Penutup';
@@ -41,6 +42,7 @@ export function InvitationBody({
       <Acara data={data} style={style} motifId={motifId} />
       <Peta data={data} style={style} motifId={motifId} />
       <Galeri foto={data.galeri ?? []} style={style} motifId={motifId} />
+      <LiveStreaming data={data} style={style} motifId={motifId} />
       <RSVP
         seed={data.ucapanContoh ?? []}
         defaultNama={guestName}

@@ -111,6 +111,19 @@ export const configKlienSchema = z.object({
   fotoCover: z.string().optional(),
   /** Titik fokus object-position per nama file foto, mis. {"cover.jpg":"50% 30%"}. */
   fotoFokus: z.record(z.string(), z.string()).optional(),
+  /** Siaran langsung (opsional) — minimal 1 tautan agar section tampil. */
+  liveStreaming: z
+    .object({
+      judul: z.string().optional(),
+      deskripsi: z.string().optional(),
+      tanggal: z.string().optional(),
+      waktu: z.string().optional(),
+      youtube: z.string().url().optional(),
+      instagram: z.string().url().optional(),
+      facebook: z.string().url().optional(),
+      link: z.string().url().optional(),
+    })
+    .optional(),
   musik: z
     .object({ judul: z.string().optional(), file: z.string().optional(), src: z.string().optional() })
     .optional(),

@@ -7,8 +7,17 @@ import { pasanganPanggilan } from '@/lib/invitation/types';
 import { BRAND, waLink } from '@/lib/brand';
 
 // FASE 4 — Undangan klien nyata dari content/clients/<slug>/. Dukungan ?to=.
-// Dinamis: status/masa-berlaku dicek tiap request (undangan expired → nonaktif).
-export const dynamic = 'force-dynamic';
+// ISR: HTML di-cache & di-serve cepat; di-render ulang tiap `revalidate` detik
+// ATAU segera saat admin mengubah config/status (revalidatePath di API admin).
+// Nama tamu (?to=) dibaca di client (Invitation), jadi tak memaksa dinamis.
+export const revalidate = 300;
+
+// [] → tak ada yang di-prerender saat build (hindari baca DB/config build-time),
+// tapi mengaktifkan ISR: render on-demand di request pertama lalu DI-CACHE
+// (dynamicParams default true). Slug baru dari admin otomatis ter-handle.
+export function generateStaticParams() {
+  return [] as { client: string }[];
+}
 
 export function generateMetadata({ params }: { params: { client: string } }): Metadata {
   let bundle;
@@ -49,13 +58,7 @@ function UndanganNonaktif() {
   );
 }
 
-export default function ClientInvitationPage({
-  params,
-  searchParams,
-}: {
-  params: { client: string };
-  searchParams: { to?: string };
-}) {
+export default function ClientInvitationPage({ params }: { params: { client: string } }) {
   const bundle = loadClient(params.client);
   if (!bundle) notFound();
 
@@ -64,13 +67,10 @@ export default function ClientInvitationPage({
     return <UndanganNonaktif />;
   }
 
-  const guest = typeof searchParams.to === 'string' ? searchParams.to : undefined;
-
   return (
     <Invitation
       data={bundle.data}
       tema={bundle.tema}
-      guestName={guest}
       analyticsContext={`client:${params.client}`}
       clientSlug={params.client}
     />

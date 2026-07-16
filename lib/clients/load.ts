@@ -93,6 +93,7 @@ export function configToData(slug: string, cfg: ConfigKlien): DataUndangan {
     galeri: (cfg.galeri ?? []).map((f) => resolveFoto(slug, f) ?? '').filter((u) => u !== ''),
     fotoCover: resolveFoto(slug, cfg.fotoCover),
     fotoCoverFokus: fokusOf(cfg, cfg.fotoCover),
+    liveStreaming: cfg.liveStreaming,
     musik: cfg.musik
       ? { judul: cfg.musik.judul, src: cfg.musik.src ?? resolveFoto(slug, cfg.musik.file) ?? '' }
       : undefined,

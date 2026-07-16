@@ -127,6 +127,17 @@ export interface DataUndangan {
   fotoCover?: string;
   /** object-position crop foto sampul, mis. "50% 30%". Kosong → center. */
   fotoCoverFokus?: string;
+  /** Siaran langsung (opsional). */
+  liveStreaming?: {
+    judul?: string;
+    deskripsi?: string;
+    tanggal?: string;
+    waktu?: string;
+    youtube?: string;
+    instagram?: string;
+    facebook?: string;
+    link?: string;
+  };
   musik?: { judul?: string; src: string };
   ucapanContoh?: Ucapan[];
   penutup?: string;

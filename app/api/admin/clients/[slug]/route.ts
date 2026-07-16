@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { currentSession } from '@/lib/auth/cookies';
 import { saveClientConfig, deleteClient, slugExists } from '@/lib/clients/write';
@@ -24,6 +25,7 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
   if (!r.ok) {
     return NextResponse.json({ ok: false, issues: r.issues }, { status: 400 });
   }
+  revalidatePath(`/u/${params.slug}`); // undangan ter-render ulang segera
   return NextResponse.json({ ok: true });
 }
 
@@ -51,6 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { slug: stri
   if (paket !== undefined || expiresAt !== undefined) {
     setPaketExpiry(params.slug, paket ?? null, expiresAt ?? null);
   }
+  revalidatePath(`/u/${params.slug}`); // status/expiry berubah → render ulang segera
   return NextResponse.json({ ok: true });
 }
 

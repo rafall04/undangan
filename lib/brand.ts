@@ -88,6 +88,18 @@ export const CARA_PESAN = [
   { n: 4, judul: 'Sebar ke Tamu', teks: 'Gunakan alat kirim kami untuk membagikan undangan ke ratusan tamu dengan rapi.' },
 ];
 
+// FAQ landing (jawaban sesuai fitur nyata; termasuk live streaming).
+export const FAQ = [
+  { q: 'Berapa lama proses pembuatannya?', a: 'Undangan Anda siap dalam 1–2 hari kerja setelah data mempelai, jadwal acara, dan foto lengkap kami terima.' },
+  { q: 'Belum punya foto, apakah tetap bisa?', a: 'Tentu bisa. Undangan tetap tampil elegan memakai monogram inisial nama Anda dan pasangan — tanpa foto pun tetap cantik.' },
+  { q: 'Berapa lama masa aktif undangannya?', a: 'Sesuai paket: Perak aktif 3 bulan, Emas 6 bulan, dan Platinum 12 bulan sejak diterbitkan.' },
+  { q: 'Apakah bisa revisi?', a: 'Bisa. Anda dapat merevisi data & detail acara sampai mendekati hari-H melalui admin kami.' },
+  { q: 'Bagaimana cara menyebar undangan ke tamu?', a: 'Kami sediakan alat kirim: tautan personal untuk tiap tamu, template pesan WhatsApp siap pakai, QR code, dan pelacakan status terkirim.' },
+  { q: 'Apakah ada konfirmasi kehadiran (RSVP) & buku ucapan?', a: 'Ada. Tamu dapat mengonfirmasi kehadiran serta mengirim ucapan & doa langsung dari halaman undangan.' },
+  { q: 'Bisa disiarkan langsung (live streaming)?', a: 'Bisa. Undangan mendukung tautan siaran langsung via YouTube, Instagram, atau Facebook untuk tamu yang berhalangan hadir.' },
+  { q: 'Bagaimana cara memesannya?', a: 'Pilih tema di katalog, lalu hubungi kami via WhatsApp. Kirim data & foto, dan undangan Anda langsung kami kerjakan.' },
+];
+
 // Keunggulan.
 export const KEUNGGULAN = [
   { judul: '250+ Tema Terkurasi', teks: 'Bukan template acak — tiap tema dirancang harmonis oleh tim kami.' },

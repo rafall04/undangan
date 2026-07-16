@@ -5,7 +5,8 @@ import { REGISTRY, getTemaBySlug } from '@/lib/engine';
 import { Invitation } from '@/lib/invitation';
 import { buildDemoData } from '@/lib/demo/couples';
 
-// Demo undangan tiap tema dengan data pasangan fiktif. Dukungan ?to=.
+// Demo undangan tiap tema dengan data pasangan fiktif. Dukungan ?to= (dibaca di
+// client oleh <Invitation>), jadi halaman ini bisa fully-static (SSG).
 
 export function generateStaticParams() {
   return REGISTRY.map((t) => ({ slug: t.slug }));
@@ -28,18 +29,11 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function DemoTemaPage({
-  params,
-  searchParams,
-}: {
-  params: { slug: string };
-  searchParams: { to?: string };
-}) {
+export default function DemoTemaPage({ params }: { params: { slug: string } }) {
   const tema = getTemaBySlug(params.slug);
   if (!tema) notFound();
 
   const data = buildDemoData(tema);
-  const guest = typeof searchParams.to === 'string' ? searchParams.to : undefined;
 
   return (
     <>
@@ -56,7 +50,7 @@ export default function DemoTemaPage({
         </Link>
       </div>
 
-      <Invitation data={data} tema={tema} guestName={guest} analyticsContext={`demo:${tema.slug}`} />
+      <Invitation data={data} tema={tema} analyticsContext={`demo:${tema.slug}`} />
     </>
   );
 }

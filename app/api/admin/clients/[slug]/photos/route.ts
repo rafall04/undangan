@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { currentSession } from '@/lib/auth/cookies';
 import { slugExists } from '@/lib/clients/write';
 import { listPhotos, deletePhoto, savePhotoForRole, roleOfFile, PHOTO_ROLES, type PhotoRole } from '@/lib/clients/photos';
@@ -65,6 +66,7 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
     wirePhotoToConfig(params.slug, role, r.file);
   }
 
+  revalidatePath(`/u/${params.slug}`);
   return NextResponse.json({ ok: errors.length === 0, photos: enriched(params.slug), errors });
 }
 
@@ -80,6 +82,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { slug: stri
     return NextResponse.json({ ok: false, error: 'Data fokus tidak valid.' }, { status: 400 });
   }
   setPhotoFokus(params.slug, file, fokus);
+  revalidatePath(`/u/${params.slug}`);
   return NextResponse.json({ ok: true, photos: enriched(params.slug) });
 }
 
@@ -89,5 +92,6 @@ export async function DELETE(req: NextRequest, { params }: { params: { slug: str
   const file = req.nextUrl.searchParams.get('file') ?? '';
   if (!file) return NextResponse.json({ ok: false, error: 'file wajib.' }, { status: 400 });
   deletePhoto(params.slug, file);
+  revalidatePath(`/u/${params.slug}`);
   return NextResponse.json({ ok: true, photos: enriched(params.slug) });
 }

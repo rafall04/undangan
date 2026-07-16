@@ -6,7 +6,7 @@ import { Footer } from '@/lib/site/Footer';
 import { Wordmark } from '@/lib/site/Wordmark';
 import { ThemeMiniCard } from '@/lib/catalog/ThemeMiniCard';
 import { getTemaBySlug, statistikRegistry } from '@/lib/engine';
-import { BRAND, waLink, PAKET, CARA_PESAN, KEUNGGULAN } from '@/lib/brand';
+import { BRAND, waLink, PAKET, CARA_PESAN, KEUNGGULAN, FAQ } from '@/lib/brand';
 import { MotifPattern } from '@/lib/engine/motifs';
 
 export const metadata: Metadata = {
@@ -84,6 +84,23 @@ export default function LandingPage() {
           {temaUnggulan.slice(0, 6).map((t) => (
             <div key={t.slug} className="w-40 shrink-0 snap-start sm:w-48">
               <ThemeMiniCard tema={t} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= TRUST STRIP ================= */}
+      <section className="border-y border-brand-line bg-brand-ink text-brand-cream">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 px-6 py-9 text-center sm:grid-cols-4">
+          {[
+            { k: `${stat.totalTema}+`, v: 'Tema Terkurasi' },
+            { k: '1–2 Hari', v: 'Pengerjaan Cepat' },
+            { k: 'Per Tamu', v: 'Tautan Personal' },
+            { k: 'WhatsApp', v: 'Dukungan Langsung' },
+          ].map((s) => (
+            <div key={s.v}>
+              <p className="font-brand-serif text-2xl font-bold text-brand-gold sm:text-3xl">{s.k}</p>
+              <p className="mt-1 text-xs text-brand-cream/70 sm:text-sm">{s.v}</p>
             </div>
           ))}
         </div>
@@ -249,6 +266,37 @@ export default function LandingPage() {
                 <path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.3.5-.3.4c-.1.1-.3.3-.1.5.1.3.7 1.1 1.5 1.8 1 .9 1.8 1.1 2 1.2.3.1.4.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.5.3 0 .1 0 .7-.1 1.1Z" />
               </svg>
               Mulai Pesan Sekarang
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= FAQ ================= */}
+      <section id="faq" className="border-t border-brand-line bg-brand-paper">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <div className="text-center">
+            <p className="font-brand-script text-3xl text-brand-gold">FAQ</p>
+            <h2 className="mt-1 font-brand-serif text-3xl font-semibold text-brand-ink">Pertanyaan Umum</h2>
+          </div>
+          <div className="mt-8 space-y-3">
+            {FAQ.map((f) => (
+              <details key={f.q} className="group rounded-2xl border border-brand-line bg-brand-cream px-5 py-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-brand-serif text-base font-medium text-brand-ink [&::-webkit-details-marker]:hidden">
+                  {f.q}
+                  <span className="shrink-0 text-xl leading-none text-brand-gold transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-brand-muted">{f.a}</p>
+              </details>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <a
+              href={waLink('Halo Rafayana, saya ada pertanyaan tentang undangan digital.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-brand-gold hover:underline"
+            >
+              Masih ada pertanyaan? Chat kami di WhatsApp →
             </a>
           </div>
         </div>

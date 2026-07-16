@@ -182,5 +182,13 @@ export function buildDemoData(tema: TemaResolved): DataUndangan {
       ],
       alamatKado: `Jl. Contoh No. 10, ${c.kota}`,
     },
+    liveStreaming: {
+      deskripsi:
+        'Bagi Bapak/Ibu/Saudara/i yang berhalangan hadir, akad & resepsi dapat disaksikan secara langsung melalui:',
+      tanggal: 'Hari-H',
+      waktu: `08:00 ${tz}`,
+      youtube: 'https://www.youtube.com/',
+      instagram: 'https://www.instagram.com/',
+    },
   };
 }

@@ -51,6 +51,16 @@ export function Invitation({
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
+  // Nama tamu (?to=) dibaca di CLIENT, bukan server — agar halaman undangan bisa
+  // di-cache/ISR (server tak lagi bergantung pada searchParams). Prop guestName
+  // (dipakai demo/studio) tetap diprioritaskan bila ada.
+  const [urlGuest, setUrlGuest] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('to');
+    if (t) setUrlGuest(t);
+  }, []);
+  const guest = guestName ?? urlGuest;
+
   // Kunci scroll sebelum undangan dibuka.
   useEffect(() => {
     document.body.style.overflow = opened ? '' : 'hidden';
@@ -97,7 +107,7 @@ export function Invitation({
       </div>
 
       {/* Isi undangan (selalu ada; cover menutupinya sampai dibuka) */}
-      <InvitationBody data={data} tema={temaEff} style={style} guestName={guestName} clientSlug={clientSlug} />
+      <InvitationBody data={data} tema={temaEff} style={style} guestName={guest} clientSlug={clientSlug} />
 
       {/* Bingkai ornamen untuk layout framed */}
       {style.framed && (
@@ -125,7 +135,7 @@ export function Invitation({
         }`}
         aria-hidden={opened}
       >
-        <Cover data={data} tema={temaEff} guestName={guestName} variant={style.cover} onOpen={handleOpen} />
+        <Cover data={data} tema={temaEff} guestName={guest} variant={style.cover} onOpen={handleOpen} />
       </div>
     </div>
   );
