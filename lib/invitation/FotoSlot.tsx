@@ -23,6 +23,8 @@ export interface FotoSlotProps {
   imgClassName?: string;
   /** object-position crop, mis. "50% 30%". Kosong → center (default browser). */
   objectPosition?: string;
+  /** Placeholder blur-up (data-URI mungil) — tampil instan sementara foto dimuat. */
+  blurDataUrl?: string;
 }
 
 export function FotoSlot({
@@ -36,6 +38,7 @@ export function FotoSlot({
   className = '',
   imgClassName = '',
   objectPosition,
+  blurDataUrl,
 }: FotoSlotProps) {
   const [w, h] = ratio.split('/');
   const aspectRatio = `${w.trim()} / ${(h ?? '1').trim()}`;
@@ -46,15 +49,25 @@ export function FotoSlot({
       style={{ aspectRatio }}
     >
       {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={alt}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-          className={`absolute inset-0 h-full w-full object-cover ${imgClassName}`}
-          style={objectPosition ? { objectPosition } : undefined}
-        />
+        <>
+          {/* Blur-up: latar mungil tampil instan, tertutup foto asli saat termuat */}
+          {blurDataUrl && (
+            <span
+              aria-hidden
+              className="absolute inset-0 bg-cover"
+              style={{ backgroundImage: `url(${blurDataUrl})`, backgroundPosition: objectPosition ?? 'center' }}
+            />
+          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
+            className={`absolute inset-0 h-full w-full object-cover ${imgClassName}`}
+            style={objectPosition ? { objectPosition } : undefined}
+          />
+        </>
       ) : (
         <Placeholder monogram={monogram} />
       )}

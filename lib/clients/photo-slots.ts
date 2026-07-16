@@ -11,8 +11,8 @@ import type { PhotoRole } from './photos';
 const smartFokus = (role: PhotoRole): string =>
   role === 'cover' || role === 'groom' || role === 'bride' ? '50% 30%' : '50% 50%';
 
-/** Sambungkan file kanonik ke field config yang tepat + set fokus awal cerdas. */
-export function wirePhotoToConfig(slug: string, role: PhotoRole, file: string): void {
+/** Sambungkan file kanonik ke field config yang tepat + fokus awal + blur (LQIP). */
+export function wirePhotoToConfig(slug: string, role: PhotoRole, file: string, lqip?: string): void {
   let cfg;
   try {
     cfg = loadClientConfig(slug);
@@ -24,6 +24,7 @@ export function wirePhotoToConfig(slug: string, role: PhotoRole, file: string): 
   const next = structuredClone(cfg);
   next.fotoFokus = { ...(next.fotoFokus ?? {}) };
   if (next.fotoFokus[file] == null) next.fotoFokus[file] = smartFokus(role);
+  if (lqip) next.fotoBlur = { ...(next.fotoBlur ?? {}), [file]: lqip };
 
   switch (role) {
     case 'cover':

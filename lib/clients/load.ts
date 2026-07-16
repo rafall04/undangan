@@ -50,6 +50,11 @@ function fokusOf(cfg: ConfigKlien, file?: string): string | undefined {
   return file ? cfg.fotoFokus?.[file] : undefined;
 }
 
+/** Placeholder blur-up (data-URI) untuk sebuah nama file, dari config.fotoBlur. */
+function blurOf(cfg: ConfigKlien, file?: string): string | undefined {
+  return file ? cfg.fotoBlur?.[file] : undefined;
+}
+
 function resolveFoto(slug: string, file?: string): string | undefined {
   if (!file) return undefined;
   // Utamakan varian teroptimasi <base>.opt.webp (dari npm run optimize).
@@ -81,18 +86,19 @@ export function configToData(slug: string, cfg: ConfigKlien): DataUndangan {
     islami: cfg.islami,
     urutanNama: cfg.urutanNama,
     mempelai: {
-      pria: { ...cfg.mempelai.pria, foto: resolveFoto(slug, cfg.mempelai.pria.foto), fotoFokus: fokusOf(cfg, cfg.mempelai.pria.foto) },
-      wanita: { ...cfg.mempelai.wanita, foto: resolveFoto(slug, cfg.mempelai.wanita.foto), fotoFokus: fokusOf(cfg, cfg.mempelai.wanita.foto) },
+      pria: { ...cfg.mempelai.pria, foto: resolveFoto(slug, cfg.mempelai.pria.foto), fotoFokus: fokusOf(cfg, cfg.mempelai.pria.foto), fotoBlur: blurOf(cfg, cfg.mempelai.pria.foto) },
+      wanita: { ...cfg.mempelai.wanita, foto: resolveFoto(slug, cfg.mempelai.wanita.foto), fotoFokus: fokusOf(cfg, cfg.mempelai.wanita.foto), fotoBlur: blurOf(cfg, cfg.mempelai.wanita.foto) },
     },
     tanggalUtama: cfg.tanggalUtama,
     acara: cfg.acara,
     salamPembuka: cfg.salamPembuka,
     ayat: cfg.ayat,
     quote: cfg.quote,
-    ceritaCinta: cfg.ceritaCinta?.map((m) => ({ ...m, foto: resolveFoto(slug, m.foto), fotoFokus: fokusOf(cfg, m.foto) })),
+    ceritaCinta: cfg.ceritaCinta?.map((m) => ({ ...m, foto: resolveFoto(slug, m.foto), fotoFokus: fokusOf(cfg, m.foto), fotoBlur: blurOf(cfg, m.foto) })),
     galeri: (cfg.galeri ?? []).map((f) => resolveFoto(slug, f) ?? '').filter((u) => u !== ''),
     fotoCover: resolveFoto(slug, cfg.fotoCover),
     fotoCoverFokus: fokusOf(cfg, cfg.fotoCover),
+    fotoCoverBlur: blurOf(cfg, cfg.fotoCover),
     liveStreaming: cfg.liveStreaming,
     musik: cfg.musik
       ? { judul: cfg.musik.judul, src: cfg.musik.src ?? resolveFoto(slug, cfg.musik.file) ?? '' }

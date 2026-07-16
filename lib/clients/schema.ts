@@ -111,6 +111,8 @@ export const configKlienSchema = z.object({
   fotoCover: z.string().optional(),
   /** Titik fokus object-position per nama file foto, mis. {"cover.jpg":"50% 30%"}. */
   fotoFokus: z.record(z.string(), z.string()).optional(),
+  /** Placeholder blur-up (data-URI base64 mungil) per nama file foto. */
+  fotoBlur: z.record(z.string(), z.string()).optional(),
   /** Siaran langsung (opsional) — minimal 1 tautan agar section tampil. */
   liveStreaming: z
     .object({

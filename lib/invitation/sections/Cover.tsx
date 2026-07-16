@@ -54,34 +54,34 @@ function BukaButton({ onOpen, color }: { onOpen: () => void; color: string }) {
 function Names({ a, b, variant }: { a: string; b: string; variant: CoverVariant }) {
   if (variant === 'minimal') {
     return (
-      <h1 className="mt-3 font-heading uppercase leading-tight text-white" style={{ fontSize: 'clamp(1.9rem, 8.5vw, 3rem)', letterSpacing: '0.14em' }}>
+      <h1 className="shimmer-names mt-3 font-heading uppercase leading-tight text-white" style={{ fontSize: 'clamp(1.9rem, 8.5vw, 3rem)', letterSpacing: '0.14em' }}>
         {a} <span className="font-script lowercase tracking-normal text-white/80" style={{ letterSpacing: 0 }}>&amp;</span> {b}
       </h1>
     );
   }
   if (variant === 'timeless' || variant === 'letter') {
     return (
-      <h1 className="mt-3 font-heading leading-tight text-white" style={{ fontSize: 'clamp(2.4rem, 12vw, 3.6rem)' }}>
+      <h1 className="shimmer-names mt-3 font-heading leading-tight text-white" style={{ fontSize: 'clamp(2.4rem, 12vw, 3.6rem)' }}>
         {a} <span className="font-script text-white/90">&amp;</span> {b}
       </h1>
     );
   }
   if (variant === 'magazine') {
     return (
-      <h1 className="font-heading font-semibold leading-[0.92] text-white" style={{ fontSize: 'clamp(3rem, 16vw, 5.2rem)' }}>
+      <h1 className="shimmer-names font-heading font-semibold leading-[0.92] text-white" style={{ fontSize: 'clamp(3rem, 16vw, 5.2rem)' }}>
         {a}<br /><span className="font-script text-4xl text-white/85 sm:text-5xl">&amp;</span> {b}
       </h1>
     );
   }
   if (variant === 'poster') {
     return (
-      <h1 className="font-heading font-bold uppercase leading-[0.9] text-white" style={{ fontSize: 'clamp(2.8rem, 15vw, 5rem)', letterSpacing: '0.02em' }}>
+      <h1 className="shimmer-names font-heading font-bold uppercase leading-[0.9] text-white" style={{ fontSize: 'clamp(2.8rem, 15vw, 5rem)', letterSpacing: '0.02em' }}>
         {a}<br />{b}
       </h1>
     );
   }
   return (
-    <h1 className="mt-3 font-script leading-[0.95] text-white drop-shadow-sm" style={{ fontSize: 'clamp(3rem, 15vw, 5rem)' }}>
+    <h1 className="shimmer-names mt-3 font-script leading-[0.95] text-white drop-shadow-sm" style={{ fontSize: 'clamp(3rem, 15vw, 5rem)' }}>
       {a} <span className="mx-1 opacity-90">&amp;</span> {b}
     </h1>
   );
@@ -112,6 +112,14 @@ const SHELL = 'invite-cover relative flex h-[100svh] min-h-[600px] w-full flex-c
 function PhotoOrGradient({ ctx, gradient }: { ctx: Ctx; gradient: string }) {
   return ctx.data.fotoCover ? (
     <>
+      {/* Blur-up: latar mungil tampil instan sementara foto sampul dimuat */}
+      {ctx.data.fotoCoverBlur && (
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-cover"
+          style={{ backgroundImage: `url(${ctx.data.fotoCoverBlur})`, backgroundPosition: ctx.data.fotoCoverFokus ?? 'center' }}
+        />
+      )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={ctx.data.fotoCover} alt="Foto sampul" className="absolute inset-0 h-full w-full object-cover" style={ctx.data.fotoCoverFokus ? { objectPosition: ctx.data.fotoCoverFokus } : undefined} />
       <div className="absolute inset-0" style={{ background: 'var(--cover-gradient)' }} />

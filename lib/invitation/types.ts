@@ -22,6 +22,8 @@ export interface Mempelai {
   foto?: string;
   /** object-position crop, mis. "50% 30%". Kosong → center. */
   fotoFokus?: string;
+  /** Placeholder blur-up (data-URI mungil) — tampil sementara foto dimuat. */
+  fotoBlur?: string;
 }
 
 export interface Acara {
@@ -46,6 +48,8 @@ export interface MomenCerita {
   foto?: string;
   /** object-position crop, mis. "50% 30%". Kosong → center. */
   fotoFokus?: string;
+  /** Placeholder blur-up (data-URI mungil). */
+  fotoBlur?: string;
 }
 
 export interface Ucapan {
@@ -127,6 +131,8 @@ export interface DataUndangan {
   fotoCover?: string;
   /** object-position crop foto sampul, mis. "50% 30%". Kosong → center. */
   fotoCoverFokus?: string;
+  /** Placeholder blur-up foto sampul (data-URI mungil). */
+  fotoCoverBlur?: string;
   /** Siaran langsung (opsional). */
   liveStreaming?: {
     judul?: string;

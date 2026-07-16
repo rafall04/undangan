@@ -127,16 +127,36 @@ function removeByBase(dir: string, base: string): void {
 }
 
 /**
+ * Placeholder "blur-up" (LQIP): versi mungil ter-blur sebagai data-URI base64
+ * (~24px, biasanya <1 KB). Ditanam di config → tampil instan sebagai latar
+ * sementara foto asli dimuat, lalu tertutup foto asli. Best-effort.
+ */
+async function makeLqip(buf: Buffer): Promise<string | undefined> {
+  try {
+    const sharp = (await import('sharp')).default;
+    const tiny = await sharp(buf)
+      .rotate()
+      .resize(24, 24, { fit: 'inside' })
+      .blur(1.2)
+      .webp({ quality: 35 })
+      .toBuffer();
+    return `data:image/webp;base64,${tiny.toString('base64')}`;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Simpan foto ke slot berdasar PERAN → nama kanonik (cover/groom/bride/
- * gallery-NN/story-NN) + varian .opt.webp. Slot tunggal mengganti foto lama.
- * Mengembalikan nama file kanonik (untuk disambungkan ke config).
+ * gallery-NN/story-NN) + varian .opt.webp + placeholder blur (LQIP).
+ * Slot tunggal mengganti foto lama. Mengembalikan nama file kanonik + lqip.
  */
 export async function savePhotoForRole(
   slug: string,
   role: PhotoRole,
   origName: string,
   buf: Buffer,
-): Promise<{ ok: true; file: string } | { ok: false; error: string }> {
+): Promise<{ ok: true; file: string; lqip?: string } | { ok: false; error: string }> {
   const ext = pickExt(origName);
   const dir = photosDir(slug);
   mkdirSync(dir, { recursive: true });
@@ -154,6 +174,7 @@ export async function savePhotoForRole(
 
   writeFileSync(join(dir, file), buf);
   const base = basename(file, ext);
+  let lqip: string | undefined;
   if (RASTER.has(ext)) {
     try {
       const sharp = (await import('sharp')).default;
@@ -165,8 +186,9 @@ export async function savePhotoForRole(
     } catch {
       /* biarkan pakai file asli */
     }
+    lqip = await makeLqip(buf);
   }
-  return { ok: true, file };
+  return { ok: true, file, lqip };
 }
 
 export function deletePhoto(slug: string, name: string): boolean {

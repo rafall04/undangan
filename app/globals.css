@@ -106,6 +106,41 @@ body {
   }
 }
 
+/* ==========================================================================
+   Nama mempelai — kilau emas melintas halus (CSS murni, 0 KB).
+   AMAN: efek hanya aktif bila background-clip:text didukung DAN pengguna tidak
+   meminta reduced-motion. Di luar itu, nama tetap memakai warna aslinya
+   (text-white) — mustahil jadi tak terlihat.
+   ========================================================================== */
+@keyframes shimmer-names {
+  0%,
+  10% {
+    background-position: 200% 0;
+  }
+  50%,
+  100% {
+    background-position: -100% 0;
+  }
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .shimmer-names {
+      background-image: linear-gradient(
+        100deg,
+        #fff 42%,
+        color-mix(in srgb, var(--accent) 60%, #fff) 50%,
+        #fff 58%
+      );
+      background-size: 300% 100%;
+      background-repeat: no-repeat;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer-names 7s ease-in-out 1.5s infinite;
+    }
+  }
+}
+
 /* Utility ringkas */
 @layer utilities {
   .text-balance {

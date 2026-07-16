@@ -97,6 +97,7 @@ function OrangCard({
           monogram={initial}
           rounded={rounded}
           objectPosition={m.fotoFokus}
+          blurDataUrl={m.fotoBlur}
         />
       </div>
       <h3

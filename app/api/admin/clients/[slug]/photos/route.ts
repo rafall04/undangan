@@ -63,7 +63,7 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       errors.push(`${file.name}: ${r.error}`);
       continue;
     }
-    wirePhotoToConfig(params.slug, role, r.file);
+    wirePhotoToConfig(params.slug, role, r.file, r.lqip);
   }
 
   revalidatePath(`/u/${params.slug}`);
