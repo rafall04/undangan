@@ -6,7 +6,7 @@ import { Footer } from '@/lib/site/Footer';
 import { Wordmark } from '@/lib/site/Wordmark';
 import { ThemeMiniCard } from '@/lib/catalog/ThemeMiniCard';
 import { getTemaBySlug, statistikRegistry } from '@/lib/engine';
-import { BRAND, waLink, CARA_PESAN, KEUNGGULAN, FAQ } from '@/lib/brand';
+import { BRAND, waLink, CARA_PESAN, KEUNGGULAN, buildFaq } from '@/lib/brand';
 import { getSettings, formatRupiah } from '@/lib/settings';
 import { MotifPattern } from '@/lib/engine/motifs';
 
@@ -41,6 +41,9 @@ function Check() {
 export default function LandingPage() {
   // Paket/harga & nomor WA dari Pengaturan (DB) → admin bisa mengubah kapan saja.
   const settings = getSettings();
+  // FAQ ikut paket yang sama, jadi jawaban masa aktif tak bisa lagi bertentangan
+  // dengan section harga di halaman yang sama.
+  const faq = buildFaq(settings.paket);
   return (
     <div className="min-h-screen bg-brand-cream text-brand-ink">
       <Header />
@@ -287,7 +290,7 @@ export default function LandingPage() {
             <h2 className="mt-1 font-brand-serif text-3xl font-semibold text-brand-ink">Pertanyaan Umum</h2>
           </div>
           <div className="mt-8 space-y-3">
-            {FAQ.map((f) => (
+            {faq.map((f) => (
               <details key={f.q} className="group rounded-2xl border border-brand-line bg-brand-cream px-5 py-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-brand-serif text-base font-medium text-brand-ink [&::-webkit-details-marker]:hidden">
                   {f.q}

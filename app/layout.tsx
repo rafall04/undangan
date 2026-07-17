@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import '@/lib/engine/fonts-load'; // self-hosted @fontsource (bukan Google CDN)
+import { TEMA_BULAT } from '@/lib/brand';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://undangan.raf.my.id'),
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s · Rafayana by RAF Undangan',
   },
   description:
-    'Rafayana by RAF Undangan — undangan pernikahan digital elegan. Setiap perjalanan cinta layak diabadikan. 250+ tema terkurasi, siap kirim lewat WhatsApp.',
+    `Rafayana by RAF Undangan — undangan pernikahan digital elegan. Setiap perjalanan cinta layak diabadikan. ${TEMA_BULAT} tema terkurasi, siap kirim lewat WhatsApp.`,
   keywords: [
     'undangan digital',
     'undangan pernikahan',

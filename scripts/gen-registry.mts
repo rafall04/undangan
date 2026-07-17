@@ -574,4 +574,30 @@ lines.push('');
 
 const outPath = resolve(__dirname, '../lib/engine/registry.ts');
 writeFileSync(outPath, lines.join('\n'), 'utf8');
+
+// Jumlah tema sebagai KONSTANTA tersendiri. Copy landing butuh angka ini, tapi
+// mengimpor REGISTRY ke lib/brand.ts akan menyeret ke-304 objek tema ke bundle
+// klien (`.length` tak bisa di-tree-shake) — mahal untuk WebView WhatsApp.
+// File mungil ini memberi angkanya dengan biaya nol, dan karena ikut di-generate
+// ia tak pernah bisa basi seperti "250+" yang dulu ditulis tangan.
+const statsPath = resolve(__dirname, '../lib/engine/registry-stats.ts');
+writeFileSync(
+  statsPath,
+  [
+    '// ============================================================================',
+    '// DIBUAT oleh scripts/gen-registry.mts — JANGAN diedit tangan.',
+    '// Dipisah dari registry.ts agar pemakai yang hanya butuh jumlahnya tidak ikut',
+    '// menarik seluruh daftar tema ke dalam bundle.',
+    '// ============================================================================',
+    '',
+    `export const TOTAL_TEMA = ${entries.length};`,
+    '',
+    '/** Dibulatkan ke bawah per 10 untuk copy pemasaran — tak pernah melebihkan. */',
+    `export const TEMA_BULAT = '${Math.floor(entries.length / 10) * 10}+';`,
+    '',
+  ].join('\n'),
+  'utf8',
+);
+
 console.log(`OK — ${entries.length} tema ditulis ke ${outPath}`);
+console.log(`OK — TOTAL_TEMA=${entries.length} ditulis ke ${statsPath}`);

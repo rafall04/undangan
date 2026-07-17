@@ -7,7 +7,7 @@ import { statistikRegistry } from '@/lib/engine';
 const stat = statistikRegistry();
 
 export const metadata: Metadata = {
-  title: 'Katalog 250+ Tema Undangan',
+  title: `Katalog ${stat.totalTema} Tema Undangan`,
   description: `Jelajahi ${stat.totalTema} tema undangan pernikahan digital terkurasi dari Rafayana by RAF Undangan — dari adat tradisional hingga modern minimalis.`,
 };
 

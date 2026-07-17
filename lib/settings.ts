@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { getDb, nowMs } from '@/lib/db';
+import { TEMA_BULAT } from '@/lib/engine/registry-stats';
 
 // ============================================================================
 // Pengaturan aplikasi (server-only) — tersimpan di DB (tabel app_settings)
@@ -53,7 +54,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
       durasiBulan: 10,
       ringkas: 'Undangan digital yang manis, lengkap informasinya.',
       fitur: [
-        'Pilih dari 250+ tema',
+        `Pilih dari ${TEMA_BULAT} tema`,
         'Foto mempelai (pria & wanita)',
         'Data lengkap: mempelai, akad & resepsi',
         'Hitung mundur & Google Calendar',

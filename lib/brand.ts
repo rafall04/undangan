@@ -1,6 +1,16 @@
+import { TEMA_BULAT } from '@/lib/engine/registry-stats';
+
 // ============================================================================
 // Konstanta identitas brand & bisnis. UBAH DI SINI (nomor WA, harga, dll).
+//
+// ATURAN: jangan pernah menulis tangan angka/nama yang sudah punya sumber
+// kebenaran di tempat lain. Jumlah tema datang dari registry-stats (di-generate
+// bersama registry); nama & durasi paket dari lib/settings.ts. Copy yang
+// menyalin nilai itu selalu basi — FAQ sempat menjanjikan "Platinum 12 bulan"
+// yang paketnya sudah lama tak ada, dan copy menyebut "250+" saat tema 304.
 // ============================================================================
+
+export { TEMA_BULAT };
 
 export const BRAND = {
   nama: 'Rafayana',
@@ -27,27 +37,48 @@ export function waLink(pesan: string, nomor: string = BRAND.whatsapp): string {
 
 // Langkah cara pesan.
 export const CARA_PESAN = [
-  { n: 1, judul: 'Pilih Tema', teks: 'Jelajahi 250+ tema terkurasi dan temukan yang paling mewakili kisah Anda.' },
+  { n: 1, judul: 'Pilih Tema', teks: `Jelajahi ${TEMA_BULAT} tema terkurasi dan temukan yang paling mewakili kisah Anda.` },
   { n: 2, judul: 'Kirim Data', teks: 'Kirim data mempelai, jadwal acara, dan foto melalui WhatsApp kami.' },
   { n: 3, judul: 'Undangan Jadi', teks: 'Undangan digital Anda siap dalam 1–2 hari, lengkap dengan tautan personal.' },
   { n: 4, judul: 'Sebar ke Tamu', teks: 'Gunakan alat kirim kami untuk membagikan undangan ke ratusan tamu dengan rapi.' },
 ];
 
-// FAQ landing (jawaban sesuai fitur nyata; termasuk live streaming).
-export const FAQ = [
-  { q: 'Berapa lama proses pembuatannya?', a: 'Undangan Anda siap dalam 1–2 hari kerja setelah data mempelai, jadwal acara, dan foto lengkap kami terima.' },
-  { q: 'Belum punya foto, apakah tetap bisa?', a: 'Tentu bisa. Undangan tetap tampil elegan memakai monogram inisial nama Anda dan pasangan — tanpa foto pun tetap cantik.' },
-  { q: 'Berapa lama masa aktif undangannya?', a: 'Sesuai paket: Perak aktif 3 bulan, Emas 6 bulan, dan Platinum 12 bulan sejak diterbitkan.' },
-  { q: 'Apakah bisa revisi?', a: 'Bisa. Anda dapat merevisi data & detail acara sampai mendekati hari-H melalui admin kami.' },
-  { q: 'Bagaimana cara menyebar undangan ke tamu?', a: 'Kami sediakan alat kirim: tautan personal untuk tiap tamu, template pesan WhatsApp siap pakai, QR code, dan pelacakan status terkirim.' },
-  { q: 'Apakah ada konfirmasi kehadiran (RSVP) & buku ucapan?', a: 'Ada. Tamu dapat mengonfirmasi kehadiran serta mengirim ucapan & doa langsung dari halaman undangan.' },
-  { q: 'Bisa disiarkan langsung (live streaming)?', a: 'Bisa. Undangan mendukung tautan siaran langsung via YouTube, Instagram, atau Facebook untuk tamu yang berhalangan hadir.' },
-  { q: 'Bagaimana cara memesannya?', a: 'Pilih tema di katalog, lalu hubungi kami via WhatsApp. Kirim data & foto, dan undangan Anda langsung kami kerjakan.' },
-];
+/**
+ * FAQ landing. Sebuah FUNGSI, bukan konstanta: jawaban masa aktif harus lahir
+ * dari paket yang sedang berlaku (lib/settings.ts, tersimpan di DB & bisa
+ * diedit admin). Dulu ia hardcoded "Perak 3 bulan / Emas 6 bulan / Platinum 12
+ * bulan" sementara paket asli Dasar & Premium 10 bulan — pelanggan yang membaca
+ * FAQ diberi info keliru soal apa yang ia beli. Ganti nama paket di panel admin
+ * sekarang otomatis ikut ke sini.
+ */
+export function buildFaq(paket: Array<{ nama: string; durasiBulan: number }>): Array<{ q: string; a: string }> {
+  return [
+    { q: 'Berapa lama proses pembuatannya?', a: 'Undangan Anda siap dalam 1–2 hari kerja setelah data mempelai, jadwal acara, dan foto lengkap kami terima.' },
+    { q: 'Belum punya foto, apakah tetap bisa?', a: 'Tentu bisa. Undangan tetap tampil elegan memakai monogram inisial nama Anda dan pasangan — tanpa foto pun tetap cantik.' },
+    { q: 'Berapa lama masa aktif undangannya?', a: jawabanMasaAktif(paket) },
+    { q: 'Apakah bisa revisi?', a: 'Bisa. Anda dapat merevisi data & detail acara sampai mendekati hari-H melalui admin kami.' },
+    { q: 'Bagaimana cara menyebar undangan ke tamu?', a: 'Kami sediakan alat kirim: tautan personal untuk tiap tamu, template pesan WhatsApp siap pakai, QR code, dan pelacakan status terkirim.' },
+    { q: 'Apakah ada konfirmasi kehadiran (RSVP) & buku ucapan?', a: 'Ada. Tamu dapat mengonfirmasi kehadiran serta mengirim ucapan & doa langsung dari halaman undangan.' },
+    { q: 'Bisa disiarkan langsung (live streaming)?', a: 'Bisa. Undangan mendukung tautan siaran langsung via YouTube, Instagram, atau Facebook untuk tamu yang berhalangan hadir.' },
+    { q: 'Bagaimana cara memesannya?', a: 'Pilih tema di katalog, lalu hubungi kami via WhatsApp. Kirim data & foto, dan undangan Anda langsung kami kerjakan.' },
+  ];
+}
+
+function jawabanMasaAktif(paket: Array<{ nama: string; durasiBulan: number }>): string {
+  if (paket.length === 0) return 'Masa aktif mengikuti paket yang Anda pilih.';
+  // Semua paket sama durasinya → satu kalimat, tanpa merinci nama paket.
+  const durasi = paket.map((p) => p.durasiBulan);
+  const seragam = durasi.every((d) => d === durasi[0]);
+  if (seragam) {
+    return `Undangan aktif ${durasi[0]} bulan sejak diterbitkan, untuk semua paket.`;
+  }
+  const rincian = paket.map((p) => `${p.nama} aktif ${p.durasiBulan} bulan`).join(', ');
+  return `Sesuai paket: ${rincian} sejak diterbitkan.`;
+}
 
 // Keunggulan.
 export const KEUNGGULAN = [
-  { judul: '250+ Tema Terkurasi', teks: 'Bukan template acak — tiap tema dirancang harmonis oleh tim kami.' },
+  { judul: `${TEMA_BULAT} Tema Terkurasi`, teks: 'Bukan template acak — tiap tema dirancang harmonis oleh tim kami.' },
   { judul: 'Foto Warga Kelas Satu', teks: 'Setiap foto tertata rapi dengan bingkai ornamen; tak ada foto gepeng.' },
   { judul: 'Mobile-First', teks: 'Dirancang untuk dibuka dari HP lewat WhatsApp — ringan & cepat.' },
   { judul: 'Alat Kirim Massal', teks: 'Tautan personal per tamu, template pesan, QR code, dan pelacakan status.' },
