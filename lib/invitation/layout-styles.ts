@@ -125,9 +125,22 @@ const RINGKAS: SectionId[] = ['pembuka', 'mempelai', 'acara', 'peta', 'countdown
 export type PembukaVariant =
   | 'center' // rata tengah klasik
   | 'rail' // rata kiri dengan rel aksen
-  | 'tategaki' // kolom vertikal + ruang kosong (ma)
+  | 'ma' // kolom sempit + ruang kosong yang DIKOMPOSISI (Jepang)
   | 'couplet' // dua bait berpasangan, simetris
   | 'gunungan'; // dibingkai lengkung gunungan
+
+// CATATAN — 'ma' dulu bernama 'tategaki' dan benar-benar memutar teks jadi
+// vertikal. Itu keliru: yang diputar adalah paragraf BAHASA INDONESIA sepanjang
+// 51 & 99 karakter, sehingga kalimat pembuka undangan nyaris tak terbaca di 48
+// tema Jepang. Tategaki adalah tradisi untuk teks JEPANG; menerapkannya pada
+// aksara Latin bukan penghormatan, melainkan kerusakan.
+//
+// ATURAN: writing-mode vertikal hanya boleh untuk lang="ja" atau label pendek
+// (≤±12 karakter, mis. batang tiket di Acara). TIDAK PERNAH untuk paragraf.
+//
+// Identitas Jepang kini datang dari KOMPOSISI: ukuran baris sempit, ruang kosong
+// asimetris yang diseimbangkan jangkar kiri, motif, dan kamon — bukan dari
+// memutar teks yang tak seharusnya diputar.
 
 export type CountdownVariant =
   | 'boxes' // empat kotak (lama)
@@ -162,9 +175,9 @@ export type Signature = 'gunungan' | 'tenun' | 'kamon' | 'seal' | 'deco' | 'none
  * Karena itu setiap budaya WAJIB punya penanda yang tergambar — 'none' hanya
  * untuk 'universal', yang memang tak mengklaim budaya apa pun.
  *
- * Catatan: 'kamon' (medali lambang) berbeda dari varian pembuka 'tategaki'.
- * Yang pertama ciri budaya (menempel di tema Jepang mana pun), yang kedua
- * pilihan layout (hanya washi & noren). Dua sumbu, jangan dicampur.
+ * Catatan: 'kamon' (medali lambang) berbeda dari varian pembuka 'ma'. Yang
+ * pertama ciri budaya (menempel di tema Jepang mana pun), yang kedua pilihan
+ * layout (hanya washi & noren). Dua sumbu, jangan dicampur.
  */
 export const SIGNATURE_BY_BUDAYA: Record<Budaya, Signature> = {
   jawa: 'gunungan',
@@ -474,13 +487,13 @@ export const LAYOUT_STYLES: Record<LayoutId, LayoutStyle> = {
     id: 'washi', containerClass: 'max-w-[27rem]', framed: false, patternOpacity: 0.03, patternScale: 1.5,
     chrome: 'open', cardClass: '', headingAlign: 'left', headingStyle: 'uppercase-thin',
     cover: 'minimal', mempelai: 'side',
-    urutan: TENANG, pembuka: 'tategaki', countdown: 'rule', acara: 'duo', galeri: 'filmstrip',
+    urutan: TENANG, pembuka: 'ma', countdown: 'rule', acara: 'duo', galeri: 'filmstrip',
   },
   noren: {
     id: 'noren', containerClass: 'max-w-[27rem]', framed: false, patternOpacity: 0.05, patternScale: 1.3,
     chrome: 'band', cardClass: '', headingAlign: 'center', headingStyle: 'uppercase-thin',
     cover: 'split', mempelai: 'circular',
-    urutan: TENANG, pembuka: 'tategaki', countdown: 'inline', acara: 'timeline', galeri: 'masonry',
+    urutan: TENANG, pembuka: 'ma', countdown: 'inline', acara: 'timeline', galeri: 'masonry',
   },
   shuangxi: {
     id: 'shuangxi', containerClass: 'max-w-[28rem]', framed: true, patternOpacity: 0.06, patternScale: 0.95,

@@ -143,7 +143,13 @@ export function Mempelai({
   const heading = (
     <SectionHeading
       motifId={motifId}
-      overline="Bismillah"
+      // Dulu "Bismillah" TANPA kondisi → label Islami terpampang di ke-304 tema,
+      // termasuk seluruh tema China, Jepang, dan Barat. Sekarang ia hanya tampil
+      // bila pasangan memang memilih konten Islami.
+      // TODO(R7): seluruh overline masih hardcoded & campur bahasa ("Counting
+      // Down", "Our Journey", "Lokasi Acara"). Jadikan configurable dari content
+      // layer agar bisa sadar-tema.
+      overline={data.islami ? 'Bismillah' : undefined}
       title="Mempelai"
       align={style.headingAlign}
       variant={style.headingStyle}

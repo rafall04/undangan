@@ -223,36 +223,25 @@ export function DecoRule({
   );
 }
 
-/**
- * Jepang — tategaki (tulis vertikal, kanan ke kiri). Ini tradisi tipografi
- * nyata, bukan sekadar hiasan: teksnya benar-benar mengalir dari atas ke bawah.
- * `text-orientation: upright` dihindari agar aksara Latin tetap terbaca wajar.
- */
-export function Tategaki({
-  children,
-  className = '',
-  maxHeight = '18rem',
-}: {
-  children: React.ReactNode;
-  className?: string;
-  maxHeight?: string;
-}) {
-  return (
-    <div
-      className={className}
-      style={{
-        writingMode: 'vertical-rl',
-        textOrientation: 'mixed',
-        maxHeight,
-        letterSpacing: '0.12em',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+// DIHAPUS: <Tategaki>.
+//
+// Komponen ini memutar teks jadi vertikal (`writing-mode: vertical-rl`), dan
+// dipakai untuk membungkus salam & intro Pembuka — dua paragraf BAHASA
+// INDONESIA sepanjang 51 & 99 karakter. Akibatnya kalimat pembuka undangan
+// nyaris tak terbaca di 48 tema Jepang, dan itu sempat live di produksi.
+//
+// Tategaki adalah tradisi tipografi untuk teks JEPANG. Menerapkannya pada
+// aksara Latin bukan penghormatan pada budaya Jepang — itu kerusakan yang
+// kebetulan terlihat "oriental". Ia dihapus, bukan sekadar dilepas dari
+// Pembuka: selama repo ini tak punya satu pun karakter kana/kanji, komponen ini
+// tak punya pemakai yang sah, dan membiarkannya hidup hanya mengundang
+// kekeliruan yang sama terulang.
+//
+// Bila suatu hari benar-benar ada teks `lang="ja"` (dan font Mincho yang
+// di-subset untuk merendernya), hidupkan lagi DENGAN syarat: hanya untuk
+// elemen lang="ja", pendek (≤±12 karakter), dan dekoratif.
 
-/** Garis vertikal tipis pendamping tategaki — meniru batas kolom washi. */
+/** Garis vertikal tipis — meniru batas kolom washi. Ornamen, bukan teks. */
 export function NorenRule({
   color = 'var(--accent)',
   className = '',

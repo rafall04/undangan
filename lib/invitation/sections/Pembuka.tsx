@@ -3,7 +3,7 @@ import type { DataUndangan } from '../types';
 import type { LayoutStyle, Signature } from '../layout-styles';
 import { SectionShell } from '../SectionShell';
 import { Divider } from '../Ornaments';
-import { PendhapaArch, SealMark, SignatureMark, Tategaki, NorenRule } from '../Signature';
+import { PendhapaArch, SealMark, SignatureMark, NorenRule } from '../Signature';
 
 // ============================================================================
 // Pembuka — salam (Islami / netral) + ayat/kutipan opsional.
@@ -102,39 +102,46 @@ function VarRail({ salam, intro, islami, kutipan, signature, motifId }: Isi) {
   );
 }
 
-// --- Varian: tategaki (Jepang) ---------------------------------------------
-// Teks mengalir vertikal kanan→kiri, dengan ruang kosong (ma) yang lapang di
-// sisi kiri. Inilah pembeda struktural tema Jepang: aliran teksnya beda arah.
-function VarTategaki({ salam, intro, islami, kutipan, motifId, signature }: Isi) {
+// --- Varian: ma (Jepang) ---------------------------------------------------
+// SEMUA TEKS HORIZONTAL. Varian ini dulu memutar salam & intro jadi vertikal
+// (tategaki) — padahal keduanya paragraf Bahasa Indonesia sepanjang 51 & 99
+// karakter. Hasilnya nyaris tak terbaca di 48 tema Jepang. Tategaki itu untuk
+// teks Jepang; memaksakannya ke aksara Latin merusak, bukan menghormati.
+//
+// Ciri Jepangnya kini dari KOMPOSISI, dan itu memang lebih tepat: `ma` bukan
+// "teks diputar", melainkan ruang kosong yang DIKOMPOSISI. Kamon + garis noren
+// jadi jangkar di kiri; teks memakai ukuran baris sempit (±30ch, nyaman dibaca
+// dan kebetulan itulah yang menciptakan ruang lapang di kanan). Kosongnya jadi
+// terbaca disengaja — bukan separuh layar terbengkalai seperti versi lama.
+function VarMa({ salam, intro, islami, kutipan, motifId, signature }: Isi) {
   return (
     <div>
-      <div className="flex justify-end gap-4 sm:gap-6">
-        {/* Medali kamon menempati sisi kiri yang lapang — mengisi `ma` tanpa
-            memenuhinya, sekaligus menandai budaya seperti varian lain. */}
-        {signature !== 'none' && (
-          <div className="mt-1 flex flex-1 justify-start">
-            <SignatureMark signature={signature} motifId={motifId} />
-          </div>
-        )}
-        <NorenRule className="mt-1 shrink-0" height={200} />
-        <Tategaki className="text-left" maxHeight="19rem">
-          <p className="font-heading text-lg font-medium text-primary sm:text-xl">{salam}</p>
-          <p className="mt-5 text-sm leading-relaxed text-muted sm:text-base">{intro}</p>
-        </Tategaki>
+      <div className="flex gap-4 sm:gap-5">
+        {/* Jangkar kiri: kamon di atas, garis turun ke bawah menahan kolom teks. */}
+        <div className="flex shrink-0 flex-col items-center gap-2.5">
+          {signature !== 'none' && <SignatureMark signature={signature} motifId={motifId} />}
+          <NorenRule className="flex-1" height={96} />
+        </div>
+
+        <div className="min-w-0 max-w-[30ch] text-left">
+          <p className="font-heading text-lg font-medium leading-snug text-primary sm:text-xl">
+            {salam}
+          </p>
+          {islami && <Bismillah className="mt-4 text-right" />}
+          <p className="mt-4 text-sm leading-relaxed text-muted sm:text-base">{intro}</p>
+
+          {kutipan && (
+            <figure className="mt-7">
+              <blockquote className="font-heading text-base italic leading-relaxed text-ink sm:text-lg">
+                “{kutipan.teks}”
+              </blockquote>
+              <figcaption className="mt-2 text-xs font-medium uppercase tracking-widest text-accent">
+                — {kutipan.sumber}
+              </figcaption>
+            </figure>
+          )}
+        </div>
       </div>
-      {islami && <Bismillah className="mt-6 text-center" />}
-      {kutipan && (
-        // Kutipan kembali horizontal: teks panjang vertikal melelahkan dibaca
-        // di ponsel, dan `ma` justru hilang kalau semua dipaksa vertikal.
-        <figure className="mt-8 max-w-sm">
-          <blockquote className="font-heading text-base italic leading-relaxed text-ink sm:text-lg">
-            “{kutipan.teks}”
-          </blockquote>
-          <figcaption className="mt-2 text-xs font-medium uppercase tracking-widest text-accent">
-            — {kutipan.sumber}
-          </figcaption>
-        </figure>
-      )}
     </div>
   );
 }
@@ -234,8 +241,8 @@ export function Pembuka({
     case 'rail':
       inner = <VarRail {...isi} />;
       break;
-    case 'tategaki':
-      inner = <VarTategaki {...isi} />;
+    case 'ma':
+      inner = <VarMa {...isi} />;
       break;
     case 'couplet':
       inner = <VarCouplet {...isi} />;
